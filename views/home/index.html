@@ -17,8 +17,15 @@
                     fontFamily: { sans: ['Inter', 'sans-serif'], display: ['Outfit', 'sans-serif'], },
                     colors: { brand: { blue: '#00629B', dark: '#001b3a', accent: '#00A3E0', surface: '#F8FAFC' } },
                     boxShadow: { 'float': '0 20px 40px -10px rgba(0,0,0,0.1)', 'glow': '0 0 20px rgba(0, 163, 224, 0.4)' },
-                    animation: { 'float': 'float 6s ease-in-out infinite', 'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite' },
-                    keyframes: { float: { '0%, 100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-20px)' } } }
+                    animation: { 
+                        'float': 'float 6s ease-in-out infinite', 
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'fade-in': 'fadeIn 0.4s ease-out forwards'
+                    },
+                    keyframes: { 
+                        float: { '0%, 100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-20px)' } },
+                        fadeIn: { '0%': { opacity: '0', transform: 'translateY(10px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } }
+                    }
                 }
             }
         }
@@ -31,7 +38,7 @@
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
-        .glass-nav { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(226, 232, 240, 0.8); }
+        .glass-nav { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(226, 232, 240, 0.8); }
         .hero-gradient { background: linear-gradient(135deg, #001b3a 0%, #003057 50%, #00629B 100%); position: relative; overflow: hidden; }
         .hero-pattern { background-image: radial-gradient(#00A3E0 1px, transparent 1px); background-size: 30px 30px; opacity: 0.1; }
         
@@ -39,6 +46,19 @@
         @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
 
         .clip-diagonal { clip-path: polygon(0 0, 100% 0, 100% 90%, 0 100%); }
+        
+        /* Timeline styling */
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 1.25rem;
+            top: 2rem;
+            bottom: -2rem;
+            width: 2px;
+            background-color: #e2e8f0;
+            z-index: 0;
+        }
+        .timeline-item:last-child::before { display: none; }
     </style>
 </head>
 <body class="text-slate-800 font-sans antialiased selection:bg-brand-accent selection:text-white overflow-x-hidden">
@@ -54,17 +74,41 @@
                         <p class="text-[0.65rem] font-bold text-brand-blue uppercase tracking-widest mt-0.5">2026</p>
                     </div>
                 </a>
+                
+                <!-- Desktop Menu -->
                 <div class="hidden md:flex items-center gap-8">
                     <a href="#about" class="text-sm font-bold text-slate-600 hover:text-brand-blue transition-colors">About</a>
-                    <a href="#highlights" class="text-sm font-bold text-slate-600 hover:text-brand-blue transition-colors">Highlights</a>
+                    <a href="#themes" class="text-sm font-bold text-slate-600 hover:text-brand-blue transition-colors">Tracks</a>
                     <a href="#schedule" class="text-sm font-bold text-slate-600 hover:text-brand-blue transition-colors">Schedule</a>
                     <a href="#venues" class="text-sm font-bold text-slate-600 hover:text-brand-blue transition-colors">Venues</a>
                 </div>
-                <div class="flex items-center gap-4">
-                    <a href="/events" class="hidden sm:inline-flex px-5 py-2.5 rounded-xl text-sm font-bold bg-brand-blue text-white hover:bg-brand-dark transition-colors shadow-md hover:shadow-lg">
-                        Explore Events
+                
+                <div class="hidden md:flex items-center gap-4">
+                    <a href="/events" class="px-6 py-2.5 rounded-full text-sm font-bold bg-brand-blue text-white hover:bg-brand-dark transition-colors shadow-md hover:shadow-lg">
+                        Secure Your Pass
                     </a>
                 </div>
+
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden flex items-center">
+                    <button id="mobile-menu-btn" class="text-slate-600 hover:text-brand-dark focus:outline-none p-2">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path id="menu-icon-bars" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                            <path id="menu-icon-close" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu Dropdown -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-slate-100 shadow-lg absolute w-full">
+            <div class="px-4 pt-2 pb-6 space-y-1">
+                <a href="#about" class="block px-3 py-3 rounded-md text-base font-bold text-slate-700 hover:text-brand-blue hover:bg-slate-50">About</a>
+                <a href="#themes" class="block px-3 py-3 rounded-md text-base font-bold text-slate-700 hover:text-brand-blue hover:bg-slate-50">Tracks</a>
+                <a href="#schedule" class="block px-3 py-3 rounded-md text-base font-bold text-slate-700 hover:text-brand-blue hover:bg-slate-50">Schedule</a>
+                <a href="#venues" class="block px-3 py-3 rounded-md text-base font-bold text-slate-700 hover:text-brand-blue hover:bg-slate-50">Venues</a>
+                <a href="#" class="block w-full text-center mt-4 px-6 py-3 rounded-xl text-base font-bold bg-brand-blue text-white shadow-md">Secure Your Pass</a>
             </div>
         </div>
     </nav>
@@ -72,46 +116,38 @@
     <section class="hero-gradient pt-32 pb-40 lg:pt-48 lg:pb-56 relative clip-diagonal">
         <div class="absolute inset-0 hero-pattern"></div>
         
-        <!-- Abstract Shapes -->
         <div class="absolute top-20 right-10 w-72 h-72 bg-brand-accent/20 rounded-full blur-3xl animate-float"></div>
         <div class="absolute bottom-10 left-10 w-96 h-96 bg-brand-blue/30 rounded-full blur-3xl animate-float" style="animation-delay: 2s;"></div>
 
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-8 items-center">
-                <!-- Left: Text Content -->
                 <div class="text-center lg:text-left">
                     <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/20 text-brand-accent text-[0.7rem] font-bold tracking-widest uppercase mb-6 backdrop-blur-sm fade-in-up" style="animation-delay: 0.1s;">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L1 12h3v9h6v-6h4v6h6v-9h3L12 2zm0 2.84L19.5 11H18v8h-2v-6H8v6H6v-8H4.5L12 4.84z"/></svg>
                         <span>IEEE Guntur Subsection Student Congress</span>
                     </div>
                     
                     <h1 class="text-5xl sm:text-6xl lg:text-7xl font-display font-black text-white mb-6 tracking-tight leading-[1.1] fade-in-up" style="animation-delay: 0.2s;">
-                        Be Inspired.<br>
-                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-accent to-blue-200">Be Empowered.</span><br>
-                        Be the Future.
+                        Innovate.<br>
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-accent to-blue-200">Inspire.</span><br>
+                        Impact.
                     </h1>
                     
                     <p class="text-lg sm:text-xl text-blue-100/90 font-medium leading-relaxed max-w-2xl mx-auto lg:mx-0 mb-8 fade-in-up" style="animation-delay: 0.3s;">
-                        Empowering Future Engineers Through Innovation, Leadership, and IEEE Excellence. Join us for a two-day technical symposium across premier institutions.
+                        Empowering Future Engineers Through Innovation, Leadership, and IEEE Excellence. Join the premier gathering across two prestigious campuses.
                     </p>
                     
                     <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 fade-in-up" style="animation-delay: 0.4s;">
-                        <a href="/events" class="w-full sm:w-auto px-8 py-4 bg-brand-accent hover:bg-white text-white hover:text-brand-dark rounded-xl font-bold text-lg transition-all shadow-glow flex items-center justify-center gap-2 group">
-                            Register Now
+                        <a href="#themes" class="w-full sm:w-auto px-8 py-4 bg-brand-accent hover:bg-white text-white hover:text-brand-dark rounded-full font-bold text-lg transition-all shadow-glow flex items-center justify-center gap-2 group">
+                            Explore Tracks
                             <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-                        </a>
-                        <a href="#about" class="w-full sm:w-auto px-8 py-4 bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-xl font-bold text-lg transition-all backdrop-blur-sm text-center">
-                            Learn More
                         </a>
                     </div>
                 </div>
 
-                <!-- Right: Launch Poster -->
                 <div class="flex justify-center fade-in-up mt-8 lg:mt-0" style="animation-delay: 0.5s;">
                     <div class="relative group max-w-sm sm:max-w-md w-full">
-                        <!-- Glowing background effect behind the poster -->
                         <div class="absolute -inset-1 bg-gradient-to-r from-brand-accent to-blue-300 rounded-[2rem] blur opacity-30 group-hover:opacity-70 transition duration-500"></div>
-                        
-                        <!-- Official Launch Poster -->
                         <img src="https://res.cloudinary.com/dzuxwvamy/image/upload/v1784550687/Udgama_banner_cleghg.jpg" 
                              alt="UDGAMA 2026 Official Launch Poster" 
                              class="relative w-full h-auto rounded-[2rem] shadow-2xl border border-white/20 transform transition-transform duration-500 group-hover:scale-[1.02] object-cover">
@@ -123,440 +159,484 @@
 
     <section id="about" class="py-20 -mt-20 relative z-20">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
-                <h2 class="text-3xl md:text-4xl font-display font-bold text-brand-dark mb-4">Why Attend UDGAMA 2026?</h2>
-                <div class="w-24 h-1.5 bg-brand-accent mx-auto rounded-full"></div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <!-- Connect -->
-                <div class="bg-white p-8 rounded-3xl shadow-float border border-slate-100 hover:-translate-y-2 transition-transform duration-300">
+                <div class="bg-white p-8 rounded-[2rem] shadow-float border border-slate-100 hover:-translate-y-2 transition-transform duration-300">
                     <div class="w-14 h-14 bg-blue-50 text-brand-blue rounded-2xl flex items-center justify-center mb-6">
                         <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
                     </div>
                     <h3 class="text-xl font-display font-bold text-slate-900 mb-3">Connect</h3>
-                    <p class="text-slate-500 text-sm leading-relaxed">Meet IEEE leaders, researchers, industry professionals, and students from institutions across the Hyderabad section.</p>
+                    <p class="text-slate-500 text-sm leading-relaxed">Meet IEEE leaders, researchers, industry professionals, and students across the section.</p>
                 </div>
 
                 <!-- Learn -->
-                <div class="bg-white p-8 rounded-3xl shadow-float border border-slate-100 hover:-translate-y-2 transition-transform duration-300">
+                <div class="bg-white p-8 rounded-[2rem] shadow-float border border-slate-100 hover:-translate-y-2 transition-transform duration-300">
                     <div class="w-14 h-14 bg-emerald-50 text-emerald-500 rounded-2xl flex items-center justify-center mb-6">
                         <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>
                     </div>
                     <h3 class="text-xl font-display font-bold text-slate-900 mb-3">Learn</h3>
-                    <p class="text-slate-500 text-sm leading-relaxed">Gain knowledge from keynote sessions on AI, Data Analytics, 6G Technologies, Healthcare Innovations, and more.</p>
+                    <p class="text-slate-500 text-sm leading-relaxed">Gain knowledge from keynotes on AI, 6G, IoT, Data Analytics, and Healthcare Innovations.</p>
                 </div>
 
                 <!-- Innovate -->
-                <div class="bg-white p-8 rounded-3xl shadow-float border border-slate-100 hover:-translate-y-2 transition-transform duration-300">
+                <div class="bg-white p-8 rounded-[2rem] shadow-float border border-slate-100 hover:-translate-y-2 transition-transform duration-300">
                     <div class="w-14 h-14 bg-purple-50 text-purple-500 rounded-2xl flex items-center justify-center mb-6">
                         <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
                     </div>
                     <h3 class="text-xl font-display font-bold text-slate-900 mb-3">Innovate</h3>
-                    <p class="text-slate-500 text-sm leading-relaxed">Showcase your ideas and technical skills through exciting student competitions, project expos, and startup pitches.</p>
+                    <p class="text-slate-500 text-sm leading-relaxed">Showcase your ideas through technical competitions, ideation, project expos, and startup pitches.</p>
                 </div>
 
                 <!-- Achieve -->
-                <div class="bg-white p-8 rounded-3xl shadow-float border border-slate-100 hover:-translate-y-2 transition-transform duration-300">
+                <div class="bg-white p-8 rounded-[2rem] shadow-float border border-slate-100 hover:-translate-y-2 transition-transform duration-300">
                     <div class="w-14 h-14 bg-amber-50 text-amber-500 rounded-2xl flex items-center justify-center mb-6">
                         <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
                     </div>
                     <h3 class="text-xl font-display font-bold text-slate-900 mb-3">Achieve</h3>
-                    <p class="text-slate-500 text-sm leading-relaxed">Earn certificates, win competition awards, grab your participant kit, and build a network that lasts a lifetime.</p>
+                    <p class="text-slate-500 text-sm leading-relaxed">Earn certificates, win awards, grab your participant kit, and build a network for a lifetime.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <section id="highlights" class="py-20 bg-slate-200/50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16">
+    <section id="themes" class="py-20 relative">
+        <div class="absolute inset-0 bg-slate-50 clip-diagonal transform -skew-y-2 z-0"></div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center mb-10">
+                <span class="text-brand-blue font-bold tracking-widest uppercase text-sm mb-2 block">Technical Competitions</span>
+                <h2 class="text-3xl md:text-4xl font-display font-bold text-brand-dark mb-4">Explore The Tracks</h2>
                 
-                <!-- Highlights List -->
-                <div>
-                    <h2 class="text-3xl font-display font-bold text-brand-dark mb-8">Event Highlights</h2>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div class="flex items-center gap-3 bg-white p-4 rounded-xl border border-slate-200">
-                            <svg class="w-5 h-5 text-brand-accent shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                            <span class="font-bold text-slate-700">Keynote Sessions</span>
+                <!-- Tracks Toggle -->
+                <div class="bg-white p-1.5 rounded-full inline-flex border border-slate-200 shadow-sm mx-auto relative mt-4">
+                    <button id="tracks-btn-day1" onclick="toggleSection('tracks', 1)" class="relative z-10 px-6 sm:px-8 py-3 rounded-full text-sm font-bold bg-brand-dark text-white shadow-md transition-all duration-300">
+                        Day 1 (Chalapathi)
+                    </button>
+                    <button id="tracks-btn-day2" onclick="toggleSection('tracks', 2)" class="relative z-10 px-6 sm:px-8 py-3 rounded-full text-sm font-bold text-slate-500 hover:text-brand-dark transition-all duration-300">
+                        Day 2 (LBRCE)
+                    </button>
+                </div>
+            </div>
+
+            <div class="relative max-w-6xl mx-auto">
+                <!-- Day 1 Tracks -->
+                <div id="tracks-day1" class="animate-fade-in">
+                    <div class="text-center mb-8">
+                        <h3 class="text-2xl font-display font-bold text-brand-dark">Host: Chalapathi Institute of Technology</h3>
+                        <p class="text-slate-500 font-medium text-sm mt-1">Focus: Foundational Technologies, Core Hardware & Startup Ideation</p>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <!-- Track A -->
+                        <div class="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm hover:shadow-lg transition-all">
+                            <div class="bg-blue-50 text-brand-blue text-xs font-bold px-3 py-1 rounded-full inline-block mb-4">TRACK A</div>
+                            <h4 class="text-xl font-bold text-brand-dark mb-4">Research Poster Competition</h4>
+                            <ul class="space-y-3">
+                                <li class="flex items-start gap-2 text-sm text-slate-600"><span class="text-brand-accent mt-0.5">•</span> Artificial Intelligence (AI)</li>
+                                <li class="flex items-start gap-2 text-sm text-slate-600"><span class="text-brand-accent mt-0.5">•</span> Internet of Things (IoT)</li>
+                                <li class="flex items-start gap-2 text-sm text-slate-600"><span class="text-brand-accent mt-0.5">•</span> Electronics & Robotics</li>
+                                <li class="flex items-start gap-2 text-sm text-slate-600"><span class="text-brand-accent mt-0.5">•</span> Communication & Power Systems</li>
+                                <li class="flex items-start gap-2 text-sm text-slate-600"><span class="text-brand-accent mt-0.5">•</span> Biomedical Engineering</li>
+                            </ul>
                         </div>
-                        <div class="flex items-center gap-3 bg-white p-4 rounded-xl border border-slate-200">
-                            <svg class="w-5 h-5 text-brand-accent shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                            <span class="font-bold text-slate-700">Technical Competitions</span>
+                        <!-- Track B -->
+                        <div class="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm hover:shadow-lg transition-all">
+                            <div class="bg-emerald-50 text-emerald-600 text-xs font-bold px-3 py-1 rounded-full inline-block mb-4">TRACK B</div>
+                            <h4 class="text-xl font-bold text-brand-dark mb-4">Innovation Project Expo</h4>
+                            <ul class="space-y-3">
+                                <li class="flex items-start gap-2 text-sm text-slate-600"><span class="text-emerald-500 mt-0.5">•</span> Hardware & Software Projects</li>
+                                <li class="flex items-start gap-2 text-sm text-slate-600"><span class="text-emerald-500 mt-0.5">•</span> Embedded Systems & Drones</li>
+                                <li class="flex items-start gap-2 text-sm text-slate-600"><span class="text-emerald-500 mt-0.5">•</span> Smart Agriculture</li>
+                                <li class="flex items-start gap-2 text-sm text-slate-600"><span class="text-emerald-500 mt-0.5">•</span> Smart Cities</li>
+                                <li class="flex items-start gap-2 text-sm text-slate-600"><span class="text-emerald-500 mt-0.5">•</span> Healthcare Technologies</li>
+                            </ul>
                         </div>
-                        <div class="flex items-center gap-3 bg-white p-4 rounded-xl border border-slate-200">
-                            <svg class="w-5 h-5 text-brand-accent shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                            <span class="font-bold text-slate-700">Startup Pitch</span>
-                        </div>
-                        <div class="flex items-center gap-3 bg-white p-4 rounded-xl border border-slate-200">
-                            <svg class="w-5 h-5 text-brand-accent shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                            <span class="font-bold text-slate-700">Project Expo</span>
-                        </div>
-                        <div class="flex items-center gap-3 bg-white p-4 rounded-xl border border-slate-200">
-                            <svg class="w-5 h-5 text-brand-accent shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                            <span class="font-bold text-slate-700">Panel Discussion</span>
-                        </div>
-                        <div class="flex items-center gap-3 bg-white p-4 rounded-xl border border-slate-200">
-                            <svg class="w-5 h-5 text-brand-accent shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                            <span class="font-bold text-slate-700">Exciting Prizes</span>
+                        <!-- Track C -->
+                        <div class="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm hover:shadow-lg transition-all">
+                            <div class="bg-purple-50 text-purple-600 text-xs font-bold px-3 py-1 rounded-full inline-block mb-4">TRACK C</div>
+                            <h4 class="text-xl font-bold text-brand-dark mb-4">Innovation Challenge & Pitch</h4>
+                            <ul class="space-y-3">
+                                <li class="flex items-start gap-2 text-sm text-slate-600"><span class="text-purple-500 mt-0.5">•</span> Student Startups</li>
+                                <li class="flex items-start gap-2 text-sm text-slate-600"><span class="text-purple-500 mt-0.5">•</span> Business Model Canvas</li>
+                                <li class="flex items-start gap-2 text-sm text-slate-600"><span class="text-purple-500 mt-0.5">•</span> Prototype Demonstration</li>
+                                <li class="flex items-start gap-2 text-sm text-slate-600"><span class="text-purple-500 mt-0.5">•</span> Live Pitch before Jury</li>
+                            </ul>
                         </div>
                     </div>
                 </div>
 
-                <!-- Registration Perks -->
-                <div>
-                    <h2 class="text-3xl font-display font-bold text-brand-dark mb-8">Registration Perks</h2>
-                    <div class="bg-brand-dark rounded-3xl p-8 text-white shadow-float relative overflow-hidden">
-                        <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-brand-accent/30 rounded-full blur-2xl pointer-events-none"></div>
-                        
-                        <ul class="space-y-6 relative z-10">
-                            <li class="flex items-start gap-4">
-                                <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center shrink-0">
-                                    <svg class="w-5 h-5 text-brand-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                </div>
-                                <div>
-                                    <h4 class="font-bold text-lg">Certificate of Participation</h4>
-                                    <p class="text-sm text-blue-200/80">Official recognition from IEEE Hyderabad Section.</p>
-                                </div>
-                            </li>
-                            <li class="flex items-start gap-4">
-                                <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center shrink-0">
-                                    <svg class="w-5 h-5 text-brand-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
-                                </div>
-                                <div>
-                                    <h4 class="font-bold text-lg">Exclusive Participant Kit</h4>
-                                    <p class="text-sm text-blue-200/80">Swag and materials to aid your congress experience.</p>
-                                </div>
-                            </li>
-                            <li class="flex items-start gap-4">
-                                <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center shrink-0">
-                                    <svg class="w-5 h-5 text-brand-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 15.546c-.523 0-1.046.151-1.5.454a2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.701 2.701 0 00-1.5-.454M9 6v2m3-2v2m3-2v2M9 3h.01M12 3h.01M15 3h.01M21 21v-7a2 2 0 00-2-2H5a2 2 0 00-2 2v7h18zm-3-9v-2a2 2 0 00-2-2H8a2 2 0 00-2 2v2h12z"></path></svg>
-                                </div>
-                                <div>
-                                    <h4 class="font-bold text-lg">Refreshments & Lunch</h4>
-                                    <p class="text-sm text-blue-200/80">Networking lunches and tea breaks included both days.</p>
-                                </div>
-                            </li>
-                            <li class="flex items-start gap-4">
-                                <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center shrink-0">
-                                    <svg class="w-5 h-5 text-brand-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
-                                </div>
-                                <div>
-                                    <h4 class="font-bold text-lg">Transportation</h4>
-                                    <p class="text-sm text-blue-200/80">Convenient travel support details provided to registered attendees.</p>
-                                </div>
-                            </li>
-                        </ul>
+                <!-- Day 2 Tracks -->
+                <div id="tracks-day2" class="hidden animate-fade-in">
+                    <div class="text-center mb-8">
+                        <h3 class="text-2xl font-display font-bold text-brand-dark">Host: LBRCE Engineering College</h3>
+                        <p class="text-slate-500 font-medium text-sm mt-1">Focus: Advanced 6G, Emerging AI Applications & Coding</p>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <!-- Track A -->
+                        <div class="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm hover:shadow-lg transition-all">
+                            <div class="bg-blue-50 text-brand-blue text-xs font-bold px-3 py-1 rounded-full inline-block mb-4">TRACK A</div>
+                            <h4 class="text-xl font-bold text-brand-dark mb-4">Poster Competition</h4>
+                            <ul class="space-y-3">
+                                <li class="flex items-start gap-2 text-sm text-slate-600"><span class="text-brand-accent mt-0.5">•</span> 6G Air Interface</li>
+                                <li class="flex items-start gap-2 text-sm text-slate-600"><span class="text-brand-accent mt-0.5">•</span> Integrated Sensing & Communication</li>
+                                <li class="flex items-start gap-2 text-sm text-slate-600"><span class="text-brand-accent mt-0.5">•</span> Gen AI & Explainable AI</li>
+                                <li class="flex items-start gap-2 text-sm text-slate-600"><span class="text-brand-accent mt-0.5">•</span> Machine Learning in Cyberspace</li>
+                                <li class="flex items-start gap-2 text-sm text-slate-600"><span class="text-brand-accent mt-0.5">•</span> Reconfigurable Intelligence Surfaces</li>
+                            </ul>
+                        </div>
+                        <!-- Track B -->
+                        <div class="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm hover:shadow-lg transition-all">
+                            <div class="bg-emerald-50 text-emerald-600 text-xs font-bold px-3 py-1 rounded-full inline-block mb-4">TRACK B</div>
+                            <h4 class="text-xl font-bold text-brand-dark mb-4">Ideation & Pitching</h4>
+                            <ul class="space-y-3">
+                                <li class="flex items-start gap-2 text-sm text-slate-600"><span class="text-emerald-500 mt-0.5">•</span> HoloClinic: 6G Telemedicine</li>
+                                <li class="flex items-start gap-2 text-sm text-slate-600"><span class="text-emerald-500 mt-0.5">•</span> AI-Adaptive BCIs for Metaverse</li>
+                                <li class="flex items-start gap-2 text-sm text-slate-600"><span class="text-emerald-500 mt-0.5">•</span> GuardianEdge: Edge-AI Security</li>
+                                <li class="flex items-start gap-2 text-sm text-slate-600"><span class="text-emerald-500 mt-0.5">•</span> AgriPulse & TwinFactory</li>
+                                <li class="flex items-start gap-2 text-sm text-slate-600"><span class="text-emerald-500 mt-0.5">•</span> SafeTraffic: AI Collision Avoidance</li>
+                            </ul>
+                        </div>
+                        <!-- Track C -->
+                        <div class="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm hover:shadow-lg transition-all flex flex-col justify-center text-center">
+                            <div class="bg-purple-50 text-purple-600 text-xs font-bold px-3 py-1 rounded-full inline-block mx-auto mb-4">TRACK C</div>
+                            <h4 class="text-xl font-bold text-brand-dark mb-4">Coding Contest</h4>
+                            <p class="text-sm text-slate-600 mb-6">Open coding contest for all engineering branches. Test your algorithmic thinking and programming prowess.</p>
+                            <div class="w-16 h-16 bg-slate-50 rounded-2xl mx-auto flex items-center justify-center text-slate-400">
+                                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <section id="schedule" class="py-20">
+    <section id="schedule" class="py-20 bg-white relative">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
-                <h2 class="text-3xl md:text-4xl font-display font-bold text-brand-dark mb-4">Congress Agenda</h2>
-                <div class="w-24 h-1.5 bg-brand-accent mx-auto rounded-full"></div>
-            </div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                <!-- Day 1 -->
-                <div class="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm relative">
-                    <div class="absolute -top-4 left-8 bg-brand-blue text-white px-4 py-1 rounded-full text-sm font-bold shadow-md">Day 1: 7 August 2026</div>
-                    <div class="mt-6 space-y-6 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-200 before:to-transparent">
-                        
-                        <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
-                            <div class="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-slate-200 text-slate-500 shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow">
-                                <span class="w-3 h-3 bg-brand-blue rounded-full"></span>
-                            </div>
-                            <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-xl border border-slate-200 bg-white shadow-sm">
-                                <div class="flex items-center justify-between mb-1">
-                                    <div class="font-bold text-brand-blue text-sm">08:30 - 09:30 AM</div>
-                                </div>
-                                <div class="text-slate-700 font-medium">Registration & Breakfast</div>
-                            </div>
-                        </div>
-
-                        <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
-                            <div class="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-slate-200 text-slate-500 shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow">
-                                <span class="w-3 h-3 bg-slate-400 rounded-full"></span>
-                            </div>
-                            <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-xl border border-slate-200 bg-white shadow-sm">
-                                <div class="flex items-center justify-between mb-1">
-                                    <div class="font-bold text-brand-blue text-sm">09:30 - 10:15 AM</div>
-                                </div>
-                                <div class="text-slate-700 font-medium">Inaugural Ceremony</div>
-                            </div>
-                        </div>
-
-                        <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
-                            <div class="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-slate-200 text-slate-500 shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow">
-                                <span class="w-3 h-3 bg-slate-400 rounded-full"></span>
-                            </div>
-                            <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-xl border border-slate-200 bg-white shadow-sm">
-                                <div class="font-bold text-brand-blue text-sm mb-1">10:15 - 10:30 AM</div>
-                                <div class="text-slate-700 font-medium">IEEE Student Opportunities</div>
-                            </div>
-                        </div>
-
-                        <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
-                            <div class="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-slate-200 text-slate-500 shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow">
-                                <span class="w-3 h-3 bg-slate-400 rounded-full"></span>
-                            </div>
-                            <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-xl border border-slate-200 bg-white shadow-sm">
-                                <div class="font-bold text-brand-blue text-sm mb-1">10:30 - 11:15 AM</div>
-                                <div class="text-slate-700 font-medium">Keynote Address I</div>
-                            </div>
-                        </div>
-
-                        <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
-                            <div class="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-slate-200 text-slate-500 shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow">
-                                <span class="w-3 h-3 bg-slate-400 rounded-full"></span>
-                            </div>
-                            <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-xl border border-slate-200 bg-white shadow-sm">
-                                <div class="font-bold text-brand-blue text-sm mb-1">11:15 - 12:00 PM</div>
-                                <div class="text-slate-700 font-medium">Keynote Address II</div>
-                            </div>
-                        </div>
-
-                        <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
-                            <div class="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-slate-200 text-slate-500 shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow">
-                                <span class="w-3 h-3 bg-slate-400 rounded-full"></span>
-                            </div>
-                            <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-xl border border-slate-200 bg-white shadow-sm">
-                                <div class="font-bold text-brand-blue text-sm mb-1">12:00 - 01:00 PM</div>
-                                <div class="text-slate-700 font-medium">Leadership Panel Discussion</div>
-                            </div>
-                        </div>
-
-                        <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
-                            <div class="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-slate-200 text-slate-500 shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow">
-                                <span class="w-3 h-3 bg-slate-400 rounded-full"></span>
-                            </div>
-                            <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-xl border border-slate-200 bg-emerald-50 border-emerald-100 shadow-sm">
-                                <div class="font-bold text-emerald-600 text-sm mb-1">01:00 - 02:00 PM</div>
-                                <div class="text-emerald-800 font-bold">Networking Lunch</div>
-                            </div>
-                        </div>
-
-                        <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
-                            <div class="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-slate-200 text-slate-500 shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow">
-                                <span class="w-3 h-3 bg-brand-accent rounded-full"></span>
-                            </div>
-                            <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-xl border border-brand-accent bg-blue-50 shadow-sm">
-                                <div class="font-bold text-brand-blue text-sm mb-1">02:00 - 03:30 PM</div>
-                                <div class="text-brand-dark font-bold">Parallel Student Competitions</div>
-                            </div>
-                        </div>
-                        
-                         <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
-                            <div class="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-slate-200 text-slate-500 shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow">
-                                <span class="w-3 h-3 bg-slate-400 rounded-full"></span>
-                            </div>
-                            <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-xl border border-slate-200 bg-white shadow-sm">
-                                <div class="font-bold text-brand-blue text-sm mb-1">03:30 - 03:45 PM</div>
-                                <div class="text-slate-700 font-medium">Tea Break</div>
-                            </div>
-                        </div>
-
-                         <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
-                            <div class="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-slate-200 text-slate-500 shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow">
-                                <span class="w-3 h-3 bg-slate-400 rounded-full"></span>
-                            </div>
-                            <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-xl border border-slate-200 bg-white shadow-sm">
-                                <div class="font-bold text-brand-blue text-sm mb-1">03:45 - 04:15 PM</div>
-                                <div class="text-slate-700 font-medium">Validictory</div>
-                            </div>
-                        </div>
-
-                        <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
-                            <div class="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-slate-200 text-slate-500 shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow">
-                                <span class="w-3 h-3 bg-slate-400 rounded-full"></span>
-                            </div>
-                            <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-xl border border-slate-200 bg-white shadow-sm">
-                                <div class="font-bold text-brand-blue text-sm mb-1">04:15 - 04:30 PM</div>
-                                <div class="text-slate-700 font-medium">Departure</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Day 2 -->
-                <div class="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm relative">
-                    <div class="absolute -top-4 left-8 bg-brand-dark text-white px-4 py-1 rounded-full text-sm font-bold shadow-md">Day 2: 8 August 2026</div>
-                    <div class="mt-6 space-y-6 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-200 before:to-transparent">
-                        
-                        <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
-                            <div class="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-slate-200 text-slate-500 shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow">
-                                <span class="w-3 h-3 bg-brand-dark rounded-full"></span>
-                            </div>
-                            <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-xl border border-slate-200 bg-white shadow-sm">
-                                <div class="flex items-center justify-between mb-1">
-                                    <div class="font-bold text-brand-dark text-sm">09:00 - 09:30 AM</div>
-                                </div>
-                                <div class="text-slate-700 font-medium">Registration & Networking Breakfast</div>
-                            </div>
-                        </div>
-
-                        <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
-                            <div class="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-slate-200 text-slate-500 shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow">
-                                <span class="w-3 h-3 bg-slate-400 rounded-full"></span>
-                            </div>
-                            <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-xl border border-slate-200 bg-white shadow-sm">
-                                <div class="flex items-center justify-between mb-1">
-                                    <div class="font-bold text-brand-dark text-sm">09:30 - 10:15 AM</div>
-                                </div>
-                                <div class="text-slate-700 font-medium">Inaugural Ceremony</div>
-                            </div>
-                        </div>
-
-                        <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
-                            <div class="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-slate-200 text-slate-500 shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow">
-                                <span class="w-3 h-3 bg-slate-400 rounded-full"></span>
-                            </div>
-                            <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-xl border border-slate-200 bg-white shadow-sm">
-                                <div class="font-bold text-brand-dark text-sm mb-1">10:15 - 10:30 AM</div>
-                                <div class="text-slate-700 font-medium">IEEE Student Opportunities</div>
-                            </div>
-                        </div>
-
-                        <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
-                            <div class="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-slate-200 text-slate-500 shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow">
-                                <span class="w-3 h-3 bg-slate-400 rounded-full"></span>
-                            </div>
-                            <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-xl border border-slate-200 bg-white shadow-sm">
-                                <div class="font-bold text-brand-dark text-sm mb-1">10:30 - 11:15 AM</div>
-                                <div class="text-slate-700 font-medium">Keynote Address I</div>
-                            </div>
-                        </div>
-
-                        <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
-                            <div class="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-slate-200 text-slate-500 shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow">
-                                <span class="w-3 h-3 bg-slate-400 rounded-full"></span>
-                            </div>
-                            <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-xl border border-slate-200 bg-white shadow-sm">
-                                <div class="font-bold text-brand-dark text-sm mb-1">11:15 - 12:00 PM</div>
-                                <div class="text-slate-700 font-medium">Keynote Address II</div>
-                            </div>
-                        </div>
-
-                        <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
-                            <div class="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-slate-200 text-slate-500 shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow">
-                                <span class="w-3 h-3 bg-slate-400 rounded-full"></span>
-                            </div>
-                            <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-xl border border-slate-200 bg-white shadow-sm">
-                                <div class="font-bold text-brand-dark text-sm mb-1">12:00 - 01:00 PM</div>
-                                <div class="text-slate-700 font-medium">Panel Discussion</div>
-                            </div>
-                        </div>
-
-                        <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
-                            <div class="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-slate-200 text-slate-500 shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow">
-                                <span class="w-3 h-3 bg-slate-400 rounded-full"></span>
-                            </div>
-                            <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-xl border border-slate-200 bg-emerald-50 border-emerald-100 shadow-sm">
-                                <div class="font-bold text-emerald-600 text-sm mb-1">01:00 - 02:00 PM</div>
-                                <div class="text-emerald-800 font-bold">Networking Lunch</div>
-                            </div>
-                        </div>
-
-                        <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
-                            <div class="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-slate-200 text-slate-500 shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow">
-                                <span class="w-3 h-3 bg-brand-accent rounded-full"></span>
-                            </div>
-                            <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-xl border border-brand-accent bg-blue-50 shadow-sm">
-                                <div class="font-bold text-brand-dark text-sm mb-1">02:00 - 03:30 PM</div>
-                                <div class="text-brand-dark font-bold">Parallel Student Competitions</div>
-                            </div>
-                        </div>
-                        
-                         <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
-                            <div class="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-slate-200 text-slate-500 shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow">
-                                <span class="w-3 h-3 bg-slate-400 rounded-full"></span>
-                            </div>
-                            <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-xl border border-slate-200 bg-white shadow-sm">
-                                <div class="font-bold text-brand-dark text-sm mb-1">03:30 - 03:45 PM</div>
-                                <div class="text-slate-700 font-medium">Tea Break</div>
-                            </div>
-                        </div>
-
-                         <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
-                            <div class="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-slate-200 text-slate-500 shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow">
-                                <span class="w-3 h-3 bg-slate-400 rounded-full"></span>
-                            </div>
-                            <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-xl border border-slate-200 bg-white shadow-sm">
-                                <div class="font-bold text-brand-dark text-sm mb-1">03:45 - 04:15 PM</div>
-                                <div class="text-slate-700 font-medium">Valedictory</div>
-                            </div>
-                        </div>
-
-                        <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
-                            <div class="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-slate-200 text-slate-500 shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow">
-                                <span class="w-3 h-3 bg-slate-400 rounded-full"></span>
-                            </div>
-                            <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-xl border border-slate-200 bg-white shadow-sm">
-                                <div class="font-bold text-brand-dark text-sm mb-1">04:15 - 04:30 PM</div>
-                                <div class="text-slate-700 font-medium">Departure</div>
-                            </div>
-                        </div>
-                    </div>
+            <div class="text-center mb-10">
+                <span class="text-brand-blue font-bold tracking-widest uppercase text-sm mb-2 block">Event Itinerary</span>
+                <h2 class="text-3xl md:text-4xl font-display font-bold text-brand-dark mb-4">Congress Schedule</h2>
+                
+                <!-- Schedule Toggle -->
+                <div class="bg-slate-50 p-1.5 rounded-full inline-flex border border-slate-200 shadow-sm mx-auto relative mt-4">
+                    <button id="schedule-btn-day1" onclick="toggleSection('schedule', 1)" class="relative z-10 px-6 sm:px-8 py-3 rounded-full text-sm font-bold bg-brand-dark text-white shadow-md transition-all duration-300">
+                        Day 1 (Chalapathi)
+                    </button>
+                    <button id="schedule-btn-day2" onclick="toggleSection('schedule', 2)" class="relative z-10 px-6 sm:px-8 py-3 rounded-full text-sm font-bold text-slate-500 hover:text-brand-dark transition-all duration-300">
+                        Day 2 (LBRCE)
+                    </button>
                 </div>
             </div>
 
-            <!-- Pricing Banner -->
-            <div class="mt-16 bg-white border border-slate-200 rounded-3xl p-8 md:p-12 shadow-float max-w-4xl mx-auto">
-                <div class="flex flex-col md:flex-row items-center justify-between gap-8">
-                    <div>
-                        <h3 class="text-2xl font-display font-bold text-slate-900 mb-2">General Registration</h3>
-                        <p class="text-slate-500 text-sm">Prices vary by IEEE membership status. Access to all keynotes, competitions, food, and standard kit.</p>
-                    </div>
+            <div class="relative max-w-4xl mx-auto mt-8">
+                <!-- Day 1 Schedule -->
+                <div id="schedule-day1" class="animate-fade-in">
                     
-                    <div class="flex flex-col sm:flex-row gap-4 shrink-0">
-                        <div class="bg-blue-50 border border-brand-blue/20 p-4 rounded-2xl text-center">
-                            <p class="text-xs font-bold text-brand-blue uppercase tracking-wider mb-1">IEEE Members</p>
-                            <p class="text-3xl font-display font-black text-brand-dark">₹400</p>
-                            <p class="text-xs text-slate-500 mt-1">for 2 days (₹200/day)</p>
+                    <!-- Day 1 Header Card -->
+                    <div class="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 flex justify-between items-center shadow-sm mb-10">
+                        <div>
+                            <span class="text-[0.65rem] font-bold text-slate-400 uppercase tracking-widest block mb-1">August 7, 2026</span>
+                            <h3 class="text-xl sm:text-2xl font-display font-bold text-slate-900">Day 1: Chalapathi Institute of Technology</h3>
                         </div>
-                        <div class="bg-slate-50 border border-slate-200 p-4 rounded-2xl text-center">
-                            <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Non-Members</p>
-                            <p class="text-3xl font-display font-black text-slate-700">₹500</p>
-                            <p class="text-xs text-slate-500 mt-1">for 2 days (₹250/day)</p>
+                        <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-blue-50 text-brand-blue flex items-center justify-center font-bold text-lg border border-blue-100 shrink-0">
+                            1
                         </div>
                     </div>
+
+                    <!-- Day 1 Timeline -->
+                    <div class="relative border-l-2 border-slate-200 ml-4 sm:ml-8 space-y-8 pb-4">
+                        
+                        <!-- Item -->
+                        <div class="relative pl-6 sm:pl-10">
+                            <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-white border-2 border-slate-300"></div>
+                            <span class="text-xs font-bold text-slate-500 block mb-2">08:30 – 09:30 AM</span>
+                            <div class="bg-slate-50/80 border border-slate-100 rounded-xl p-5 hover:bg-slate-50 transition-colors">
+                                <h4 class="font-bold text-slate-800 text-lg mb-1">Registration & Networking Breakfast</h4>
+                                <p class="text-sm text-slate-500">Registration, Kit Distribution, Informal Networking, IEEE Exhibition at Mothadaka Campus.</p>
+                            </div>
+                        </div>
+
+                        <!-- Item -->
+                        <div class="relative pl-6 sm:pl-10">
+                            <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-white border-2 border-brand-blue"></div>
+                            <span class="text-xs font-bold text-slate-500 block mb-2">09:30 – 10:15 AM</span>
+                            <div class="bg-slate-50/80 border border-slate-100 rounded-xl p-5 hover:bg-slate-50 transition-colors">
+                                <h4 class="font-bold text-slate-800 text-lg mb-1">Inaugural Ceremony</h4>
+                                <p class="text-sm text-slate-500">Welcome Address by Host Principal, Lamp Lighting, Presidential & Chief Guest Addresses, Group Photograph.</p>
+                            </div>
+                        </div>
+
+                        <!-- Item -->
+                        <div class="relative pl-6 sm:pl-10">
+                            <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-white border-2 border-slate-300"></div>
+                            <span class="text-xs font-bold text-slate-500 block mb-2">10:15 – 10:30 AM</span>
+                            <div class="bg-slate-50/80 border border-slate-100 rounded-xl p-5 hover:bg-slate-50 transition-colors">
+                                <h4 class="font-bold text-slate-800 text-lg mb-1">IEEE Student Opportunities</h4>
+                                <p class="text-sm text-slate-500">IEEE Membership Benefits, Scholarships, Awards, Student Branch Success Stories.</p>
+                            </div>
+                        </div>
+
+                        <!-- Item -->
+                        <div class="relative pl-6 sm:pl-10">
+                            <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-white border-2 border-brand-accent"></div>
+                            <span class="text-xs font-bold text-slate-500 block mb-2">10:30 – 11:15 AM</span>
+                            <div class="bg-slate-50/80 border border-slate-100 rounded-xl p-5 hover:bg-slate-50 transition-colors">
+                                <h4 class="font-bold text-slate-800 text-lg mb-1">Keynote Address I</h4>
+                                <p class="text-sm text-slate-500">Engineering the Future with Artificial Intelligence</p>
+                            </div>
+                        </div>
+
+                        <!-- Item -->
+                        <div class="relative pl-6 sm:pl-10">
+                            <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-white border-2 border-brand-accent"></div>
+                            <span class="text-xs font-bold text-slate-500 block mb-2">11:15 – 12:00 Noon</span>
+                            <div class="bg-slate-50/80 border border-slate-100 rounded-xl p-5 hover:bg-slate-50 transition-colors">
+                                <h4 class="font-bold text-slate-800 text-lg mb-1">Keynote Address II</h4>
+                                <p class="text-sm text-slate-500">AI for Healthcare: Innovations, Diagnostics and Future Opportunities</p>
+                            </div>
+                        </div>
+
+                        <!-- Item -->
+                        <div class="relative pl-6 sm:pl-10">
+                            <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-white border-2 border-slate-300"></div>
+                            <span class="text-xs font-bold text-slate-500 block mb-2">12:00 – 01:00 PM</span>
+                            <div class="bg-slate-50/80 border border-slate-100 rounded-xl p-5 hover:bg-slate-50 transition-colors">
+                                <h4 class="font-bold text-slate-800 text-lg mb-1">Leadership Panel Discussion</h4>
+                                <p class="text-sm text-slate-500">Future-Ready Engineers: Careers, Higher Studies, Entrepreneurship and Leadership.</p>
+                            </div>
+                        </div>
+
+                        <!-- Highlight Item: Lunch -->
+                        <div class="relative pl-6 sm:pl-10">
+                            <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-white border-2 border-emerald-400"></div>
+                            <span class="text-xs font-bold text-slate-500 block mb-2">01:00 – 02:00 PM</span>
+                            <div class="bg-emerald-50 border border-emerald-100 rounded-xl p-5">
+                                <h4 class="font-bold text-emerald-800 text-lg mb-1">Networking Lunch</h4>
+                                <p class="text-sm text-emerald-600/80">Interaction with IEEE Leaders, Speakers and Students</p>
+                            </div>
+                        </div>
+
+                        <!-- Highlight Item: Competitions -->
+                        <div class="relative pl-6 sm:pl-10">
+                            <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-white border-2 border-brand-dark"></div>
+                            <span class="text-xs font-bold text-slate-500 block mb-2">02:00 – 03:30 PM</span>
+                            <div class="bg-[#0b1a30] rounded-xl p-6 shadow-md border border-[#162a4a]">
+                                <h4 class="font-bold text-white text-lg mb-4">Parallel Student Competitions</h4>
+                                <ul class="space-y-2">
+                                    <li class="text-sm text-blue-200 flex items-center gap-3">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-brand-accent"></span> 
+                                        Track A: Research Poster Competition
+                                    </li>
+                                    <li class="text-sm text-blue-200 flex items-center gap-3">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-brand-accent"></span> 
+                                        Track B: Innovation Project Expo
+                                    </li>
+                                    <li class="text-sm text-blue-200 flex items-center gap-3">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-brand-accent"></span> 
+                                        Track C: Innovation Challenge & Startup Pitch
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Item -->
+                        <div class="relative pl-6 sm:pl-10">
+                            <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-white border-2 border-slate-300"></div>
+                            <span class="text-xs font-bold text-slate-500 block mb-2">03:30 – 03:45 PM</span>
+                            <div class="bg-slate-50/80 border border-slate-100 rounded-xl p-5 hover:bg-slate-50 transition-colors">
+                                <h4 class="font-bold text-slate-800 text-lg">Tea Break & Networking</h4>
+                            </div>
+                        </div>
+
+                        <!-- Item -->
+                        <div class="relative pl-6 sm:pl-10">
+                            <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-white border-2 border-slate-300"></div>
+                            <span class="text-xs font-bold text-slate-500 block mb-2">03:45 – 04:15 PM</span>
+                            <div class="bg-slate-50/80 border border-slate-100 rounded-xl p-5 hover:bg-slate-50 transition-colors">
+                                <h4 class="font-bold text-slate-800 text-lg mb-1">Valedictory</h4>
+                                <p class="text-sm text-slate-500">Awards & Recognition, Valedictory, National Anthem.</p>
+                            </div>
+                        </div>
+
+                        <!-- Item -->
+                        <div class="relative pl-6 sm:pl-10">
+                            <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-white border-2 border-slate-300"></div>
+                            <span class="text-xs font-bold text-slate-500 block mb-2">04:15 – 04:30 PM</span>
+                            <div class="bg-slate-50/80 border border-slate-100 rounded-xl p-5 hover:bg-slate-50 transition-colors">
+                                <h4 class="font-bold text-slate-800 text-lg">Departure</h4>
+                            </div>
+                        </div>
+
+                    </div>
                 </div>
-                <div class="mt-8 text-center border-t border-slate-100 pt-8">
-                    <a href="/events" class="inline-flex px-10 py-4 bg-brand-dark hover:bg-brand-blue text-white rounded-xl font-bold text-lg transition-colors shadow-lg justify-center items-center gap-2">
-                        Browse & Register Now
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-                    </a>
+
+                <!-- Day 2 Schedule -->
+                <div id="schedule-day2" class="hidden animate-fade-in">
+                    
+                    <!-- Day 2 Header Card -->
+                    <div class="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 flex justify-between items-center shadow-sm mb-10">
+                        <div>
+                            <span class="text-[0.65rem] font-bold text-slate-400 uppercase tracking-widest block mb-1">August 8, 2026</span>
+                            <h3 class="text-xl sm:text-2xl font-display font-bold text-slate-900">Day 2: Lakireddy Bali Reddy College</h3>
+                        </div>
+                        <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center font-bold text-lg border border-slate-200 shrink-0">
+                            2
+                        </div>
+                    </div>
+
+                    <!-- Day 2 Timeline -->
+                    <div class="relative border-l-2 border-slate-200 ml-4 sm:ml-8 space-y-8 pb-4">
+                        
+                        <!-- Item -->
+                        <div class="relative pl-6 sm:pl-10">
+                            <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-white border-2 border-slate-300"></div>
+                            <span class="text-xs font-bold text-slate-500 block mb-2">09:00 – 09:30 AM</span>
+                            <div class="bg-slate-50/80 border border-slate-100 rounded-xl p-5 hover:bg-slate-50 transition-colors">
+                                <h4 class="font-bold text-slate-800 text-lg mb-1">Registration & Networking Breakfast</h4>
+                                <p class="text-sm text-slate-500">Registration, Kit Distribution, Informal Networking, IEEE Exhibition.</p>
+                            </div>
+                        </div>
+
+                        <!-- Item -->
+                        <div class="relative pl-6 sm:pl-10">
+                            <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-white border-2 border-brand-blue"></div>
+                            <span class="text-xs font-bold text-slate-500 block mb-2">09:30 – 10:15 AM</span>
+                            <div class="bg-slate-50/80 border border-slate-100 rounded-xl p-5 hover:bg-slate-50 transition-colors">
+                                <h4 class="font-bold text-slate-800 text-lg mb-1">Inaugural Ceremony</h4>
+                                <p class="text-sm text-slate-500">Welcome Address, Lamp Lighting, Presidential & Chief Guest Addresses, Group Photograph.</p>
+                            </div>
+                        </div>
+
+                        <!-- Item -->
+                        <div class="relative pl-6 sm:pl-10">
+                            <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-white border-2 border-slate-300"></div>
+                            <span class="text-xs font-bold text-slate-500 block mb-2">10:15 – 10:30 AM</span>
+                            <div class="bg-slate-50/80 border border-slate-100 rounded-xl p-5 hover:bg-slate-50 transition-colors">
+                                <h4 class="font-bold text-slate-800 text-lg mb-1">IEEE Student Opportunities</h4>
+                                <p class="text-sm text-slate-500">IEEE Membership Benefits, Scholarships, Awards, Student Activities.</p>
+                            </div>
+                        </div>
+
+                        <!-- Item -->
+                        <div class="relative pl-6 sm:pl-10">
+                            <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-white border-2 border-brand-accent"></div>
+                            <span class="text-xs font-bold text-slate-500 block mb-2">10:30 – 11:15 AM</span>
+                            <div class="bg-slate-50/80 border border-slate-100 rounded-xl p-5 hover:bg-slate-50 transition-colors">
+                                <h4 class="font-bold text-slate-800 text-lg mb-1">Keynote Address I</h4>
+                                <p class="text-sm text-slate-500">6G Technologies & Beyond</p>
+                            </div>
+                        </div>
+
+                        <!-- Item -->
+                        <div class="relative pl-6 sm:pl-10">
+                            <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-white border-2 border-brand-accent"></div>
+                            <span class="text-xs font-bold text-slate-500 block mb-2">11:15 – 12:00 Noon</span>
+                            <div class="bg-slate-50/80 border border-slate-100 rounded-xl p-5 hover:bg-slate-50 transition-colors">
+                                <h4 class="font-bold text-slate-800 text-lg mb-1">Keynote Address II</h4>
+                                <p class="text-sm text-slate-500">Data Analytics</p>
+                            </div>
+                        </div>
+
+                        <!-- Item -->
+                        <div class="relative pl-6 sm:pl-10">
+                            <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-white border-2 border-slate-300"></div>
+                            <span class="text-xs font-bold text-slate-500 block mb-2">12:00 – 01:00 PM</span>
+                            <div class="bg-slate-50/80 border border-slate-100 rounded-xl p-5 hover:bg-slate-50 transition-colors">
+                                <h4 class="font-bold text-slate-800 text-lg mb-1">Panel Discussion</h4>
+                                <p class="text-sm text-slate-500">Industry Advancements, Placements, Higher Education.</p>
+                            </div>
+                        </div>
+
+                        <!-- Highlight Item: Lunch -->
+                        <div class="relative pl-6 sm:pl-10">
+                            <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-white border-2 border-emerald-400"></div>
+                            <span class="text-xs font-bold text-slate-500 block mb-2">01:00 – 02:00 PM</span>
+                            <div class="bg-emerald-50 border border-emerald-100 rounded-xl p-5">
+                                <h4 class="font-bold text-emerald-800 text-lg mb-1">Networking Lunch</h4>
+                                <p class="text-sm text-emerald-600/80">Interaction with IEEE Leaders, Speakers and Students</p>
+                            </div>
+                        </div>
+
+                        <!-- Highlight Item: Competitions -->
+                        <div class="relative pl-6 sm:pl-10">
+                            <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-white border-2 border-brand-dark"></div>
+                            <span class="text-xs font-bold text-slate-500 block mb-2">02:00 – 03:30 PM</span>
+                            <div class="bg-[#0b1a30] rounded-xl p-6 shadow-md border border-[#162a4a]">
+                                <h4 class="font-bold text-white text-lg mb-4">Parallel Student Competitions</h4>
+                                <ul class="space-y-2">
+                                    <li class="text-sm text-blue-200 flex items-center gap-3">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-brand-accent"></span> 
+                                        Track A: Poster Competition
+                                    </li>
+                                    <li class="text-sm text-blue-200 flex items-center gap-3">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-brand-accent"></span> 
+                                        Track B: Ideation / Pitching Competition
+                                    </li>
+                                    <li class="text-sm text-blue-200 flex items-center gap-3">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-brand-accent"></span> 
+                                        Track C: Coding Contest
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Item -->
+                        <div class="relative pl-6 sm:pl-10">
+                            <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-white border-2 border-slate-300"></div>
+                            <span class="text-xs font-bold text-slate-500 block mb-2">03:30 – 03:45 PM</span>
+                            <div class="bg-slate-50/80 border border-slate-100 rounded-xl p-5 hover:bg-slate-50 transition-colors">
+                                <h4 class="font-bold text-slate-800 text-lg">Tea Break & Networking</h4>
+                            </div>
+                        </div>
+
+                        <!-- Item -->
+                        <div class="relative pl-6 sm:pl-10">
+                            <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-white border-2 border-slate-300"></div>
+                            <span class="text-xs font-bold text-slate-500 block mb-2">03:45 – 04:15 PM</span>
+                            <div class="bg-slate-50/80 border border-slate-100 rounded-xl p-5 hover:bg-slate-50 transition-colors">
+                                <h4 class="font-bold text-slate-800 text-lg mb-1">Valedictory</h4>
+                                <p class="text-sm text-slate-500">Awards & Recognition, Valedictory, National Anthem.</p>
+                            </div>
+                        </div>
+
+                        <!-- Item -->
+                        <div class="relative pl-6 sm:pl-10">
+                            <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-white border-2 border-slate-300"></div>
+                            <span class="text-xs font-bold text-slate-500 block mb-2">04:15 – 04:30 PM</span>
+                            <div class="bg-slate-50/80 border border-slate-100 rounded-xl p-5 hover:bg-slate-50 transition-colors">
+                                <h4 class="font-bold text-slate-800 text-lg">Departure</h4>
+                            </div>
+                        </div>
+
+                    </div>
                 </div>
             </div>
-
         </div>
     </section>
 
-    <section id="venues" class="py-20 bg-brand-dark relative overflow-hidden">
-        <div class="absolute inset-0 hero-pattern opacity-5"></div>
+    <section id="venues" class="py-20 bg-slate-50 relative border-t border-slate-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div class="text-center mb-16">
-                <h2 class="text-3xl md:text-4xl font-display font-bold text-white mb-4">Host Institutions</h2>
+                <span class="text-brand-blue font-bold tracking-widest uppercase text-sm mb-2 block">Locations</span>
+                <h2 class="text-3xl md:text-4xl font-display font-bold text-brand-dark mb-4">Host Institutions</h2>
                 <div class="w-24 h-1.5 bg-brand-accent mx-auto rounded-full"></div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
                 <!-- Day 1 Venue -->
-                <div class="bg-white rounded-3xl overflow-hidden shadow-2xl flex flex-col">
-                    <div class="bg-brand-blue p-4 text-center">
-                        <p class="text-white font-bold tracking-widest uppercase text-sm">DAY 1 HOST (7 Aug)</p>
+                <div class="bg-white rounded-[2rem] overflow-hidden shadow-float border border-slate-200 flex flex-col group hover:-translate-y-1 transition-all">
+                    <div class="h-56 w-full overflow-hidden relative">
+                        <div class="absolute inset-0 bg-brand-dark/20 group-hover:bg-transparent transition-colors z-10"></div>
+                        <img src="https://city.ac.in/img/breadcromes/AboutUslowercollegephoto.webp" alt="Chalapathi Institute" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700">
+                        <div class="absolute top-4 left-4 z-20 bg-brand-blue text-white px-3 py-1 rounded-full text-xs font-bold shadow-md">
+                            DAY 1 HOST (7 Aug)
+                        </div>
                     </div>
-                    <div class="p-8 flex flex-col flex-1">
+                    <div class="p-8 flex flex-col flex-1 relative">
                         <h3 class="text-2xl font-display font-bold text-slate-900 mb-2">Chalapathi Institute of Technology (CITY)</h3>
-                        <p class="text-slate-500 text-sm mb-6">Guntur, Andhra Pradesh</p>
+                        <p class="text-slate-500 text-sm mb-6">Mothadaka, Guntur, Andhra Pradesh</p>
                         
                         <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 mb-6">
                             <p class="text-xs font-bold text-slate-400 uppercase mb-2">Co-Host</p>
-                            <p class="font-bold text-slate-700 text-sm">Chalapathi Institute of Engineering & Technology</p>
+                            <p class="font-bold text-slate-700 text-sm">Chalapathi Institute of Engineering & Technology, Lam</p>
                         </div>
 
                         <div class="mt-auto pt-6 border-t border-slate-100">
@@ -571,13 +651,17 @@
                 </div>
 
                 <!-- Day 2 Venue -->
-                <div class="bg-white rounded-3xl overflow-hidden shadow-2xl flex flex-col">
-                    <div class="bg-slate-800 p-4 text-center">
-                        <p class="text-white font-bold tracking-widest uppercase text-sm">DAY 2 HOST (8 Aug)</p>
+                <div class="bg-white rounded-[2rem] overflow-hidden shadow-float border border-slate-200 flex flex-col group hover:-translate-y-1 transition-all">
+                    <div class="h-56 w-full overflow-hidden relative">
+                        <div class="absolute inset-0 bg-brand-dark/20 group-hover:bg-transparent transition-colors z-10"></div>
+                        <img src="https://res.cloudinary.com/djdwpjm7x/image/upload/v1769924817/admin-block_kgxvrc.jpg" alt="LBRCE Engineering College" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700">
+                        <div class="absolute top-4 left-4 z-20 bg-slate-800 text-white px-3 py-1 rounded-full text-xs font-bold shadow-md">
+                            DAY 2 HOST (8 Aug)
+                        </div>
                     </div>
                     <div class="p-8 flex flex-col flex-1">
                         <h3 class="text-2xl font-display font-bold text-slate-900 mb-2">Lakireddy Bali Reddy College of Engineering</h3>
-                        <p class="text-slate-500 text-sm mb-6">Mylavaram, Andhra Pradesh</p>
+                        <p class="text-slate-500 text-sm mb-6">Mylavaram, NTR District, Andhra Pradesh</p>
 
                         <div class="mt-auto pt-6 border-t border-slate-100">
                             <p class="text-xs font-bold text-slate-400 uppercase mb-2">Primary Contact</p>
@@ -593,40 +677,156 @@
         </div>
     </section>
 
-    <footer class="bg-white border-t border-slate-200 py-12">
+    
+     <footer class="bg-[#0f172a] text-slate-300 py-16 border-t border-slate-800">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex flex-col md:flex-row justify-between items-center gap-6">
-                <div class="flex items-center gap-3">
-                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQRQUOVTVuLAWuWWCkcSow3IBBsUkVKziDB3e5VpyN02Q&s=10" alt="UDGAMA Logo" class="h-10 w-auto rounded-md grayscale opacity-70 hover:grayscale-0 hover:opacity-100 transition-all">
-                    <div>
-                        <h4 class="font-display font-bold text-slate-800">UDGAMA 2026</h4>
-                        <p class="text-xs text-slate-500">IEEE Hyderabad Section SAC</p>
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-12 lg:gap-8">
+                
+                <!-- Brand & About -->
+                <div class="md:col-span-5 lg:col-span-5">
+                    <div class="inline-flex items-center gap-3 bg-white/5 border border-white/10 p-2 pr-6 rounded-xl mb-6">
+                        <div class="w-10 h-10 bg-white rounded-lg flex items-center justify-center p-1">
+                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQRQUOVTVuLAWuWWCkcSow3IBBsUkVKziDB3e5VpyN02Q&s=10" alt="IEEE Logo" class="w-full h-full object-contain">
+                        </div>
+                        <h4 class="font-display font-bold text-white tracking-wide">UDGAMA 2026</h4>
+                    </div>
+                    <p class="text-sm leading-relaxed mb-6 pr-4 text-slate-400">
+                        Empowering Future Engineers Through Innovation, Leadership and IEEE Excellence. Hosted by Guntur Subsection.
+                    </p>
+                    <div class="flex gap-3">
+                        <a href="mailto:sac@ieeehyd.org" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 transition-colors">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                        </a>
+                        <a href="https://linkedin.com/company/ieee-sac-hyd-section" target="_blank" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 transition-colors">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                        </a>
+                        <a href="https://instagram.com/ieeehydsac" target="_blank" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 transition-colors">
+                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                        </a>
                     </div>
                 </div>
-                
-                <div class="flex gap-6">
-                    <a href="mailto:sac@ieeehyd.org" class="text-slate-400 hover:text-brand-blue transition-colors">
-                        <span class="sr-only">Email</span>
-                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
-                    </a>
-                    <a href="https://ieeehydsac.in" target="_blank" class="text-slate-400 hover:text-brand-blue transition-colors">
-                        <span class="sr-only">Website</span>
-                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
-                    </a>
+
+                <!-- Quick Links -->
+                <div class="md:col-span-3 lg:col-span-3 lg:col-start-6">
+                    <h5 class="text-white font-bold tracking-wider mb-6 text-sm">QUICK LINKS</h5>
+                    <ul class="space-y-4">
+                        <li>
+                            <a href="#about" class="hover:text-white transition-colors flex items-center gap-2 text-sm">
+                                <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                                About Congress
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#themes" class="hover:text-white transition-colors flex items-center gap-2 text-sm">
+                                <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                                Technical Tracks
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#schedule" class="hover:text-white transition-colors flex items-center gap-2 text-sm">
+                                <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                                Schedule
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#venues" class="hover:text-white transition-colors flex items-center gap-2 text-sm">
+                                <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                                Venues
+                            </a>
+                        </li>
+                    </ul>
                 </div>
+
+                <!-- Contact -->
+                <div class="md:col-span-4 lg:col-span-4">
+                    <h5 class="text-white font-bold tracking-wider mb-6 text-sm">CONTACT</h5>
+                    <ul class="space-y-5">
+                        <li class="flex items-start gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center shrink-0 mt-0.5">
+                                <svg class="w-4 h-4 text-brand-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                            </div>
+                            <span class="text-sm leading-relaxed">Guntur Subsection,<br>Andhra Pradesh, India</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center shrink-0">
+                                <svg class="w-4 h-4 text-brand-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                            </div>
+                            <a href="mailto:sac@ieeehyd.org" class="hover:text-white transition-colors text-sm">sac@ieeehyd.org</a>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center shrink-0">
+                                <svg class="w-4 h-4 text-brand-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path></svg>
+                            </div>
+                            <a href="https://ieeehydsac.in" target="_blank" class="hover:text-white transition-colors text-sm">ieeehydsac.in</a>
+                        </li>
+                    </ul>
+                </div>
+
             </div>
             
-            <div class="mt-8 pt-8 border-t border-slate-100 flex flex-col md:flex-row justify-between items-center gap-4 text-slate-400 text-sm">
-                <p>&copy; 2026 IEEE Hyderabad Section. All rights reserved.</p>
+            <!-- Bottom Footer bar -->
+            <div class="pt-8 mt-12 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-slate-500">
+                <p>&copy; 2026 IEEE Hyderabad Section SAC. All rights reserved.</p>
                 <p>
                     Designed & Developed by 
-                    <a href="https://xetasolutions.in" target="_blank" rel="noopener noreferrer" class="font-bold text-brand-blue hover:text-brand-dark transition-colors">
+                    <a href="https://xetasolutions.in" target="_blank" rel="noopener noreferrer" class="font-bold text-[#b490ff] hover:text-white transition-colors ml-1">
                         Xeta Tech Solutions
                     </a>
                 </p>
             </div>
         </div>
     </footer>
+    <script>
+        // Toggle Logic for Tracks and Schedule using Pill Buttons
+        function toggleSection(section, day) {
+            const day1Btn = document.getElementById(`${section}-btn-day1`);
+            const day2Btn = document.getElementById(`${section}-btn-day2`);
+            const day1Content = document.getElementById(`${section}-day1`);
+            const day2Content = document.getElementById(`${section}-day2`);
 
+            const activeClasses = ['bg-brand-dark', 'text-white', 'shadow-md'];
+            const inactiveClasses = ['text-slate-500', 'hover:text-brand-dark'];
+
+            if (day === 1) {
+                day1Btn.classList.add(...activeClasses);
+                day1Btn.classList.remove(...inactiveClasses);
+                day2Btn.classList.remove(...activeClasses);
+                day2Btn.classList.add(...inactiveClasses);
+                
+                day2Content.classList.add('hidden');
+                day1Content.classList.remove('hidden');
+            } else {
+                day2Btn.classList.add(...activeClasses);
+                day2Btn.classList.remove(...inactiveClasses);
+                day1Btn.classList.remove(...activeClasses);
+                day1Btn.classList.add(...inactiveClasses);
+                
+                day1Content.classList.add('hidden');
+                day2Content.classList.remove('hidden');
+            }
+        }
+
+        // Mobile Menu Logic
+        const mobileBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const menuIconBars = document.getElementById('menu-icon-bars');
+        const menuIconClose = document.getElementById('menu-icon-close');
+
+        mobileBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+            menuIconBars.classList.toggle('hidden');
+            menuIconClose.classList.toggle('hidden');
+        });
+
+        // Close mobile menu on link click
+        const mobileLinks = mobileMenu.querySelectorAll('a');
+        mobileLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+                menuIconBars.classList.remove('hidden');
+                menuIconClose.classList.add('hidden');
+            });
+        });
+    </script>
 </body>
 </html>
