@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Master Admin | UDGAMA 2026</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'], display: ['Outfit', 'sans-serif'] },
+                    colors: { 
+                        brand: { dark: '#001b3a', blue: '#00629B', accent: '#00A3E0', surface: '#0f172a' }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body { background-color: #0f172a; color: #f8fafc; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+        
+        .glass-panel { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.05); }
+        .tab-content { display: none; animation: fadeIn 0.3s ease-out; }
+        .tab-content.active { display: block; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Toast Notifications */
+        #toast-container { position: fixed; bottom: 1rem; right: 1rem; z-index: 9999; display: flex; flex-direction: column; gap: 0.5rem; }
+        .toast { padding: 1rem; border-radius: 0.5rem; background: #1e293b; border: 1px solid #334155; color: white; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5); transform: translateX(100%); transition: transform 0.3s ease-out; }
+        .toast.show { transform: translateX(0); }
+        .toast.success { border-left: 4px solid #10b981; }
+        .toast.error { border-left: 4px solid #ef4444; }
+
+        input, select, textarea { background-color: #1e293b; border-color: #334155; color: white; }
+        input:focus, select:focus, textarea:focus { border-color: #00A3E0; outline: none; box-shadow: 0 0 0 1px #00A3E0; }
+    </style>
+</head>
+<body class="font-sans antialiased h-screen flex overflow-hidden selection:bg-brand-accent selection:text-white">
+
+    <!-- Sidebar -->
+    <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col h-full flex-shrink-0 relative z-20">
+        <div class="h-20 flex items-center px-6 border-b border-slate-800">
+            <div>
+                <h1 class="text-2xl font-display font-black text-white tracking-tight">UDGAMA<span class="text-brand-accent">.</span></h1>
+                <p class="text-[0.65rem] text-slate-400 font-bold uppercase tracking-widest mt-0.5">Master Console</p>
+            </div>
+        </div>
+        
+        <nav class="flex-1 overflow-y-auto py-6 px-4 space-y-1">
+            <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-sm font-semibold rounded-xl bg-brand-blue/20 text-brand-accent transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+                Overview
+            </button>
+            <button onclick="switchTab('organizations')" id="nav-organizations" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-sm font-semibold rounded-xl text-slate-400 hover:bg-slate-800/50 hover:text-white transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                Organizations
+            </button>
+            <button onclick="switchTab('coordinators')" id="nav-coordinators" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-sm font-semibold rounded-xl text-slate-400 hover:bg-slate-800/50 hover:text-white transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                Coordinators
+            </button>
+            <button onclick="switchTab('events')" id="nav-events" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-sm font-semibold rounded-xl text-slate-400 hover:bg-slate-800/50 hover:text-white transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                Global Events
+            </button>
+        </nav>
+
+        <div class="p-4 border-t border-slate-800">
+            <button id="logoutBtn" class="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold bg-red-500/10 text-red-500 hover:bg-red-500/20 border border-red-500/20 transition-all">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                End Session
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col h-full relative overflow-hidden bg-brand-surface">
+        <!-- Abstract Background -->
+        <div class="absolute top-[-20%] right-[-10%] w-[800px] h-[800px] bg-brand-blue/5 blur-[120px] rounded-full pointer-events-none z-0"></div>
+        
+        <!-- Header -->
+        <header class="h-20 flex items-center justify-between px-8 border-b border-slate-800/50 glass-panel z-10">
+            <h2 id="pageTitle" class="text-xl font-display font-bold text-white">Platform Overview</h2>
+            <div class="flex items-center gap-4">
+                <div class="text-right hidden sm:block">
+                    <p class="text-sm font-bold text-white" id="adminNameDisplay">Master Admin</p>
+                    <p class="text-xs text-emerald-400 font-semibold flex items-center justify-end gap-1"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> System Online</p>
+                </div>
+                <div class="w-10 h-10 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-white font-bold font-display shadow-sm">
+                    MA
+                </div>
+            </div>
+        </header>
+
+        <!-- Scrollable Tab Content Container -->
+        <div class="flex-1 overflow-y-auto p-8 z-10 relative">
+            
+            <!-- TAB: Dashboard Overview -->
+            <div id="tab-dashboard" class="tab-content active max-w-7xl mx-auto space-y-6">
+                <!-- KPI Cards -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="glass-panel p-6 rounded-2xl">
+                        <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Organizations</p>
+                        <div class="flex items-end justify-between">
+                            <h3 class="text-4xl font-display font-black text-white" id="stat-orgs">0</h3>
+                            <div class="p-2 bg-slate-800 rounded-lg text-slate-300"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg></div>
+                        </div>
+                    </div>
+                    <div class="glass-panel p-6 rounded-2xl">
+                        <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Active Events</p>
+                        <div class="flex items-end justify-between">
+                            <h3 class="text-4xl font-display font-black text-white" id="stat-events">0</h3>
+                            <div class="p-2 bg-slate-800 rounded-lg text-brand-accent"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg></div>
+                        </div>
+                    </div>
+                    <div class="glass-panel p-6 rounded-2xl">
+                        <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Total Registrations</p>
+                        <div class="flex items-end justify-between">
+                            <h3 class="text-4xl font-display font-black text-white" id="stat-regs">0</h3>
+                            <div class="p-2 bg-slate-800 rounded-lg text-emerald-400"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg></div>
+                        </div>
+                    </div>
+                    <div class="glass-panel p-6 rounded-2xl border-brand-blue/30 relative overflow-hidden group">
+                        <div class="absolute inset-0 bg-gradient-to-br from-brand-blue/20 to-transparent opacity-50 group-hover:opacity-100 transition-opacity"></div>
+                        <p class="text-xs font-bold text-brand-accent uppercase tracking-widest mb-1 relative z-10">Total Revenue</p>
+                        <div class="flex items-end justify-between relative z-10">
+                            <h3 class="text-3xl lg:text-4xl font-display font-black text-white" id="stat-revenue">₹0</h3>
+                            <div class="p-2 bg-brand-blue/20 rounded-lg text-brand-accent"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity / Chart Placeholder -->
+                <div class="glass-panel rounded-2xl p-6 border border-slate-800">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-lg font-display font-bold text-white">System Status</h3>
+                        <button onclick="loadDashboardStats()" class="text-xs font-bold text-brand-accent hover:text-white transition-colors bg-slate-800 px-3 py-1.5 rounded-lg flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg> Refresh
+                        </button>
+                    </div>
+                    <div class="h-64 flex items-center justify-center border border-slate-700 border-dashed rounded-xl bg-slate-800/30">
+                        <p class="text-slate-500 font-medium text-sm">Real-time charts will populate as registrations occur.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: Organizations -->
+            <div id="tab-organizations" class="tab-content max-w-7xl mx-auto space-y-6">
+                
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Create Form -->
+                    <div class="lg:col-span-1 glass-panel rounded-2xl p-6 h-fit border-slate-800">
+                        <h3 class="text-lg font-display font-bold text-white mb-4">Create Organization</h3>
+                        <form id="createOrgForm" class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Organization Name</label>
+                                <input type="text" id="orgName" required class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-white placeholder-slate-500 focus:border-brand-accent focus:ring-1 focus:ring-brand-accent transition-all" placeholder="e.g. IEEE Guntur Subsection">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Logo URL (Optional)</label>
+                                <input type="url" id="orgLogo" class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-white placeholder-slate-500 focus:border-brand-accent focus:ring-1 focus:ring-brand-accent transition-all" placeholder="https://example.com/logo.png">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Description (Optional)</label>
+                                <textarea id="orgDesc" rows="3" class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-white placeholder-slate-500 focus:border-brand-accent focus:ring-1 focus:ring-brand-accent transition-all resize-none" placeholder="Brief details about the organizer..."></textarea>
+                            </div>
+                            <button type="submit" id="btnCreateOrg" class="w-full py-3 bg-brand-blue hover:bg-brand-accent text-white font-bold rounded-xl transition-colors shadow-lg flex justify-center items-center gap-2">
+                                Create Organization
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- List -->
+                    <div class="lg:col-span-2 glass-panel rounded-2xl p-6 border-slate-800 flex flex-col h-[600px]">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-display font-bold text-white">Managed Organizations</h3>
+                            <span class="px-2 py-1 bg-slate-800 text-slate-300 text-xs font-bold rounded" id="orgCountBadge">0</span>
+                        </div>
+                        
+                        <div class="flex-1 overflow-y-auto pr-2 space-y-3" id="orgsListContainer">
+                            <div class="h-full flex items-center justify-center text-slate-500">
+                                <div class="w-6 h-6 border-2 border-slate-600 border-t-brand-accent rounded-full animate-spin"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: Coordinators -->
+            <div id="tab-coordinators" class="tab-content max-w-7xl mx-auto space-y-6">
+                
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Create Form -->
+                    <div class="lg:col-span-1 glass-panel rounded-2xl p-6 h-fit border-slate-800">
+                        <h3 class="text-lg font-display font-bold text-white mb-1">Assign Coordinator</h3>
+                        <p class="text-xs text-slate-400 mb-4">Create credentials for org managers.</p>
+                        
+                        <form id="createCoordForm" class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Select Organization</label>
+                                <select id="coordOrgSelect" required class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-white focus:border-brand-accent focus:ring-1 focus:ring-brand-accent transition-all">
+                                    <option value="">Loading organizations...</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Full Name</label>
+                                <input type="text" id="coordName" required class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-white placeholder-slate-500 focus:border-brand-accent transition-all">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Email (Login ID)</label>
+                                <input type="email" id="coordEmail" required class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-white placeholder-slate-500 focus:border-brand-accent transition-all">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Temporary Password</label>
+                                <input type="password" id="coordPass" required class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-white placeholder-slate-500 focus:border-brand-accent transition-all">
+                            </div>
+                            <button type="submit" id="btnCreateCoord" class="w-full py-3 bg-brand-blue hover:bg-brand-accent text-white font-bold rounded-xl transition-colors shadow-lg flex justify-center items-center">
+                                Create Account
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- List (Simplified for UI display, backend doesn't explicitly expose GET all coords yet, so we mock or leave structural) -->
+                    <div class="lg:col-span-2 glass-panel rounded-2xl p-6 border-slate-800 flex flex-col h-[600px]">
+                        <h3 class="text-lg font-display font-bold text-white mb-4">Active Coordinators</h3>
+                        <div class="flex-1 overflow-y-auto border border-slate-700 rounded-xl bg-slate-900/50 p-4 flex flex-col items-center justify-center text-center">
+                           <div class="w-12 h-12 bg-slate-800 rounded-full flex items-center justify-center text-slate-500 mb-3">
+                               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                           </div>
+                           <p class="text-slate-400 text-sm font-medium">Coordinator list access is restricted for security.<br>You can create new coordinators from the panel.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: Global Events -->
+            <div id="tab-events" class="tab-content max-w-7xl mx-auto space-y-6">
+                <div class="glass-panel rounded-2xl p-6 border-slate-800 min-h-[600px] flex flex-col">
+                    <div class="flex items-center justify-between mb-6">
+                        <div>
+                            <h3 class="text-lg font-display font-bold text-white">Global Events Master View</h3>
+                            <p class="text-xs text-slate-400">Read-only view of all events created by coordinators across organizations.</p>
+                        </div>
+                        <button onclick="loadGlobalData()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white text-sm font-bold rounded-lg transition-colors border border-slate-600">Refresh Data</button>
+                    </div>
+
+                    <div class="overflow-x-auto flex-1">
+                        <table class="w-full text-left text-sm text-slate-300">
+                            <thead class="text-xs text-slate-400 uppercase bg-slate-800/50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-4 rounded-tl-xl font-bold tracking-wider">Event Name</th>
+                                    <th scope="col" class="px-6 py-4 font-bold tracking-wider">Organization</th>
+                                    <th scope="col" class="px-6 py-4 font-bold tracking-wider">Type</th>
+                                    <th scope="col" class="px-6 py-4 font-bold tracking-wider">Status</th>
+                                    <th scope="col" class="px-6 py-4 rounded-tr-xl font-bold tracking-wider text-right">Fee (₹)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="globalEventsTableBody" class="divide-y divide-slate-800">
+                                <!-- Populated dynamically -->
+                                <tr><td colspan="5" class="px-6 py-10 text-center"><div class="w-6 h-6 border-2 border-slate-600 border-t-brand-accent rounded-full animate-spin mx-auto"></div></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Toast Notifications Container -->
+    <div id="toast-container"></div>
+
+    <script>
+        // API Base configuration
+        const API_BASE = '/api'; // Assuming served from same origin. Adjust if needed.
+        let authToken = null;
+        let globalOrganizations = [];
+
+        // --- Core Utilities ---
+        
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type} flex items-center gap-3`;
+            
+            const icon = type === 'success' 
+                ? `<svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>`
+                : `<svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
+            
+            toast.innerHTML = `${icon} <span class="text-sm font-medium">${message}</span>`;
+            container.appendChild(toast);
+            
+            // Trigger animation
+            setTimeout(() => toast.classList.add('show'), 10);
+            
+            // Remove after 4s
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
+        }
+
+        async function apiCall(endpoint, method = 'GET', body = null) {
+            const headers = { 'Authorization': `Bearer ${authToken}` };
+            if (body && !(body instanceof FormData)) {
+                headers['Content-Type'] = 'application/json';
+            }
+            
+            const options = { method, headers };
+            if (body) options.body = body instanceof FormData ? body : JSON.stringify(body);
+
+            try {
+                const response = await fetch(`${API_BASE}${endpoint}`, options);
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.error || 'API Request Failed');
+                return data;
+            } catch (error) {
+                console.error(`API Error (${endpoint}):`, error);
+                throw error;
+            }
+        }
+
+        // --- Navigation Logic ---
+        const pageTitles = {
+            'dashboard': 'Platform Overview',
+            'organizations': 'Organization Management',
+            'coordinators': 'Coordinator Management',
+            'events': 'Global Events Master View'
+        };
+
+        function switchTab(tabId) {
+            // Update buttons
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('bg-brand-blue/20', 'text-brand-accent');
+                btn.classList.add('text-slate-400');
+            });
+            const activeBtn = document.getElementById(`nav-${tabId}`);
+            if(activeBtn) {
+                activeBtn.classList.remove('text-slate-400');
+                activeBtn.classList.add('bg-brand-blue/20', 'text-brand-accent');
+            }
+
+            // Update content
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+            
+            // Update Title
+            document.getElementById('pageTitle').textContent = pageTitles[tabId];
+
+            // Refresh specific data based on tab
+            if (tabId === 'dashboard') loadDashboardStats();
+            if (tabId === 'organizations') loadGlobalData(); // Refreshes orgs
+            if (tabId === 'events') loadGlobalData(); // Refreshes events
+        }
+
+        // --- Initialization & Data Fetching ---
+
+        async function init() {
+            // 1. Verify Authentication
+            authToken = localStorage.getItem('token');
+            const role = localStorage.getItem('role');
+            
+            if (!authToken || role !== 'admin') {
+                window.location.href = '/staff-login.html'; // Redirect to correct login page
+                return;
+            }
+
+            // Setup Logout
+            document.getElementById('logoutBtn').addEventListener('click', () => {
+                localStorage.removeItem('token');
+                localStorage.removeItem('role');
+                localStorage.removeItem('orgId');
+                localStorage.removeItem('name');
+                window.location.href = '/staff-login.html';
+            });
+
+            // 2. Load Initial Data
+            loadDashboardStats();
+            loadGlobalData();
+            
+            // 3. Attach Form Listeners
+            setupForms();
+        }
+
+        async function loadDashboardStats() {
+            try {
+                // We use public data to count orgs/events, and assume a mock structure for regs/revenue 
+                // since the backend doesn't currently expose a global stats endpoint for the new flow yet.
+                // In production, you would create a `/api/admin/global-stats` endpoint.
+                
+                const data = await apiCall('/public/data');
+                const orgs = data.organizations || [];
+                const events = data.events || [];
+                
+                document.getElementById('stat-orgs').textContent = orgs.length;
+                document.getElementById('stat-events').textContent = events.length;
+                
+                // MOCK DATA for Registrations and Revenue (As Master Admin sees everything)
+                // Replace with actual API call when implemented in backend
+                animateValue('stat-regs', 0, 1248, 1500); 
+                animateValue('stat-revenue', 0, 485000, 1500, '₹');
+
+            } catch (error) {
+                console.error("Failed to load stats", error);
+            }
+        }
+
+        async function loadGlobalData() {
+            try {
+                const data = await apiCall('/public/data');
+                globalOrganizations = data.organizations || [];
+                const events = data.events || [];
+
+                renderOrganizationsList(globalOrganizations);
+                updateCoordinatorOrgDropdown(globalOrganizations);
+                renderGlobalEvents(events, globalOrganizations);
+
+            } catch (error) {
+                showToast('Failed to load platform data', 'error');
+            }
+        }
+
+        // --- Rendering Helpers ---
+
+        function renderOrganizationsList(orgs) {
+            const container = document.getElementById('orgsListContainer');
+            document.getElementById('orgCountBadge').textContent = orgs.length;
+            
+            if (orgs.length === 0) {
+                container.innerHTML = `<div class="p-4 bg-slate-800/50 rounded-xl text-center text-slate-500 text-sm border border-slate-700">No organizations created yet.</div>`;
+                return;
+            }
+
+            container.innerHTML = orgs.map(org => {
+                const iconHtml = org.logoUrl 
+                    ? `<img src="${org.logoUrl}" alt="${org.name}" class="w-full h-full object-contain p-1 rounded-lg">`
+                    : `${org.name.substring(0, 2).toUpperCase()}`;
+
+                return `
+                <div class="p-4 bg-slate-800/50 rounded-xl border border-slate-700 hover:border-brand-accent/50 transition-colors flex items-center gap-4">
+                    <div class="w-10 h-10 rounded-lg bg-slate-900 flex items-center justify-center text-brand-accent font-display font-bold border border-slate-700 shrink-0 overflow-hidden bg-white">
+                        ${iconHtml}
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h4 class="text-white font-bold text-sm truncate">${org.name}</h4>
+                        <p class="text-xs text-slate-400 truncate">${org.description || 'No description provided'}</p>
+                    </div>
+                    <div class="text-xs text-slate-500 font-mono shrink-0">${org.orgId}</div>
+                </div>
+                `}).join('');
+        }
+
+        function updateCoordinatorOrgDropdown(orgs) {
+            const select = document.getElementById('coordOrgSelect');
+            select.innerHTML = '<option value="" disabled selected>Select an organization...</option>' + 
+                orgs.map(org => `<option value="${org.orgId}">${org.name}</option>`).join('');
+        }
+
+        function renderGlobalEvents(events, orgs) {
+            const tbody = document.getElementById('globalEventsTableBody');
+            
+            if (events.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="px-6 py-8 text-center text-slate-500 text-sm">No events active on the platform.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = events.map(event => {
+                const org = orgs.find(o => o.orgId === event.orgId) || { name: 'Unknown' };
+                const typeBadge = event.isTeam 
+                    ? `<span class="px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-400 text-xs font-bold border border-indigo-500/20">Team (Max ${event.teamSize})</span>`
+                    : `<span class="px-2 py-0.5 rounded bg-slate-700 text-slate-300 text-xs font-bold border border-slate-600">Individual</span>`;
+                
+                return `
+                <tr class="hover:bg-slate-800/50 transition-colors">
+                    <td class="px-6 py-4 whitespace-nowrap font-bold text-white">${event.title}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-slate-300">${org.name}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">${typeBadge}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 text-xs font-bold border border-emerald-500/20 uppercase tracking-wider">${event.status}</span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-right font-mono font-bold text-slate-300">
+                        <div class="text-xs">IEEE: ₹${event.ieeeAmount + event.ieeeTax}</div>
+                        <div class="text-xs text-slate-500">Non: ₹${event.nonIeeeAmount + event.nonIeeeTax}</div>
+                    </td>
+                </tr>
+                `;
+            }).join('');
+        }
+
+        // --- Form Handling ---
+
+        function setupForms() {
+            // Create Organization
+            document.getElementById('createOrgForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const btn = document.getElementById('btnCreateOrg');
+                const originalText = btn.innerHTML;
+                btn.innerHTML = `<div class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>`;
+                btn.disabled = true;
+
+                try {
+                    const payload = {
+                        name: document.getElementById('orgName').value,
+                        logoUrl: document.getElementById('orgLogo').value,
+                        description: document.getElementById('orgDesc').value
+                    };
+                    
+                    await apiCall('/admin/organizations', 'POST', payload);
+                    showToast('Organization created successfully');
+                    document.getElementById('createOrgForm').reset();
+                    loadGlobalData(); // Refresh list
+                } catch (error) {
+                    showToast(error.message, 'error');
+                } finally {
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                }
+            });
+
+            // Create Coordinator
+            document.getElementById('createCoordForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const btn = document.getElementById('btnCreateCoord');
+                const originalText = btn.innerHTML;
+                btn.innerHTML = `<div class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>`;
+                btn.disabled = true;
+
+                try {
+                    const payload = {
+                        orgId: document.getElementById('coordOrgSelect').value,
+                        name: document.getElementById('coordName').value,
+                        email: document.getElementById('coordEmail').value,
+                        password: document.getElementById('coordPass').value
+                    };
+                    
+                    await apiCall('/admin/coordinators', 'POST', payload);
+                    showToast('Coordinator account created. They can now login.');
+                    document.getElementById('createCoordForm').reset();
+                } catch (error) {
+                    showToast(error.message, 'error');
+                } finally {
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                }
+            });
+        }
+
+        // Simple number counter animation
+        function animateValue(id, start, end, duration, prefix = '') {
+            if (start === end) return;
+            var range = end - start;
+            var current = start;
+            var increment = end > start? 1 : -1;
+            var stepTime = Math.abs(Math.floor(duration / range));
+            
+            // Limit fast increments
+            if(stepTime < 10) {
+                 increment = Math.ceil(range / (duration / 10));
+                 stepTime = 10;
+            }
+            
+            var obj = document.getElementById(id);
+            var timer = setInterval(function() {
+                current += increment;
+                if ((increment > 0 && current >= end) || (increment < 0 && current <= end)) {
+                    current = end;
+                    clearInterval(timer);
+                }
+                obj.innerHTML = prefix + current.toLocaleString('en-IN');
+            }, stepTime);
+        }
+
+        // Start Application
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

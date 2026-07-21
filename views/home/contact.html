@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact | UDGAMA-2026</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --ieee-blue: #00629B;
+            --ieee-dark-blue: #003057;
+            --bg-main: #FAFAFC;
+            --surface-white: #FFFFFF;
+            --text-primary: #1F2937;
+            --text-secondary: #4B5563;
+            --border-light: #E5E7EB;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --radius-md: 8px;
+            --max-width: 1280px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-main); color: var(--text-primary); display: flex; flex-direction: column; min-height: 100vh; }
+        a { text-decoration: none; color: inherit; }
+        .container { max-width: var(--max-width); margin: 0 auto; padding: 0 1.5rem; }
+
+        .navbar { background-color: var(--surface-white); border-bottom: 1px solid var(--border-light); position: fixed; width: 100%; top: 0; z-index: 1000; }
+        .nav-container { display: flex; justify-content: space-between; align-items: center; height: 4.5rem; }
+        .brand-logo { font-size: 1.5rem; font-weight: 800; color: var(--ieee-dark-blue); }
+        .brand-logo span { color: var(--ieee-blue); }
+        .nav-links { display: flex; gap: 2rem; align-items: center; }
+        .nav-link { font-weight: 500; color: var(--text-secondary); transition: color 0.2s; }
+        .nav-link:hover, .nav-link.active { color: var(--ieee-blue); }
+        .nav-actions { display: flex; gap: 1rem; }
+        .btn { padding: 0.75rem 1.5rem; font-weight: 600; border-radius: var(--radius-md); border: none; cursor: pointer; transition: 0.2s; }
+        .btn-primary { background-color: var(--ieee-blue); color: white; }
+        .btn-outline { background: transparent; color: var(--ieee-blue); border: 2px solid var(--ieee-blue); }
+        
+        .mobile-menu-btn { display: none; background: none; border: none; cursor: pointer; }
+        .mobile-menu-btn svg { width: 24px; height: 24px; }
+
+        .contact-wrap { padding: 8rem 0 4rem; flex-grow: 1; }
+        .contact-grid { display: grid; grid-template-columns: 1fr 1.5fr; gap: 4rem; align-items: start; }
+        
+        .contact-info h1 { font-size: 2.5rem; color: var(--ieee-dark-blue); margin-bottom: 1rem; }
+        .contact-info p { color: var(--text-secondary); margin-bottom: 2rem; line-height: 1.7; }
+        
+        .info-block { margin-bottom: 1.5rem; display: flex; align-items: flex-start; gap: 1rem; }
+        .info-icon { color: var(--ieee-blue); }
+        .info-text strong { display: block; color: var(--text-primary); margin-bottom: 0.25rem; }
+        .info-text span { color: var(--text-secondary); }
+
+        .contact-form-card { background: var(--surface-white); padding: 2.5rem; border-radius: 12px; box-shadow: var(--shadow-md); border: 1px solid var(--border-light); }
+        
+        .form-group { margin-bottom: 1.5rem; }
+        .form-label { display: block; font-weight: 500; margin-bottom: 0.5rem; color: var(--text-primary); }
+        .form-control { width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--border-light); border-radius: var(--radius-md); font-family: inherit; font-size: 1rem; transition: border-color 0.2s; }
+        .form-control:focus { outline: none; border-color: var(--ieee-blue); }
+        textarea.form-control { resize: vertical; min-height: 120px; }
+
+        .submit-btn { width: 100%; padding: 1rem; font-size: 1rem; margin-top: 1rem; }
+
+        .global-footer { background-color: var(--ieee-dark-blue); color: white; padding: 2rem 0; text-align: center; }
+        .footer-branding { font-size: 0.9rem; color: rgba(255,255,255,0.8); }
+        .footer-branding a { color: white; font-weight: 600; text-decoration: underline; text-decoration-color: rgba(255,255,255,0.3); text-underline-offset: 4px; }
+
+        @media (max-width: 900px) { .contact-grid { grid-template-columns: 1fr; gap: 3rem; } }
+        @media (max-width: 768px) {
+            .nav-links, .nav-actions .btn-outline { display: none; }
+            .mobile-menu-btn { display: block; }
+        }
+        
+        .mobile-nav-overlay {
+            position: fixed; top: 4.5rem; left: 0; width: 100%; height: calc(100vh - 4.5rem); background-color: var(--surface-white); z-index: 999; display: none; flex-direction: column; padding: 2rem;
+        }
+        .mobile-nav-overlay.active { display: flex; }
+        .mobile-nav-overlay .nav-link { font-size: 1.25rem; padding: 1rem 0; border-bottom: 1px solid var(--border-light); display: block; }
+    </style>
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="container nav-container">
+            <a href="/home/index.html" class="brand-logo">UDGAMA<span>2026</span></a>
+            <nav class="nav-links">
+                <a href="/home/index.html" class="nav-link">Home</a>
+                <a href="/home/about.html" class="nav-link">About</a>
+                <a href="/home/events.html" class="nav-link">Events</a>
+                <a href="/home/contact.html" class="nav-link active">Contact</a>
+            </nav>
+            <div class="nav-actions">
+                <a href="/home/login.html" class="btn btn-outline">Login</a>
+                <a href="/home/register.html" class="btn btn-primary">Register Now</a>
+                <button class="mobile-menu-btn" id="mobileMenuBtn">
+                    <svg viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="mobile-nav-overlay" id="mobileNav">
+        <a href="/home/index.html" class="nav-link">Home</a>
+        <a href="/home/about.html" class="nav-link">About</a>
+        <a href="/home/events.html" class="nav-link">Events</a>
+        <a href="/home/contact.html" class="nav-link active">Contact</a>
+    </div>
+
+    <main class="contact-wrap">
+        <div class="container contact-grid">
+            
+            <div class="contact-info">
+                <h1>Get in Touch</h1>
+                <p>Have questions about registration, events, or sponsorships? Our organizing committee is here to assist you.</p>
+                
+                <div class="info-block">
+                    <div class="info-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
+                    <div class="info-text">
+                        <strong>Phone</strong>
+                        <span>+91 98765 43210</span>
+                    </div>
+                </div>
+
+                <div class="info-block">
+                    <div class="info-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+                    <div class="info-text">
+                        <strong>Email Support</strong>
+                        <span>support@udgama-guntur.ieee.org</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="contact-form-card">
+                <!-- Expected Backend Endpoint: POST /api/contact -->
+                <form action="#" method="POST" id="contactForm">
+                    <div class="form-group">
+                        <label class="form-label" for="name">Full Name</label>
+                        <input type="text" id="name" name="name" class="form-control" required placeholder="John Doe">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="email">Email Address</label>
+                        <input type="email" id="email" name="email" class="form-control" required placeholder="john@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="subject">Subject</label>
+                        <input type="text" id="subject" name="subject" class="form-control" required placeholder="How can we help?">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="message">Message</label>
+                        <textarea id="message" name="message" class="form-control" required placeholder="Write your message here..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary submit-btn">Send Message</button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <footer class="global-footer">
+        <div class="container">
+            <p class="footer-branding">
+                Designed & Developed by <a href="https://xetasolutions.in" target="_blank" rel="noopener noreferrer">Xeta Tech Solutions</a>
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const mobileNav = document.getElementById('mobileNav');
+            let isMenuOpen = false;
+
+            mobileMenuBtn.addEventListener('click', () => {
+                isMenuOpen = !isMenuOpen;
+                mobileNav.classList.toggle('active', isMenuOpen);
+            });
+
+            // Prevent default form submission for mockup purposes
+            const form = document.getElementById('contactForm');
+            const submitBtn = form.querySelector('.submit-btn');
+
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                submitBtn.innerHTML = 'Sending...';
+                submitBtn.style.opacity = '0.7';
+                submitBtn.disabled = true;
+
+                // Simulate API call delay
+                setTimeout(() => {
+                    // We avoid alert() per constraints. Show inline success message.
+                    form.innerHTML = '<div style="text-align:center; padding: 2rem 0; color: #00629B;"><h3>Message Sent!</h3><p>We will get back to you shortly.</p></div>';
+                }, 1500);
+            });
+        });
+    </script>
+</body>
+</html>

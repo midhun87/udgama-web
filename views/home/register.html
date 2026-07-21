@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account | UDGAMA-2026</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --ieee-blue: #00629B;
+            --ieee-dark-blue: #003057;
+            --bg-main: #FAFAFC;
+            --surface-white: #FFFFFF;
+            --text-primary: #1F2937;
+            --text-secondary: #4B5563;
+            --border-light: #E5E7EB;
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --radius-md: 8px;
+            --max-width: 1280px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-main); color: var(--text-primary); display: flex; flex-direction: column; min-height: 100vh; }
+        a { text-decoration: none; color: inherit; }
+        
+        .navbar { background-color: var(--surface-white); border-bottom: 1px solid var(--border-light); position: fixed; width: 100%; top: 0; z-index: 1000; }
+        .nav-container { display: flex; justify-content: space-between; align-items: center; height: 4.5rem; max-width: var(--max-width); margin: 0 auto; padding: 0 1.5rem; }
+        .brand-logo { font-size: 1.5rem; font-weight: 800; color: var(--ieee-dark-blue); }
+        .brand-logo span { color: var(--ieee-blue); }
+
+        .auth-wrapper { flex-grow: 1; display: flex; align-items: center; justify-content: center; padding: 8rem 1.5rem 4rem; }
+        .auth-card { background: var(--surface-white); width: 100%; max-width: 550px; padding: 2.5rem; border-radius: 12px; box-shadow: var(--shadow-md); border: 1px solid var(--border-light); }
+        
+        .auth-header { text-align: center; margin-bottom: 2rem; }
+        .auth-header h1 { color: var(--ieee-dark-blue); font-size: 1.75rem; margin-bottom: 0.5rem; }
+        .auth-header p { color: var(--text-secondary); font-size: 0.95rem; }
+
+        .form-row { display: flex; gap: 1rem; margin-bottom: 1.25rem; }
+        .form-row > div { flex: 1; }
+        
+        .form-group { margin-bottom: 1.25rem; }
+        .form-label { display: block; font-size: 0.9rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-primary); }
+        .form-control { width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--border-light); border-radius: var(--radius-md); font-family: inherit; font-size: 1rem; }
+        .form-control:focus { outline: none; border-color: var(--ieee-blue); }
+
+        .btn { width: 100%; padding: 0.85rem; font-size: 1rem; font-weight: 600; border-radius: var(--radius-md); border: none; cursor: pointer; transition: 0.2s; }
+        .btn-primary { background-color: var(--ieee-blue); color: white; margin-top: 1rem; }
+        .btn-primary:hover { background-color: var(--ieee-dark-blue); }
+        .btn:disabled { opacity: 0.7; cursor: not-allowed; }
+
+        .auth-footer { text-align: center; margin-top: 1.5rem; font-size: 0.9rem; color: var(--text-secondary); }
+        .auth-footer a { color: var(--ieee-blue); font-weight: 600; }
+
+        #step-otp { display: none; text-align: center; }
+        .otp-inputs { display: flex; justify-content: center; gap: 0.5rem; margin: 2rem 0; }
+        .otp-input { width: 45px; height: 50px; text-align: center; font-size: 1.25rem; font-weight: 700; border: 1px solid var(--border-light); border-radius: var(--radius-md); }
+        .otp-input:focus { outline: none; border-color: var(--ieee-blue); }
+        .resend-link { display: inline-block; margin-top: 1rem; color: var(--ieee-blue); font-size: 0.85rem; font-weight: 600; cursor: pointer; border: none; background: none; }
+
+        /* Footer */
+        .global-footer { background-color: var(--ieee-dark-blue); color: white; padding: 2rem 0; text-align: center; }
+        .footer-branding { font-size: 0.9rem; color: rgba(255,255,255,0.8); }
+        .footer-branding a { color: white; font-weight: 600; text-decoration: underline; text-decoration-color: rgba(255,255,255,0.3); text-underline-offset: 4px; }
+
+        @media (max-width: 600px) { .form-row { flex-direction: column; gap: 0; } }
+    </style>
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="nav-container">
+            <a href="/home/index.html" class="brand-logo">UDGAMA<span>2026</span></a>
+        </div>
+    </header>
+
+    <main class="auth-wrapper">
+        <div class="auth-card">
+            
+            <!-- Step 1: User Details -->
+            <div id="step-details">
+                <div class="auth-header">
+                    <h1>Create an Account</h1>
+                    <p>Join the premier technical congress.</p>
+                </div>
+
+                <form id="registerForm">
+                    <div class="form-group">
+                        <label class="form-label" for="fullName">Full Name</label>
+                        <input type="text" id="fullName" name="fullName" class="form-control" required placeholder="John Doe">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="email">Mail ID</label>
+                            <input type="email" id="email" name="email" class="form-control" required placeholder="john@college.edu">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="mobile">Mobile Number</label>
+                            <input type="tel" id="mobile" name="mobile" class="form-control" required placeholder="+91 9876543210">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="organization">Organization / College</label>
+                        <input type="text" id="organization" name="organization" class="form-control" required placeholder="University Name">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="password">Create Password</label>
+                            <input type="password" id="password" name="password" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="confirmPassword">Confirm Password</label>
+                            <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" required>
+                        </div>
+                    </div>
+                    
+                    <!-- Error container for password mismatch -->
+                    <div id="errorMsg" style="color: #dc2626; font-size: 0.85rem; margin-bottom: 1rem; display: none;">Passwords do not match.</div>
+
+                    <button type="submit" class="btn btn-primary" id="continueBtn">Continue to Verify</button>
+                </form>
+
+                <div class="auth-footer">
+                    Already have an account? <a href="/home/login.html">Log in</a>
+                </div>
+            </div>
+
+            <!-- Step 2: OTP Verification -->
+            <div id="step-otp">
+                <div class="auth-header">
+                    <h1>Verify your email</h1>
+                    <p>We've sent a 4-digit code to <strong id="displayEmail"></strong></p>
+                </div>
+
+                <form id="otpForm">
+                    <div class="otp-inputs">
+                        <input type="text" class="otp-input" maxlength="1" required data-index="0">
+                        <input type="text" class="otp-input" maxlength="1" required data-index="1">
+                        <input type="text" class="otp-input" maxlength="1" required data-index="2">
+                        <input type="text" class="otp-input" maxlength="1" required data-index="3">
+                    </div>
+                    
+                    <!-- Hidden field to collect final OTP string for backend -->
+                    <input type="hidden" name="finalOtp" id="finalOtp">
+
+                    <div id="otpErrorMsg" style="color: #dc2626; font-size: 0.85rem; margin-bottom: 1rem; display: none; text-align: center;"></div>
+
+                    <button type="submit" class="btn btn-primary" id="verifyBtn">Verify & Create Account</button>
+                </form>
+                
+                <button class="resend-link">Didn't receive it? Resend Code</button>
+            </div>
+
+        </div>
+    </main>
+
+    <footer class="global-footer">
+        <div class="container">
+            <p class="footer-branding">
+                Designed & Developed by <a href="https://xetasolutions.in" target="_blank" rel="noopener noreferrer">Xeta Tech Solutions</a>
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const stepDetails = document.getElementById('step-details');
+            const stepOtp = document.getElementById('step-otp');
+            const registerForm = document.getElementById('registerForm');
+            const otpForm = document.getElementById('otpForm');
+            const continueBtn = document.getElementById('continueBtn');
+            const errorMsg = document.getElementById('errorMsg');
+            
+            let currentEmail = ''; // Store email globally for Step 2
+
+            // OTP Inputs logic
+            const otpInputs = document.querySelectorAll('.otp-input');
+            
+            otpInputs.forEach((input, index) => {
+                input.addEventListener('input', (e) => {
+                    // Move to next box automatically
+                    if (e.target.value.length === 1 && index < otpInputs.length - 1) {
+                        otpInputs[index + 1].focus();
+                    }
+                });
+                
+                input.addEventListener('keydown', (e) => {
+                    // Handle backspace to move to previous box
+                    if (e.key === 'Backspace' && e.target.value === '' && index > 0) {
+                        otpInputs[index - 1].focus();
+                    }
+                });
+            });
+
+            // Handle Step 1 Submission
+            registerForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const fullName = document.getElementById('fullName').value;
+                const email = document.getElementById('email').value;
+                const mobile = document.getElementById('mobile').value;
+                const organization = document.getElementById('organization').value;
+                const pwd = document.getElementById('password').value;
+                const confirmPwd = document.getElementById('confirmPassword').value;
+
+                if (pwd !== confirmPwd) {
+                    errorMsg.textContent = 'Passwords do not match.';
+                    errorMsg.style.display = 'block';
+                    return;
+                }
+                
+                errorMsg.style.display = 'none';
+                continueBtn.innerHTML = 'Sending OTP...';
+                continueBtn.disabled = true;
+
+                try {
+                    const response = await fetch('/api/auth/register/init', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ fullName, email, mobile, organization, password: pwd })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (response.ok) {
+                        currentEmail = email; // Save for Step 2 Verification
+                        document.getElementById('displayEmail').innerText = email;
+                        stepDetails.style.display = 'none';
+                        stepOtp.style.display = 'block';
+                        otpInputs[0].focus();
+                    } else {
+                        errorMsg.textContent = data.error || 'Failed to initiate registration.';
+                        errorMsg.style.display = 'block';
+                        continueBtn.innerHTML = 'Continue to Verify';
+                        continueBtn.disabled = false;
+                    }
+                } catch (err) {
+                    console.error("Register Init Error:", err);
+                    errorMsg.textContent = 'Network error. Please try again.';
+                    errorMsg.style.display = 'block';
+                    continueBtn.innerHTML = 'Continue to Verify';
+                    continueBtn.disabled = false;
+                }
+            });
+
+            // Handle Step 2 Submission
+            otpForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const verifyBtn = document.getElementById('verifyBtn');
+                const otpErrorMsg = document.getElementById('otpErrorMsg');
+                
+                // Collect OTP string
+                let otpString = '';
+                otpInputs.forEach(input => otpString += input.value);
+                document.getElementById('finalOtp').value = otpString;
+
+                otpErrorMsg.style.display = 'none';
+                verifyBtn.innerHTML = 'Verifying...';
+                verifyBtn.disabled = true;
+
+                try {
+                    const response = await fetch('/api/auth/register/verify', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email: currentEmail, otp: otpString })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (response.ok) {
+                        // Store JWT token and user info in localStorage
+                        localStorage.setItem('udgama_token', data.token);
+                        localStorage.setItem('udgama_role', 'user');
+                        localStorage.setItem('udgama_user', JSON.stringify(data.user));
+
+                        verifyBtn.innerHTML = 'Account Created!';
+                        // Redirect to user dashboard
+                        window.location.href = '/user/dashboard.html';
+                    } else {
+                        otpErrorMsg.textContent = data.error || 'Invalid OTP.';
+                        otpErrorMsg.style.display = 'block';
+                        verifyBtn.innerHTML = 'Verify & Create Account';
+                        verifyBtn.disabled = false;
+                        
+                        // Clear inputs for retry
+                        otpInputs.forEach(input => input.value = '');
+                        otpInputs[0].focus();
+                    }
+                } catch (err) {
+                    console.error("Register Verify Error:", err);
+                    otpErrorMsg.textContent = 'Network error. Please try again.';
+                    otpErrorMsg.style.display = 'block';
+                    verifyBtn.innerHTML = 'Verify & Create Account';
+                    verifyBtn.disabled = false;
+                }
+            });
+        });
+    </script>
+</body>
+</html>

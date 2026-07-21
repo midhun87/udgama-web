@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | UDGAMA-2026</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --ieee-blue: #00629B;
+            --ieee-dark-blue: #003057;
+            --bg-main: #FAFAFC;
+            --surface-white: #FFFFFF;
+            --text-primary: #1F2937;
+            --text-secondary: #4B5563;
+            --border-light: #E5E7EB;
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --radius-md: 8px;
+            --max-width: 1280px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-main); color: var(--text-primary); display: flex; flex-direction: column; min-height: 100vh; }
+        a { text-decoration: none; color: inherit; }
+        
+        .navbar { background-color: var(--surface-white); border-bottom: 1px solid var(--border-light); position: fixed; width: 100%; top: 0; z-index: 1000; }
+        .nav-container { display: flex; justify-content: space-between; align-items: center; height: 4.5rem; max-width: var(--max-width); margin: 0 auto; padding: 0 1.5rem; }
+        .brand-logo { font-size: 1.5rem; font-weight: 800; color: var(--ieee-dark-blue); }
+        .brand-logo span { color: var(--ieee-blue); }
+
+        .auth-wrapper { flex-grow: 1; display: flex; align-items: center; justify-content: center; padding: 8rem 1.5rem 4rem; }
+        .auth-card { background: var(--surface-white); width: 100%; max-width: 450px; padding: 2.5rem; border-radius: 12px; box-shadow: var(--shadow-md); border: 1px solid var(--border-light); }
+        
+        .auth-header { text-align: center; margin-bottom: 2rem; }
+        .auth-header h1 { color: var(--ieee-dark-blue); font-size: 1.75rem; margin-bottom: 0.5rem; }
+        .auth-header p { color: var(--text-secondary); font-size: 0.95rem; }
+
+        .form-group { margin-bottom: 1.25rem; }
+        .form-label-wrap { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
+        .form-label { font-size: 0.9rem; font-weight: 600; color: var(--text-primary); }
+        .forgot-link { font-size: 0.85rem; color: var(--ieee-blue); font-weight: 500; }
+        .forgot-link:hover { text-decoration: underline; }
+        
+        .form-control { width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--border-light); border-radius: var(--radius-md); font-family: inherit; font-size: 1rem; }
+        .form-control:focus { outline: none; border-color: var(--ieee-blue); }
+
+        .btn { width: 100%; padding: 0.85rem; font-size: 1rem; font-weight: 600; border-radius: var(--radius-md); border: none; cursor: pointer; transition: 0.2s; }
+        .btn-primary { background-color: var(--ieee-blue); color: white; margin-top: 1rem; }
+        .btn-primary:hover { background-color: var(--ieee-dark-blue); }
+        .btn:disabled { opacity: 0.7; cursor: not-allowed; }
+
+        .auth-footer { text-align: center; margin-top: 1.5rem; font-size: 0.9rem; color: var(--text-secondary); }
+        .auth-footer a { color: var(--ieee-blue); font-weight: 600; }
+
+        #reset-view { display: none; }
+        #reset-success { display: none; text-align: center; }
+
+        /* Footer */
+        .global-footer { background-color: var(--ieee-dark-blue); color: white; padding: 2rem 0; text-align: center; }
+        .footer-branding { font-size: 0.9rem; color: rgba(255,255,255,0.8); }
+        .footer-branding a { color: white; font-weight: 600; text-decoration: underline; text-decoration-color: rgba(255,255,255,0.3); text-underline-offset: 4px; }
+    </style>
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="nav-container">
+            <a href="/home/index.html" class="brand-logo">UDGAMA<span>2026</span></a>
+        </div>
+    </header>
+
+    <main class="auth-wrapper">
+        <div class="auth-card">
+            
+            <!-- Default Login View -->
+            <div id="login-view">
+                <div class="auth-header">
+                    <h1>Welcome Back</h1>
+                    <p>Log in to manage your events and tickets.</p>
+                </div>
+
+                <form id="loginForm" action="/user/dashboard.html">
+                    <div class="form-group">
+                        <div class="form-label-wrap">
+                            <label class="form-label" for="email">Mail ID</label>
+                        </div>
+                        <input type="email" id="email" name="email" class="form-control" required placeholder="name@college.edu">
+                    </div>
+
+                    <div class="form-group">
+                        <div class="form-label-wrap">
+                            <label class="form-label" for="password">Password</label>
+                            <a href="#" class="forgot-link" id="showResetBtn">Forgot Password?</a>
+                        </div>
+                        <input type="password" id="password" name="password" class="form-control" required>
+                    </div>
+
+                    <div id="loginError" style="color: #dc2626; font-size: 0.85rem; margin-bottom: 1rem; display: none; text-align: center;"></div>
+
+                    <button type="submit" class="btn btn-primary" id="loginBtn">Log In</button>
+                </form>
+
+                <div class="auth-footer">
+                    Don't have an account? <a href="/home/register.html">Sign up</a>
+                </div>
+            </div>
+
+            <!-- Password Reset View (Hidden by default) -->
+            <div id="reset-view">
+                <div class="auth-header">
+                    <h1>Reset Password</h1>
+                    <p>Enter your email to receive a reset link.</p>
+                </div>
+
+                <form id="resetForm">
+                    <div class="form-group">
+                        <label class="form-label" for="resetEmail">Mail ID</label>
+                        <input type="email" id="resetEmail" name="resetEmail" class="form-control" required placeholder="name@college.edu">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" id="sendResetBtn">Send Reset Link</button>
+                </form>
+                
+                <div class="auth-footer">
+                    Remembered it? <a href="#" id="backToLoginBtn">Back to Login</a>
+                </div>
+            </div>
+
+            <!-- Reset Success Message -->
+            <div id="reset-success">
+                <div class="auth-header">
+                    <h1>Link Sent</h1>
+                    <p>Check your email for instructions to reset your password.</p>
+                </div>
+                <button class="btn btn-outline" style="width: 100%; margin-top: 1rem;" onclick="location.reload()">Return to Login</button>
+            </div>
+
+        </div>
+    </main>
+
+    <footer class="global-footer">
+        <div class="container">
+            <p class="footer-branding">
+                Designed & Developed by <a href="https://xetasolutions.in" target="_blank" rel="noopener noreferrer">Xeta Tech Solutions</a>
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const loginView = document.getElementById('login-view');
+            const resetView = document.getElementById('reset-view');
+            const resetSuccess = document.getElementById('reset-success');
+            
+            const showResetBtn = document.getElementById('showResetBtn');
+            const backToLoginBtn = document.getElementById('backToLoginBtn');
+            
+            const loginForm = document.getElementById('loginForm');
+            const resetForm = document.getElementById('resetForm');
+            const loginBtn = document.getElementById('loginBtn');
+            const sendResetBtn = document.getElementById('sendResetBtn');
+
+            // Toggle views
+            showResetBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                loginView.style.display = 'none';
+                resetView.style.display = 'block';
+            });
+
+            backToLoginBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                resetView.style.display = 'none';
+                loginView.style.display = 'block';
+            });
+
+            // Login submission
+            loginForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                const loginError = document.getElementById('loginError');
+
+                loginBtn.innerHTML = 'Authenticating...';
+                loginBtn.disabled = true;
+                if(loginError) loginError.style.display = 'none';
+
+                try {
+                    const response = await fetch('/api/auth/login', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email, password })
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        // Store credentials in localStorage securely
+                        localStorage.setItem('udgama_token', data.token);
+                        localStorage.setItem('udgama_role', data.role);
+                        localStorage.setItem('udgama_user', JSON.stringify(data.user));
+
+                        // Redirect based on role
+                        if (data.role === 'admin') {
+                            window.location.href = '/admin/dashboard.html';
+                        } else {
+                            window.location.href = '/user/dashboard.html';
+                        }
+                    } else {
+                        loginError.textContent = data.error || 'Login failed. Please try again.';
+                        loginError.style.display = 'block';
+                        loginBtn.innerHTML = 'Log In';
+                        loginBtn.disabled = false;
+                    }
+                } catch (err) {
+                    console.error("Login Error:", err);
+                    loginError.textContent = 'Network error. Please try again later.';
+                    loginError.style.display = 'block';
+                    loginBtn.innerHTML = 'Log In';
+                    loginBtn.disabled = false;
+                }
+            });
+
+            // Password Reset submission (Simulated)
+            resetForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                sendResetBtn.innerHTML = 'Sending...';
+                sendResetBtn.disabled = true;
+
+                // Simulate backend AWS SES trigger delay
+                setTimeout(() => {
+                    resetView.style.display = 'none';
+                    resetSuccess.style.display = 'block';
+                }, 1500);
+            });
+        });
+    </script>
+</body>
+</html>
