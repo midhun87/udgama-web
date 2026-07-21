@@ -817,6 +817,54 @@ app.post('/api/public/register/verify', async (req, res) => {
     }
 });
 
+// Update Event Display Order (Master Admin Only)
+app.put('/api/admin/events/:eventId/order', requireAdmin, async (req, res) => {
+    try {
+        const { eventId } = req.params;
+        const { displayOrder } = req.body;
+
+        if (typeof displayOrder !== 'number') {
+            return res.status(400).json({ error: 'displayOrder must be a valid number' });
+        }
+
+        await docClient.send(new UpdateCommand({
+            TableName: EVENTS_TABLE,
+            Key: { eventId },
+            UpdateExpression: 'SET displayOrder = :order',
+            ExpressionAttributeValues: { ':order': displayOrder }
+        }));
+
+        res.json({ message: 'Event display order updated successfully' });
+    } catch (error) {
+        console.error('Update Event Order Error:', error);
+        res.status(500).json({ error: 'Failed to update event order' });
+    }
+});
+
+// Update Organization Display Order (Master Admin Only)
+app.put('/api/admin/organizations/:orgId/order', requireAdmin, async (req, res) => {
+    try {
+        const { orgId } = req.params;
+        const { displayOrder } = req.body;
+
+        if (typeof displayOrder !== 'number') {
+            return res.status(400).json({ error: 'displayOrder must be a valid number' });
+        }
+
+        await docClient.send(new UpdateCommand({
+            TableName: ORGS_TABLE, // Ensure this matches your dynamo table name constant
+            Key: { orgId },
+            UpdateExpression: 'SET displayOrder = :order',
+            ExpressionAttributeValues: { ':order': displayOrder }
+        }));
+
+        res.json({ message: 'Organization display order updated successfully' });
+    } catch (error) {
+        console.error('Update Org Order Error:', error);
+        res.status(500).json({ error: 'Failed to update organization order' });
+    }
+});
+
 // Catch-all for unresolved routes
 app.use((req, res) => {
     res.status(404).json({ error: 'Endpoint not found' });
