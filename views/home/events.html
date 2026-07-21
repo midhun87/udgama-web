@@ -253,7 +253,15 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 slide-up" style="animation-delay: 0.1s;">
             `;
             
-            for (const orgId of Object.keys(window.groupedEvents)) {
+            const sortedOrgIds = Object.keys(window.groupedEvents).sort((a, b) => {
+                const orgA = window.loadedOrgs.find(o => o.orgId === a);
+                const orgB = window.loadedOrgs.find(o => o.orgId === b);
+                const orderA = (orgA && orgA.displayOrder !== undefined && orgA.displayOrder !== null) ? orgA.displayOrder : 999;
+                const orderB = (orgB && orgB.displayOrder !== undefined && orgB.displayOrder !== null) ? orgB.displayOrder : 999;
+                return orderA - orderB;
+            });
+
+            for (const orgId of sortedOrgIds) {
                 const org = window.loadedOrgs.find(o => o.orgId === orgId) || { name: 'Independent Events', description: 'Events not tied to a specific organization' };
                 const eventCount = window.groupedEvents[orgId].length;
                 
@@ -311,7 +319,13 @@
                 </div>
             `;
 
-            document.getElementById('events-list').innerHTML = events.map((event, i) => {
+            const sortedEvents = [...events].sort((a, b) => {
+                const orderA = a.displayOrder !== undefined && a.displayOrder !== null ? a.displayOrder : 999;
+                const orderB = b.displayOrder !== undefined && b.displayOrder !== null ? b.displayOrder : 999;
+                return orderA - orderB;
+            });
+
+            document.getElementById('events-list').innerHTML = sortedEvents.map((event, i) => {
                 const ieeeTotal = Number(event.ieeeAmount) + Number(event.ieeeTax);
                 
                 return `
