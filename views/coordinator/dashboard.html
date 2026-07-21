@@ -201,13 +201,15 @@
                         <div class="p-4 border border-slate-200 rounded-xl bg-white">
                             <h4 class="font-bold text-brand-blue text-sm mb-3">IEEE Member Pricing</h4>
                             <div class="space-y-3">
-                                <div><label class="text-xs font-bold text-slate-500 mb-1 block">Registration Fee (₹)</label><input type="number" id="ieeeBase" required min="0" class="w-full px-3 py-2 border border-slate-300 rounded-lg outline-none focus:ring-2 focus:ring-brand-blue"></div>
+                                <div><label class="text-xs font-bold text-slate-500 mb-1 block">Base Amount (₹)</label><input type="number" id="ieeeBase" required min="0" class="w-full px-3 py-2 border border-slate-300 rounded-lg outline-none focus:ring-2 focus:ring-brand-blue"></div>
+                                <div><label class="text-xs font-bold text-slate-500 mb-1 block">Tax Amount (₹)</label><input type="number" id="ieeeTax" required min="0" class="w-full px-3 py-2 border border-slate-300 rounded-lg outline-none focus:ring-2 focus:ring-brand-blue"></div>
                             </div>
                         </div>
                         <div class="p-4 border border-slate-200 rounded-xl bg-white">
                             <h4 class="font-bold text-slate-700 text-sm mb-3">Non-IEEE Pricing</h4>
                             <div class="space-y-3">
-                                <div><label class="text-xs font-bold text-slate-500 mb-1 block">Registration Fee (₹)</label><input type="number" id="nonIeeeBase" required min="0" class="w-full px-3 py-2 border border-slate-300 rounded-lg outline-none focus:ring-2 focus:ring-brand-blue"></div>
+                                <div><label class="text-xs font-bold text-slate-500 mb-1 block">Base Amount (₹)</label><input type="number" id="nonIeeeBase" required min="0" class="w-full px-3 py-2 border border-slate-300 rounded-lg outline-none focus:ring-2 focus:ring-brand-blue"></div>
+                                <div><label class="text-xs font-bold text-slate-500 mb-1 block">Tax Amount (₹)</label><input type="number" id="nonIeeeTax" required min="0" class="w-full px-3 py-2 border border-slate-300 rounded-lg outline-none focus:ring-2 focus:ring-brand-blue"></div>
                             </div>
                         </div>
                     </div>
@@ -400,6 +402,22 @@
 
             container.innerHTML = registrations.map(reg => {
                 const lead = reg.participants && reg.participants[0] ? reg.participants[0] : { fullName: 'Unknown', email: 'N/A', mobile: 'N/A' };
+                
+                // Calculate Base Amount (without tax) based on participants and event pricing
+                let baseAmountDisplay = reg.totalAmountPaid;
+                const eventObj = events.find(e => e.eventId === reg.eventId);
+                if (eventObj && reg.participants) {
+                    let calcBase = 0;
+                    reg.participants.forEach(p => {
+                        if (p.isIeee === 'Yes' || p.isIeee === true) {
+                            calcBase += Number(eventObj.ieeeAmount || 0);
+                        } else {
+                            calcBase += Number(eventObj.nonIeeeAmount || 0);
+                        }
+                    });
+                    baseAmountDisplay = calcBase;
+                }
+
                 return `
                 <tr class="hover:bg-slate-50 transition-colors group">
                     <td class="py-4 px-6 border-b border-slate-100">
@@ -412,7 +430,7 @@
                         ${reg.participants.length > 1 ? `<p class="text-[0.65rem] font-bold text-emerald-600 mt-1">+ ${reg.participants.length - 1} more member(s)</p>` : ''}
                     </td>
                     <td class="py-4 px-6 border-b border-slate-100 text-sm font-bold text-slate-700">
-                        ₹${reg.totalAmountPaid}
+                        ₹${baseAmountDisplay}
                     </td>
                     <td class="py-4 px-6 border-b border-slate-100">
                         <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold ${reg.paymentStatus === 'Paid' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-600'}">
@@ -432,12 +450,26 @@
         function getExportData() {
             const flatData = [];
             registrations.forEach(reg => {
+                
+                // Calculate Base Amount for Exports
+                let baseAmountDisplay = reg.totalAmountPaid;
+                const eventObj = events.find(e => e.eventId === reg.eventId);
+                if (eventObj && reg.participants) {
+                    let calcBase = 0;
+                    reg.participants.forEach(p => {
+                        if (p.isIeee === 'Yes' || p.isIeee === true) calcBase += Number(eventObj.ieeeAmount || 0);
+                        else calcBase += Number(eventObj.nonIeeeAmount || 0);
+                    });
+                    baseAmountDisplay = calcBase;
+                }
+
                 (reg.participants || []).forEach((p, index) => {
                     flatData.push({
                         'Registration ID': reg.registrationId,
                         'Event Name': reg.eventName,
                         'Payment Status': reg.paymentStatus,
-                        'Total Paid': `Rs. ${reg.totalAmountPaid}`,
+                        'Base Paid (Excl. Tax)': `Rs. ${baseAmountDisplay}`,
+                        'Total Paid (Inc. Tax)': `Rs. ${reg.totalAmountPaid}`,
                         'Role': index === 0 ? 'Lead' : 'Member',
                         'Name': p.fullName || 'N/A',
                         'Email': p.email || 'N/A',
@@ -469,11 +501,11 @@
             doc.text("UDGAMA 2026 - Registrations", 14, 15);
             
             const data = getExportData();
-            const headers = [['Reg ID', 'Event', 'Role', 'Name', 'Email', 'Mobile', 'Institution', 'IEEE', 'IEEE No', 'Paid', 'Status']];
+            const headers = [['Reg ID', 'Event', 'Role', 'Name', 'Email', 'Mobile', 'Institution', 'IEEE', 'Base Paid', 'Status']];
             const rows = data.map(d => [
                 d['Registration ID'], d['Event Name'], d['Role'], d['Name'], d['Email'], 
-                d['Mobile'], d['Institution'], d['IEEE Member'], d['IEEE Number'], 
-                d['Total Paid'], d['Payment Status']
+                d['Mobile'], d['Institution'], d['IEEE Member'],
+                d['Base Paid (Excl. Tax)'], d['Payment Status']
             ]);
             
             doc.autoTable({
@@ -575,8 +607,9 @@
             document.getElementById('teamSize').value = ev.teamSize || 1;
 
             document.getElementById('ieeeBase').value = ev.ieeeAmount;
+            document.getElementById('ieeeTax').value = ev.ieeeTax || 0;
             document.getElementById('nonIeeeBase').value = ev.nonIeeeAmount;
-            // Removed Tax population
+            document.getElementById('nonIeeeTax').value = ev.nonIeeeTax || 0;
 
             const modal = document.getElementById('eventModal');
             modal.classList.remove('hidden');
@@ -611,9 +644,9 @@
                 isTeam: document.getElementById('isTeam').checked,
                 teamSize: Number(document.getElementById('teamSize').value),
                 ieeeAmount: Number(document.getElementById('ieeeBase').value),
-                ieeeTax: 0, // Hardcoded to 0 to bypass backend tax schema
+                ieeeTax: Number(document.getElementById('ieeeTax').value), 
                 nonIeeeAmount: Number(document.getElementById('nonIeeeBase').value),
-                nonIeeeTax: 0 // Hardcoded to 0 to bypass backend tax schema
+                nonIeeeTax: Number(document.getElementById('nonIeeeTax').value) 
             };
 
             const url = isUpdate ? `${API_BASE}/coordinator/events/${eventId}` : `${API_BASE}/coordinator/events`;
