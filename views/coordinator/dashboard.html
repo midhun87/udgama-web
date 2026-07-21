@@ -10,6 +10,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     
+    <!-- Export Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    
     <script>
         tailwind.config = {
             theme: {
@@ -68,7 +73,7 @@
     </nav>
 
     <!-- Main Content -->
-    <main class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
+    <main class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 flex flex-col">
         
         <!-- Tabs & Actions -->
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
@@ -94,7 +99,21 @@
             </div>
         </div>
 
-        <div id="view-registrations" class="fade-in hidden">
+        <div id="view-registrations" class="fade-in hidden flex-col flex-1">
+            <div class="flex flex-wrap justify-between items-center mb-4 gap-4">
+                <h3 class="text-lg font-display font-bold text-slate-800">Registration List</h3>
+                <div class="flex gap-2">
+                    <button onclick="exportExcel()" class="px-4 py-2 bg-emerald-50 text-emerald-600 rounded-lg text-sm font-bold border border-emerald-200 hover:bg-emerald-100 flex items-center gap-2 transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        Export Excel
+                    </button>
+                    <button onclick="exportPDF()" class="px-4 py-2 bg-red-50 text-red-600 rounded-lg text-sm font-bold border border-red-200 hover:bg-red-100 flex items-center gap-2 transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                        Export PDF
+                    </button>
+                </div>
+            </div>
+            
             <div class="bg-white rounded-2xl shadow-float border border-slate-200 overflow-hidden">
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse">
@@ -104,16 +123,22 @@
                                 <th class="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Lead Participant</th>
                                 <th class="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Amount</th>
                                 <th class="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Status</th>
+                                <th class="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Action</th>
                             </tr>
                         </thead>
                         <tbody id="registrationsContainer" class="divide-y divide-slate-100">
-                            <tr><td colspan="4" class="py-8 text-center text-slate-500">Loading registrations...</td></tr>
+                            <tr><td colspan="5" class="py-8 text-center text-slate-500">Loading registrations...</td></tr>
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
     </main>
+
+    <footer class="mt-auto py-6 border-t border-slate-200 bg-white text-center z-10">
+        <p class="text-slate-500 text-sm font-medium">© 2026 UDGAMA. All rights reserved.</p>
+        <p class="text-slate-400 text-xs mt-1">Designed & Developed by <a href="https://xetasolutions.in" target="_blank" class="font-bold text-brand-blue hover:underline transition-colors">Xeta Tech Solutions</a></p>
+    </footer>
 
     <!-- Create/Edit Event Modal -->
     <div id="eventModal" class="fixed inset-0 z-50 hidden items-center justify-center modal-overlay p-4 opacity-0 transition-opacity duration-300">
@@ -134,7 +159,6 @@
                         <input type="text" id="title" required class="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-blue focus:border-brand-blue outline-none transition-all">
                     </div>
 
-                    <!-- REVISED: Image Link Snippet -->
                     <div class="bg-blue-50/50 border border-blue-100 p-4 rounded-xl">
                         <label for="bannerUrl" class="block text-sm font-bold text-slate-700 mb-1">
                             Event Cover Image Link
@@ -177,15 +201,13 @@
                         <div class="p-4 border border-slate-200 rounded-xl bg-white">
                             <h4 class="font-bold text-brand-blue text-sm mb-3">IEEE Member Pricing</h4>
                             <div class="space-y-3">
-                                <div><label class="text-xs font-bold text-slate-500">Base Amount (₹)</label><input type="number" id="ieeeBase" required min="0" class="w-full px-3 py-1.5 border border-slate-300 rounded-lg"></div>
-                                <div><label class="text-xs font-bold text-slate-500">Tax Amount (₹)</label><input type="number" id="ieeeTax" required min="0" class="w-full px-3 py-1.5 border border-slate-300 rounded-lg"></div>
+                                <div><label class="text-xs font-bold text-slate-500 mb-1 block">Registration Fee (₹)</label><input type="number" id="ieeeBase" required min="0" class="w-full px-3 py-2 border border-slate-300 rounded-lg outline-none focus:ring-2 focus:ring-brand-blue"></div>
                             </div>
                         </div>
                         <div class="p-4 border border-slate-200 rounded-xl bg-white">
                             <h4 class="font-bold text-slate-700 text-sm mb-3">Non-IEEE Pricing</h4>
                             <div class="space-y-3">
-                                <div><label class="text-xs font-bold text-slate-500">Base Amount (₹)</label><input type="number" id="nonIeeeBase" required min="0" class="w-full px-3 py-1.5 border border-slate-300 rounded-lg"></div>
-                                <div><label class="text-xs font-bold text-slate-500">Tax Amount (₹)</label><input type="number" id="nonIeeeTax" required min="0" class="w-full px-3 py-1.5 border border-slate-300 rounded-lg"></div>
+                                <div><label class="text-xs font-bold text-slate-500 mb-1 block">Registration Fee (₹)</label><input type="number" id="nonIeeeBase" required min="0" class="w-full px-3 py-2 border border-slate-300 rounded-lg outline-none focus:ring-2 focus:ring-brand-blue"></div>
                             </div>
                         </div>
                     </div>
@@ -197,6 +219,44 @@
                 <button type="submit" form="eventForm" id="saveEventBtn" class="px-6 py-2.5 rounded-xl font-bold text-white bg-brand-blue hover:bg-brand-dark transition-colors shadow-md flex items-center gap-2">
                     Save Event
                 </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Team Details Modal -->
+    <div id="teamModal" class="fixed inset-0 z-50 hidden items-center justify-center modal-overlay p-4 opacity-0 transition-opacity duration-300">
+        <div class="bg-white rounded-[2rem] w-full max-w-4xl shadow-2xl transform scale-95 transition-transform duration-300 flex flex-col max-h-[90vh]">
+            <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-white rounded-t-[2rem]">
+                <div>
+                    <h2 class="text-xl font-display font-bold text-slate-900" id="teamModalTitle">Team Details</h2>
+                    <p class="text-sm font-medium text-brand-blue mt-1" id="teamModalRegId"></p>
+                </div>
+                <button onclick="closeTeamModal()" class="text-slate-400 hover:text-slate-700 bg-slate-100 hover:bg-slate-200 p-2 rounded-full transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            
+            <div class="p-6 overflow-y-auto flex-1 bg-slate-50/50">
+                <div class="overflow-x-auto bg-white rounded-xl shadow-sm border border-slate-200">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50 border-b border-slate-200">
+                                <th class="py-3 px-4 text-xs font-bold text-slate-500 uppercase">Role</th>
+                                <th class="py-3 px-4 text-xs font-bold text-slate-500 uppercase">Participant</th>
+                                <th class="py-3 px-4 text-xs font-bold text-slate-500 uppercase">Contact</th>
+                                <th class="py-3 px-4 text-xs font-bold text-slate-500 uppercase">Institution</th>
+                                <th class="py-3 px-4 text-xs font-bold text-slate-500 uppercase">IEEE Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="teamMembersContainer" class="divide-y divide-slate-100">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="p-5 border-t border-slate-100 bg-white rounded-b-[2rem] flex justify-end">
+                <button type="button" onclick="closeTeamModal()" class="px-6 py-2.5 rounded-xl font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 transition-colors">Close</button>
             </div>
         </div>
     </div>
@@ -217,11 +277,10 @@
             orgId = localStorage.getItem('orgId');
             const name = localStorage.getItem('name');
 
-            // FIX: Clear localStorage if auth fails to break infinite redirect loops
             if (!token || (role !== 'coordinator' && role !== 'admin')) {
                 console.warn("Invalid session detected. Clearing storage and redirecting.");
                 localStorage.clear(); 
-                window.location.replace('/staff-login'); // Use replace to avoid back-button bugs
+                window.location.replace('/staff-login'); 
                 return;
             }
 
@@ -237,7 +296,6 @@
         function switchTab(tab) {
             currentTab = tab;
             
-            // Tab Styling
             document.getElementById('tab-events').className = tab === 'events' 
                 ? 'flex-1 sm:flex-none px-6 py-2.5 rounded-lg text-sm font-bold bg-white text-brand-blue shadow-sm transition-all' 
                 : 'flex-1 sm:flex-none px-6 py-2.5 rounded-lg text-sm font-bold text-slate-600 hover:text-slate-900 transition-all';
@@ -246,11 +304,12 @@
                 ? 'flex-1 sm:flex-none px-6 py-2.5 rounded-lg text-sm font-bold bg-white text-brand-blue shadow-sm transition-all' 
                 : 'flex-1 sm:flex-none px-6 py-2.5 rounded-lg text-sm font-bold text-slate-600 hover:text-slate-900 transition-all';
 
-            // View toggling
             document.getElementById('view-events').classList.toggle('hidden', tab !== 'events');
-            document.getElementById('view-registrations').classList.toggle('hidden', tab !== 'registrations');
+            document.getElementById('view-events').classList.toggle('block', tab === 'events');
             
-            // Hide "Create Event" button if on Registrations tab
+            document.getElementById('view-registrations').classList.toggle('hidden', tab !== 'registrations');
+            document.getElementById('view-registrations').classList.toggle('flex', tab === 'registrations');
+            
             document.getElementById('createEventBtn').classList.toggle('hidden', tab !== 'events');
         }
 
@@ -271,15 +330,12 @@
             try {
                 const token = localStorage.getItem('token');
                 
-                // Fetch Public Events (to filter for this org)
                 const evRes = await fetch(`${API_BASE}/public/data`);
                 const evData = await evRes.json();
                 
-                // Note: Assuming public endpoint returns events for this org.
                 events = (evData.events || []).filter(e => e.orgId === orgId);
                 renderEvents();
 
-                // Fetch Registrations securely
                 const regRes = await fetch(`${API_BASE}/coordinator/registrations`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
@@ -338,7 +394,7 @@
         function renderRegistrations() {
             const container = document.getElementById('registrationsContainer');
             if (registrations.length === 0) {
-                container.innerHTML = `<tr><td colspan="4" class="py-12 text-center text-slate-500 font-medium">No registrations received yet.</td></tr>`;
+                container.innerHTML = `<tr><td colspan="5" class="py-12 text-center text-slate-500 font-medium">No registrations received yet.</td></tr>`;
                 return;
             }
 
@@ -364,8 +420,119 @@
                             ${reg.paymentStatus}
                         </span>
                     </td>
+                    <td class="py-4 px-6 border-b border-slate-100 text-right">
+                        <button onclick="viewTeam('${reg.registrationId}')" class="px-3 py-1.5 bg-white border border-slate-200 hover:border-brand-blue hover:text-brand-blue rounded-lg text-xs font-bold text-slate-600 shadow-sm transition-all">
+                            View Details
+                        </button>
+                    </td>
                 </tr>
             `}).join('');
+        }
+
+        function getExportData() {
+            const flatData = [];
+            registrations.forEach(reg => {
+                (reg.participants || []).forEach((p, index) => {
+                    flatData.push({
+                        'Registration ID': reg.registrationId,
+                        'Event Name': reg.eventName,
+                        'Payment Status': reg.paymentStatus,
+                        'Total Paid': `Rs. ${reg.totalAmountPaid}`,
+                        'Role': index === 0 ? 'Lead' : 'Member',
+                        'Name': p.fullName || 'N/A',
+                        'Email': p.email || 'N/A',
+                        'Mobile': p.mobile || 'N/A',
+                        'Institution': p.organization || 'N/A',
+                        'IEEE Member': (p.isIeee === 'Yes' || p.isIeee === true) ? 'Yes' : 'No',
+                        'IEEE Number': p.ieeeNumber || 'N/A'
+                    });
+                });
+            });
+            return flatData;
+        }
+
+        function exportExcel() {
+            if (registrations.length === 0) return showToast("No data to export", "error");
+            const data = getExportData();
+            const ws = XLSX.utils.json_to_sheet(data);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Registrations");
+            XLSX.writeFile(wb, "UDGAMA_Registrations.xlsx");
+        }
+
+        function exportPDF() {
+            if (registrations.length === 0) return showToast("No data to export", "error");
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('landscape');
+            
+            doc.setFontSize(14);
+            doc.text("UDGAMA 2026 - Registrations", 14, 15);
+            
+            const data = getExportData();
+            const headers = [['Reg ID', 'Event', 'Role', 'Name', 'Email', 'Mobile', 'Institution', 'IEEE', 'IEEE No', 'Paid', 'Status']];
+            const rows = data.map(d => [
+                d['Registration ID'], d['Event Name'], d['Role'], d['Name'], d['Email'], 
+                d['Mobile'], d['Institution'], d['IEEE Member'], d['IEEE Number'], 
+                d['Total Paid'], d['Payment Status']
+            ]);
+            
+            doc.autoTable({
+                head: headers,
+                body: rows,
+                startY: 20,
+                styles: { fontSize: 7, cellPadding: 2 },
+                headStyles: { fillColor: [0, 98, 155] } // brand-blue
+            });
+            
+            doc.save('UDGAMA_Registrations.pdf');
+        }
+
+        function viewTeam(regId) {
+            const reg = registrations.find(r => r.registrationId === regId);
+            if(!reg) return;
+
+            document.getElementById('teamModalTitle').textContent = reg.eventName;
+            document.getElementById('teamModalRegId').textContent = `Registration ID: ${reg.registrationId}`;
+            
+            const container = document.getElementById('teamMembersContainer');
+            container.innerHTML = (reg.participants || []).map((p, idx) => `
+                <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="py-3 px-4 border-b border-slate-100">
+                        <span class="inline-block px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider ${idx === 0 ? 'bg-blue-100 text-brand-blue' : 'bg-slate-100 text-slate-500'}">
+                            ${idx === 0 ? 'Lead' : 'Member'}
+                        </span>
+                    </td>
+                    <td class="py-3 px-4 border-b border-slate-100">
+                        <p class="text-sm font-bold text-slate-900">${p.fullName}</p>
+                    </td>
+                    <td class="py-3 px-4 border-b border-slate-100">
+                        <p class="text-xs text-slate-600">${p.email}</p>
+                        <p class="text-xs text-slate-600">${p.mobile}</p>
+                    </td>
+                    <td class="py-3 px-4 border-b border-slate-100 text-sm text-slate-700">
+                        ${p.organization}
+                    </td>
+                    <td class="py-3 px-4 border-b border-slate-100">
+                        ${(p.isIeee === 'Yes' || p.isIeee === true) 
+                            ? `<span class="text-emerald-600 text-xs font-bold">YES</span><br><span class="text-[10px] text-slate-400 font-mono">${p.ieeeNumber || ''}</span>`
+                            : `<span class="text-slate-400 text-xs font-bold">NO</span>`}
+                    </td>
+                </tr>
+            `).join('');
+
+            const modal = document.getElementById('teamModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            setTimeout(() => modal.classList.remove('opacity-0'), 10);
+        }
+
+        function closeTeamModal() {
+            const modal = document.getElementById('teamModal');
+            modal.classList.add('opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }, 300);
         }
 
         function toggleTeamSize(isTeam) {
@@ -400,7 +567,7 @@
             document.getElementById('title').value = ev.title;
             document.getElementById('shortDesc').value = ev.shortDescription;
             document.getElementById('longDesc').value = ev.detailedDescription;
-            document.getElementById('bannerUrl').value = ev.bannerUrl || ''; // Bind the image URL
+            document.getElementById('bannerUrl').value = ev.bannerUrl || ''; 
             
             const teamToggle = document.getElementById('isTeam');
             teamToggle.checked = ev.isTeam;
@@ -408,9 +575,8 @@
             document.getElementById('teamSize').value = ev.teamSize || 1;
 
             document.getElementById('ieeeBase').value = ev.ieeeAmount;
-            document.getElementById('ieeeTax').value = ev.ieeeTax;
             document.getElementById('nonIeeeBase').value = ev.nonIeeeAmount;
-            document.getElementById('nonIeeeTax').value = ev.nonIeeeTax;
+            // Removed Tax population
 
             const modal = document.getElementById('eventModal');
             modal.classList.remove('hidden');
@@ -441,13 +607,13 @@
                 title: document.getElementById('title').value,
                 shortDescription: document.getElementById('shortDesc').value,
                 detailedDescription: document.getElementById('longDesc').value,
-                bannerUrl: document.getElementById('bannerUrl').value, // Send the image URL to server
+                bannerUrl: document.getElementById('bannerUrl').value,
                 isTeam: document.getElementById('isTeam').checked,
                 teamSize: Number(document.getElementById('teamSize').value),
                 ieeeAmount: Number(document.getElementById('ieeeBase').value),
-                ieeeTax: Number(document.getElementById('ieeeTax').value),
+                ieeeTax: 0, // Hardcoded to 0 to bypass backend tax schema
                 nonIeeeAmount: Number(document.getElementById('nonIeeeBase').value),
-                nonIeeeTax: Number(document.getElementById('nonIeeeTax').value)
+                nonIeeeTax: 0 // Hardcoded to 0 to bypass backend tax schema
             };
 
             const url = isUpdate ? `${API_BASE}/coordinator/events/${eventId}` : `${API_BASE}/coordinator/events`;
@@ -468,7 +634,7 @@
 
                 showToast(isUpdate ? 'Event updated!' : 'Event created!');
                 closeEventModal();
-                fetchDashboardData(); // Refresh list
+                fetchDashboardData(); 
 
             } catch (error) {
                 console.error(error);
