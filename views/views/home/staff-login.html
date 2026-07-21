@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff Login | UDGAMA 2026</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'], display: ['Outfit', 'sans-serif'] },
+                    colors: { brand: { blue: '#00629B', dark: '#001b3a', accent: '#00A3E0', surface: '#F8FAFC' } },
+                    boxShadow: { 'float': '0 20px 40px -10px rgba(0,0,0,0.1)' }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body { background-color: #F8FAFC; }
+        .hero-bg { background: linear-gradient(135deg, #001b3a 0%, #002855 100%); }
+        .fade-in { animation: fadeIn 0.6s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="text-slate-800 font-sans antialiased min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
+
+    <!-- Decorative Background -->
+    <div class="absolute inset-0 hero-bg z-0"></div>
+    <div class="absolute top-[-20%] right-[-10%] w-[600px] h-[600px] bg-brand-accent/20 rounded-full blur-3xl z-0 pointer-events-none"></div>
+    <div class="absolute bottom-[-20%] left-[-10%] w-[600px] h-[600px] bg-brand-blue/30 rounded-full blur-3xl z-0 pointer-events-none"></div>
+
+    <div class="w-full max-w-md bg-white rounded-3xl shadow-float p-8 sm:p-10 z-10 fade-in border border-white/20">
+        
+        <div class="text-center mb-8">
+            <a href="/" class="inline-block mb-6 hover:scale-105 transition-transform">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQRQUOVTVuLAWuWWCkcSow3IBBsUkVKziDB3e5VpyN02Q&s=10" alt="UDGAMA Logo" class="h-16 w-auto mx-auto rounded-xl shadow-sm">
+            </a>
+            <h1 class="text-2xl font-display font-bold text-slate-900 tracking-tight">Staff Portal</h1>
+            <p class="text-slate-500 text-sm mt-1">Sign in to manage UDGAMA 2026 events</p>
+        </div>
+
+        <form id="loginForm" class="space-y-5">
+            <div id="errorBox" class="hidden bg-red-50 text-red-600 text-sm font-bold p-3 rounded-xl border border-red-100 flex items-center gap-2">
+                <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <span id="errorMessage">Invalid credentials</span>
+            </div>
+
+            <div>
+                <label class="block text-sm font-bold text-slate-700 mb-1.5" for="email">Email Address</label>
+                <input type="email" id="email" required placeholder="coordinator@udgama.in" 
+                       class="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-blue focus:border-brand-blue outline-none transition-all bg-slate-50 focus:bg-white text-slate-900">
+            </div>
+
+            <div>
+                <label class="block text-sm font-bold text-slate-700 mb-1.5" for="password">Password</label>
+                <input type="password" id="password" required placeholder="••••••••" 
+                       class="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-blue focus:border-brand-blue outline-none transition-all bg-slate-50 focus:bg-white text-slate-900">
+            </div>
+
+            <button type="submit" id="loginBtn" class="w-full py-3.5 px-4 border border-transparent rounded-xl shadow-md text-white bg-brand-blue hover:bg-brand-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-blue font-bold transition-colors flex justify-center items-center gap-2">
+                Sign In
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+            </button>
+        </form>
+        
+        <div class="mt-8 text-center">
+            <a href="/" class="text-sm font-bold text-slate-400 hover:text-brand-blue transition-colors">← Back to Main Website</a>
+        </div>
+    </div>
+
+    <script>
+        // Clear any existing bad session data right when they land on the login page
+        localStorage.clear();
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const btn = document.getElementById('loginBtn');
+            const errorBox = document.getElementById('errorBox');
+            const errorMessage = document.getElementById('errorMessage');
+
+            btn.disabled = true;
+            btn.innerHTML = '<div class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div> Authenticating...';
+            errorBox.classList.add('hidden');
+
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Login failed. Please check your credentials.');
+                }
+
+                // ==========================================
+                // THE FIX: Saving the exact required tokens and forcing lowercase on roles
+                // ==========================================
+                const safeRole = (data.role || '').toLowerCase();
+                
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('role', safeRole);
+                localStorage.setItem('orgId', data.orgId || '');
+                localStorage.setItem('name', data.name || 'Coordinator');
+
+                btn.classList.remove('bg-brand-blue', 'hover:bg-brand-dark');
+                btn.classList.add('bg-emerald-500', 'hover:bg-emerald-600');
+                btn.innerHTML = 'Success! Redirecting...';
+
+                // Redirect based on the safely formatted role
+                setTimeout(() => {
+                    if (safeRole === 'admin') {
+                        window.location.href = '/admin/dashboard';
+                    } else {
+                        window.location.href = '/coordinator/dashboard';
+                    }
+                }, 500);
+
+            } catch (error) {
+                console.error('Login Error:', error);
+                errorMessage.textContent = error.message;
+                errorBox.classList.remove('hidden');
+                
+                btn.disabled = false;
+                btn.innerHTML = 'Sign In <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>';
+            }
+        });
+    </script>
+</body>
+</html>

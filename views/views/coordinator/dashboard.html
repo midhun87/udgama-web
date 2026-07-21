@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coordinator Dashboard | UDGAMA 2026</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'], display: ['Outfit', 'sans-serif'] },
+                    colors: { brand: { blue: '#00629B', dark: '#001b3a', accent: '#00A3E0', surface: '#F8FAFC' } },
+                    boxShadow: { 'float': '0 10px 40px -10px rgba(0,0,0,0.08)' }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body { background-color: #F8FAFC; }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        .fade-in { animation: fadeIn 0.4s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .modal-overlay { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); }
+        .glass-nav { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(226, 232, 240, 0.8); }
+
+        /* Toast Notifications */
+        #toast-container { position: fixed; bottom: 1rem; right: 1rem; z-index: 9999; display: flex; flex-direction: column; gap: 0.5rem; }
+        .toast { padding: 1rem; border-radius: 0.75rem; background: #1e293b; color: white; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5); transform: translateX(120%); transition: transform 0.3s ease-out; display: flex; align-items: center; gap: 0.75rem; font-size: 0.875rem; font-weight: 500;}
+        .toast.show { transform: translateX(0); }
+        .toast.success { border-left: 4px solid #10b981; }
+        .toast.error { border-left: 4px solid #ef4444; }
+    </style>
+</head>
+<body class="text-slate-800 font-sans antialiased min-h-screen flex flex-col">
+
+    <!-- Navigation -->
+    <nav class="glass-nav sticky top-0 z-40 w-full">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-brand-dark text-white rounded-lg flex items-center justify-center font-display font-bold">U</div>
+                    <span class="font-display font-bold text-lg text-brand-dark">Coordinator Panel</span>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="text-right hidden sm:block">
+                        <p class="text-sm font-bold text-slate-700" id="coordName">Loading...</p>
+                        <p class="text-xs text-slate-500">Organization Coordinator</p>
+                    </div>
+                    <button onclick="logout()" class="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors font-medium text-sm flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                        <span class="hidden sm:inline">Logout</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
+        
+        <!-- Tabs & Actions -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+            <div class="flex bg-slate-200/50 p-1 rounded-xl w-full sm:w-auto">
+                <button onclick="switchTab('events')" id="tab-events" class="flex-1 sm:flex-none px-6 py-2.5 rounded-lg text-sm font-bold bg-white text-brand-blue shadow-sm transition-all">My Events</button>
+                <button onclick="switchTab('registrations')" id="tab-registrations" class="flex-1 sm:flex-none px-6 py-2.5 rounded-lg text-sm font-bold text-slate-600 hover:text-slate-900 transition-all">Registrations</button>
+            </div>
+            
+            <button id="createEventBtn" onclick="openEventModal()" class="bg-brand-blue hover:bg-brand-dark text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-md transition-all flex items-center justify-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                Create New Event
+            </button>
+        </div>
+
+        <!-- Views -->
+        <div id="view-events" class="fade-in block">
+            <div id="eventsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Events populated here -->
+                <div class="col-span-full text-center py-12 text-slate-500">
+                    <svg class="w-12 h-12 mx-auto mb-3 text-slate-300 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                    Loading events...
+                </div>
+            </div>
+        </div>
+
+        <div id="view-registrations" class="fade-in hidden">
+            <div class="bg-white rounded-2xl shadow-float border border-slate-200 overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50 border-b border-slate-200">
+                                <th class="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Reg ID / Event</th>
+                                <th class="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Lead Participant</th>
+                                <th class="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Amount</th>
+                                <th class="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="registrationsContainer" class="divide-y divide-slate-100">
+                            <tr><td colspan="4" class="py-8 text-center text-slate-500">Loading registrations...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Create/Edit Event Modal -->
+    <div id="eventModal" class="fixed inset-0 z-50 hidden items-center justify-center modal-overlay p-4 opacity-0 transition-opacity duration-300">
+        <div class="bg-white rounded-[2rem] w-full max-w-3xl shadow-2xl transform scale-95 transition-transform duration-300 flex flex-col max-h-[90vh]">
+            <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-white rounded-t-[2rem]">
+                <h2 class="text-xl font-display font-bold text-slate-900" id="modalTitle">Create New Event</h2>
+                <button onclick="closeEventModal()" class="text-slate-400 hover:text-slate-700 bg-slate-100 hover:bg-slate-200 p-2 rounded-full transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            
+            <div class="p-6 overflow-y-auto flex-1 bg-slate-50/50">
+                <form id="eventForm" onsubmit="saveEvent(event)" class="space-y-6">
+                    <input type="hidden" id="editEventId">
+                    
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-1">Event Title *</label>
+                        <input type="text" id="title" required class="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-blue focus:border-brand-blue outline-none transition-all">
+                    </div>
+
+                    <!-- REVISED: Image Link Snippet -->
+                    <div class="bg-blue-50/50 border border-blue-100 p-4 rounded-xl">
+                        <label for="bannerUrl" class="block text-sm font-bold text-slate-700 mb-1">
+                            Event Cover Image Link
+                        </label>
+                        <input type="url" id="bannerUrl" name="bannerUrl" placeholder="https://example.com/poster.jpg" 
+                               class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue focus:border-brand-blue bg-white">
+                        
+                        <p class="text-xs text-slate-500 mt-2 flex items-start gap-1.5">
+                            <svg class="w-4 h-4 text-brand-blue shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            <span>Recommended image size: <strong class="text-slate-700">800 x 400 pixels</strong> (2:1 aspect ratio) for best quality. Ensure the link ends in .jpg or .png.</span>
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-1">Short Description *</label>
+                            <textarea id="shortDesc" required rows="3" class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-blue focus:border-brand-blue outline-none resize-none" placeholder="Brief overview for the card..."></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-1">Detailed Description</label>
+                            <textarea id="longDesc" rows="3" class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-blue focus:border-brand-blue outline-none resize-none" placeholder="Full rules, timings, etc."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-4 bg-white border border-slate-200 rounded-xl">
+                        <div class="flex items-center justify-between">
+                            <label class="text-sm font-bold text-slate-700">Is this a Team Event?</label>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="isTeam" class="sr-only peer" onchange="toggleTeamSize(this.checked)">
+                                <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-blue"></div>
+                            </label>
+                        </div>
+                        <div id="teamSizeContainer" class="opacity-50 pointer-events-none transition-opacity">
+                            <label class="block text-sm font-bold text-slate-700 mb-1">Max Team Size</label>
+                            <input type="number" id="teamSize" min="1" value="1" class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-blue outline-none">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="p-4 border border-slate-200 rounded-xl bg-white">
+                            <h4 class="font-bold text-brand-blue text-sm mb-3">IEEE Member Pricing</h4>
+                            <div class="space-y-3">
+                                <div><label class="text-xs font-bold text-slate-500">Base Amount (₹)</label><input type="number" id="ieeeBase" required min="0" class="w-full px-3 py-1.5 border border-slate-300 rounded-lg"></div>
+                                <div><label class="text-xs font-bold text-slate-500">Tax Amount (₹)</label><input type="number" id="ieeeTax" required min="0" class="w-full px-3 py-1.5 border border-slate-300 rounded-lg"></div>
+                            </div>
+                        </div>
+                        <div class="p-4 border border-slate-200 rounded-xl bg-white">
+                            <h4 class="font-bold text-slate-700 text-sm mb-3">Non-IEEE Pricing</h4>
+                            <div class="space-y-3">
+                                <div><label class="text-xs font-bold text-slate-500">Base Amount (₹)</label><input type="number" id="nonIeeeBase" required min="0" class="w-full px-3 py-1.5 border border-slate-300 rounded-lg"></div>
+                                <div><label class="text-xs font-bold text-slate-500">Tax Amount (₹)</label><input type="number" id="nonIeeeTax" required min="0" class="w-full px-3 py-1.5 border border-slate-300 rounded-lg"></div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="p-6 border-t border-slate-100 bg-white rounded-b-[2rem] flex justify-end gap-3">
+                <button type="button" onclick="closeEventModal()" class="px-5 py-2.5 rounded-xl font-bold text-slate-600 hover:bg-slate-100 transition-colors">Cancel</button>
+                <button type="submit" form="eventForm" id="saveEventBtn" class="px-6 py-2.5 rounded-xl font-bold text-white bg-brand-blue hover:bg-brand-dark transition-colors shadow-md flex items-center gap-2">
+                    Save Event
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-container"></div>
+
+    <script>
+        const API_BASE = '/api';
+        let currentTab = 'events';
+        let orgId = '';
+        let events = [];
+        let registrations = [];
+
+        // Auth Check
+        document.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem('token');
+            const role = localStorage.getItem('role');
+            orgId = localStorage.getItem('orgId');
+            const name = localStorage.getItem('name');
+
+            // FIX: Clear localStorage if auth fails to break infinite redirect loops
+            if (!token || (role !== 'coordinator' && role !== 'admin')) {
+                console.warn("Invalid session detected. Clearing storage and redirecting.");
+                localStorage.clear(); 
+                window.location.replace('/staff-login'); // Use replace to avoid back-button bugs
+                return;
+            }
+
+            document.getElementById('coordName').textContent = name || 'Coordinator';
+            fetchDashboardData();
+        });
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = '/staff-login';
+        }
+
+        function switchTab(tab) {
+            currentTab = tab;
+            
+            // Tab Styling
+            document.getElementById('tab-events').className = tab === 'events' 
+                ? 'flex-1 sm:flex-none px-6 py-2.5 rounded-lg text-sm font-bold bg-white text-brand-blue shadow-sm transition-all' 
+                : 'flex-1 sm:flex-none px-6 py-2.5 rounded-lg text-sm font-bold text-slate-600 hover:text-slate-900 transition-all';
+            
+            document.getElementById('tab-registrations').className = tab === 'registrations' 
+                ? 'flex-1 sm:flex-none px-6 py-2.5 rounded-lg text-sm font-bold bg-white text-brand-blue shadow-sm transition-all' 
+                : 'flex-1 sm:flex-none px-6 py-2.5 rounded-lg text-sm font-bold text-slate-600 hover:text-slate-900 transition-all';
+
+            // View toggling
+            document.getElementById('view-events').classList.toggle('hidden', tab !== 'events');
+            document.getElementById('view-registrations').classList.toggle('hidden', tab !== 'registrations');
+            
+            // Hide "Create Event" button if on Registrations tab
+            document.getElementById('createEventBtn').classList.toggle('hidden', tab !== 'events');
+        }
+
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = type === 'success' 
+                ? `<svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> <span>${message}</span>`
+                : `<svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> <span>${message}</span>`;
+            
+            container.appendChild(toast);
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 300); }, 3000);
+        }
+
+        async function fetchDashboardData() {
+            try {
+                const token = localStorage.getItem('token');
+                
+                // Fetch Public Events (to filter for this org)
+                const evRes = await fetch(`${API_BASE}/public/data`);
+                const evData = await evRes.json();
+                
+                // Note: Assuming public endpoint returns events for this org.
+                events = (evData.events || []).filter(e => e.orgId === orgId);
+                renderEvents();
+
+                // Fetch Registrations securely
+                const regRes = await fetch(`${API_BASE}/coordinator/registrations`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const regData = await regRes.json();
+                registrations = regData.registrations || [];
+                renderRegistrations();
+
+            } catch (error) {
+                console.error(error);
+                showToast('Failed to load data.', 'error');
+            }
+        }
+
+        function renderEvents() {
+            const container = document.getElementById('eventsContainer');
+            if (events.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full bg-white rounded-2xl p-12 text-center border border-slate-200 border-dashed">
+                        <div class="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4 text-brand-blue">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        </div>
+                        <h3 class="text-lg font-bold text-slate-800 mb-1">No Events Found</h3>
+                        <p class="text-slate-500 text-sm">You haven't created any events yet.</p>
+                    </div>`;
+                return;
+            }
+
+            container.innerHTML = events.map(event => `
+                <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-float transition-all flex flex-col relative">
+                    <div class="h-32 bg-slate-100 relative overflow-hidden">
+                        ${event.bannerUrl 
+                            ? `<img src="${event.bannerUrl}" class="w-full h-full object-cover opacity-90" onerror="this.style.display='none'">` 
+                            : `<div class="w-full h-full bg-gradient-to-br from-brand-dark to-brand-blue"></div>`
+                        }
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+                        <div class="absolute bottom-3 left-4 text-white">
+                            <p class="text-sm font-bold drop-shadow">${event.isTeam ? `Team Event (${event.teamSize})` : 'Individual'}</p>
+                        </div>
+                    </div>
+                    <div class="p-5 flex flex-col flex-1">
+                        <h3 class="font-display font-bold text-lg text-slate-900 mb-1 line-clamp-1">${event.title}</h3>
+                        <p class="text-xs text-slate-500 mb-4 line-clamp-2">${event.shortDescription}</p>
+                        <div class="mt-auto pt-4 border-t border-slate-100 flex justify-between items-center">
+                            <span class="text-xs font-bold ${event.status === 'opened' ? 'text-emerald-500 bg-emerald-50' : 'text-red-500 bg-red-50'} px-2.5 py-1 rounded-md uppercase">
+                                ${event.status}
+                            </span>
+                            <button onclick="editEvent('${event.eventId}')" class="text-brand-blue hover:text-brand-dark font-bold text-sm flex items-center gap-1">
+                                Edit <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderRegistrations() {
+            const container = document.getElementById('registrationsContainer');
+            if (registrations.length === 0) {
+                container.innerHTML = `<tr><td colspan="4" class="py-12 text-center text-slate-500 font-medium">No registrations received yet.</td></tr>`;
+                return;
+            }
+
+            container.innerHTML = registrations.map(reg => {
+                const lead = reg.participants && reg.participants[0] ? reg.participants[0] : { fullName: 'Unknown', email: 'N/A', mobile: 'N/A' };
+                return `
+                <tr class="hover:bg-slate-50 transition-colors group">
+                    <td class="py-4 px-6 border-b border-slate-100">
+                        <p class="font-mono text-xs font-bold text-brand-blue bg-blue-50 inline-block px-2 py-0.5 rounded mb-1">${reg.registrationId}</p>
+                        <p class="text-sm font-bold text-slate-700">${reg.eventName}</p>
+                    </td>
+                    <td class="py-4 px-6 border-b border-slate-100">
+                        <p class="text-sm font-bold text-slate-900">${lead.fullName}</p>
+                        <p class="text-xs text-slate-500">${lead.email} | ${lead.mobile}</p>
+                        ${reg.participants.length > 1 ? `<p class="text-[0.65rem] font-bold text-emerald-600 mt-1">+ ${reg.participants.length - 1} more member(s)</p>` : ''}
+                    </td>
+                    <td class="py-4 px-6 border-b border-slate-100 text-sm font-bold text-slate-700">
+                        ₹${reg.totalAmountPaid}
+                    </td>
+                    <td class="py-4 px-6 border-b border-slate-100">
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold ${reg.paymentStatus === 'Paid' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-600'}">
+                            <span class="w-1.5 h-1.5 rounded-full ${reg.paymentStatus === 'Paid' ? 'bg-emerald-500' : 'bg-slate-400'}"></span>
+                            ${reg.paymentStatus}
+                        </span>
+                    </td>
+                </tr>
+            `}).join('');
+        }
+
+        function toggleTeamSize(isTeam) {
+            const container = document.getElementById('teamSizeContainer');
+            if(isTeam) {
+                container.classList.remove('opacity-50', 'pointer-events-none');
+            } else {
+                container.classList.add('opacity-50', 'pointer-events-none');
+                document.getElementById('teamSize').value = 1;
+            }
+        }
+
+        function openEventModal() {
+            document.getElementById('eventForm').reset();
+            document.getElementById('editEventId').value = '';
+            document.getElementById('modalTitle').textContent = 'Create New Event';
+            toggleTeamSize(false);
+            
+            const modal = document.getElementById('eventModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            setTimeout(() => modal.classList.remove('opacity-0'), 10);
+        }
+
+        function editEvent(eventId) {
+            const ev = events.find(e => e.eventId === eventId);
+            if(!ev) return;
+
+            document.getElementById('editEventId').value = ev.eventId;
+            document.getElementById('modalTitle').textContent = 'Edit Event';
+            
+            document.getElementById('title').value = ev.title;
+            document.getElementById('shortDesc').value = ev.shortDescription;
+            document.getElementById('longDesc').value = ev.detailedDescription;
+            document.getElementById('bannerUrl').value = ev.bannerUrl || ''; // Bind the image URL
+            
+            const teamToggle = document.getElementById('isTeam');
+            teamToggle.checked = ev.isTeam;
+            toggleTeamSize(ev.isTeam);
+            document.getElementById('teamSize').value = ev.teamSize || 1;
+
+            document.getElementById('ieeeBase').value = ev.ieeeAmount;
+            document.getElementById('ieeeTax').value = ev.ieeeTax;
+            document.getElementById('nonIeeeBase').value = ev.nonIeeeAmount;
+            document.getElementById('nonIeeeTax').value = ev.nonIeeeTax;
+
+            const modal = document.getElementById('eventModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            setTimeout(() => modal.classList.remove('opacity-0'), 10);
+        }
+
+        function closeEventModal() {
+            const modal = document.getElementById('eventModal');
+            modal.classList.add('opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }, 300);
+        }
+
+        async function saveEvent(e) {
+            e.preventDefault();
+            const btn = document.getElementById('saveEventBtn');
+            btn.disabled = true;
+            btn.innerHTML = 'Saving...';
+
+            const token = localStorage.getItem('token');
+            const eventId = document.getElementById('editEventId').value;
+            const isUpdate = !!eventId;
+
+            const payload = {
+                title: document.getElementById('title').value,
+                shortDescription: document.getElementById('shortDesc').value,
+                detailedDescription: document.getElementById('longDesc').value,
+                bannerUrl: document.getElementById('bannerUrl').value, // Send the image URL to server
+                isTeam: document.getElementById('isTeam').checked,
+                teamSize: Number(document.getElementById('teamSize').value),
+                ieeeAmount: Number(document.getElementById('ieeeBase').value),
+                ieeeTax: Number(document.getElementById('ieeeTax').value),
+                nonIeeeAmount: Number(document.getElementById('nonIeeeBase').value),
+                nonIeeeTax: Number(document.getElementById('nonIeeeTax').value)
+            };
+
+            const url = isUpdate ? `${API_BASE}/coordinator/events/${eventId}` : `${API_BASE}/coordinator/events`;
+            const method = isUpdate ? 'PUT' : 'POST';
+
+            try {
+                const res = await fetch(url, {
+                    method: method,
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}` 
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Failed to save event');
+
+                showToast(isUpdate ? 'Event updated!' : 'Event created!');
+                closeEventModal();
+                fetchDashboardData(); // Refresh list
+
+            } catch (error) {
+                console.error(error);
+                showToast(error.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = 'Save Event';
+            }
+        }
+    </script>
+</body>
+</html>

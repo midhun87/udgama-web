@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About UDGAMA-2026 | IEEE Guntur Sub Section</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            var(--ieee-blue: #00629B); /* Re-declared to satisfy linter but ideally scoped globally in standard env */
+            --ieee-blue: #00629B;
+            --ieee-dark-blue: #003057;
+            --bg-main: #FAFAFC;
+            --surface-white: #FFFFFF;
+            --text-primary: #1F2937;
+            --text-secondary: #4B5563;
+            --border-light: #E5E7EB;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --max-width: 1280px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-main); color: var(--text-primary); line-height: 1.6; }
+        a { text-decoration: none; color: inherit; }
+        .container { max-width: var(--max-width); margin: 0 auto; padding: 0 1.5rem; }
+
+        .navbar { background-color: var(--surface-white); border-bottom: 1px solid var(--border-light); position: fixed; width: 100%; top: 0; z-index: 1000; box-shadow: var(--shadow-sm); }
+        .nav-container { display: flex; justify-content: space-between; align-items: center; height: 4.5rem; }
+        .brand-logo { font-size: 1.5rem; font-weight: 800; color: var(--ieee-dark-blue); }
+        .brand-logo span { color: var(--ieee-blue); }
+        .nav-links { display: flex; gap: 2rem; align-items: center; }
+        .nav-link { font-weight: 500; color: var(--text-secondary); transition: color 0.2s; }
+        .nav-link:hover, .nav-link.active { color: var(--ieee-blue); }
+        .nav-actions { display: flex; gap: 1rem; }
+        .btn { padding: 0.75rem 1.5rem; font-size: 0.95rem; font-weight: 600; border-radius: var(--radius-md); border: none; cursor: pointer; }
+        .btn-primary { background-color: var(--ieee-blue); color: white; }
+        .btn-outline { background: transparent; color: var(--ieee-blue); border: 2px solid var(--ieee-blue); }
+        .mobile-menu-btn { display: none; background: none; border: none; padding: 0.5rem; cursor: pointer;}
+        .mobile-menu-btn svg { width: 24px; height: 24px; fill: var(--text-primary); }
+
+        .page-header {
+            padding: 8rem 0 4rem;
+            background-color: var(--surface-white);
+            border-bottom: 1px solid var(--border-light);
+            text-align: center;
+        }
+
+        .page-title {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--ieee-dark-blue);
+            margin-bottom: 1rem;
+        }
+        
+        .content-section {
+            padding: 5rem 0;
+        }
+
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .about-text h2 {
+            font-size: 2rem;
+            color: var(--ieee-dark-blue);
+            margin-bottom: 1.5rem;
+        }
+
+        .about-text p {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+        }
+
+        .image-placeholder {
+            width: 100%;
+            height: 400px;
+            background-color: var(--border-light);
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        /* Footer */
+        .global-footer { background-color: var(--ieee-dark-blue); color: white; padding: 2rem 0; text-align: center; margin-top: auto; }
+        .footer-branding { font-size: 0.9rem; color: rgba(255,255,255,0.8); }
+        .footer-branding a { color: white; font-weight: 600; text-decoration: underline; text-decoration-color: rgba(255,255,255,0.3); text-underline-offset: 4px; }
+
+        @media (max-width: 768px) {
+            .nav-links, .nav-actions .btn-outline { display: none; }
+            .mobile-menu-btn { display: block; }
+            .about-grid { grid-template-columns: 1fr; gap: 2rem; }
+            .page-title { font-size: 2.5rem; }
+        }
+        
+        .mobile-nav-overlay {
+            position: fixed; top: 4.5rem; left: 0; width: 100%; height: calc(100vh - 4.5rem); background-color: var(--surface-white); z-index: 999; display: none; flex-direction: column; padding: 2rem;
+        }
+        .mobile-nav-overlay.active { display: flex; }
+        .mobile-nav-overlay .nav-link { font-size: 1.25rem; padding: 1rem 0; border-bottom: 1px solid var(--border-light); display: block; }
+        .mobile-nav-overlay .btn-outline { margin-top: 2rem; width: 100%; }
+    </style>
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="container nav-container">
+            <a href="/home/index.html" class="brand-logo">UDGAMA<span>2026</span></a>
+            <nav class="nav-links">
+                <a href="/home/index.html" class="nav-link">Home</a>
+                <a href="/home/about.html" class="nav-link active">About</a>
+                <a href="/home/events.html" class="nav-link">Events</a>
+                <a href="/home/contact.html" class="nav-link">Contact</a>
+            </nav>
+            <div class="nav-actions">
+                <a href="/home/login.html" class="btn btn-outline">Login</a>
+                <a href="/home/register.html" class="btn btn-primary">Register Now</a>
+                <button class="mobile-menu-btn" id="mobileMenuBtn">
+                    <svg viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="mobile-nav-overlay" id="mobileNav">
+        <a href="/home/index.html" class="nav-link">Home</a>
+        <a href="/home/about.html" class="nav-link active">About</a>
+        <a href="/home/events.html" class="nav-link">Events</a>
+        <a href="/home/contact.html" class="nav-link">Contact</a>
+        <a href="/home/login.html" class="btn btn-outline">Login</a>
+    </div>
+
+    <main>
+        <section class="page-header">
+            <div class="container">
+                <h1 class="page-title">About UDGAMA</h1>
+                <p class="text-secondary">The premier zonal student congress of IEEE Guntur Sub Section.</p>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <div class="container about-grid">
+                <div class="about-text">
+                    <h2>Empowering the Next Generation of Engineers</h2>
+                    <p>UDGAMA 2026 is the flagship annual event orchestrated by the IEEE Guntur Sub Section. Designed as a melting pot of ideas, innovation, and industry-academic interaction, UDGAMA serves as a critical platform for aspiring engineers across the region.</p>
+                    <p>Our mission is to foster a culture of technical excellence. Through a series of rigorously curated technical symposiums, hands-on workshops, and competitive events, we aim to equip students with the practical skills and theoretical knowledge required to thrive in modern technological landscapes.</p>
+                    <p>Whether you are a researcher looking to present your findings, a coder ready for a hackathon, or a student seeking inspiration from industry veterans, UDGAMA 2026 is your gateway to the future.</p>
+                </div>
+                <div class="image-placeholder">
+                    [ Event/Congress Group Photo Here ]
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="global-footer">
+        <div class="container">
+            <p class="footer-branding">
+                Designed & Developed by <a href="https://xetasolutions.in" target="_blank" rel="noopener noreferrer">Xeta Tech Solutions</a>
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const mobileNav = document.getElementById('mobileNav');
+            let isMenuOpen = false;
+
+            mobileMenuBtn.addEventListener('click', () => {
+                isMenuOpen = !isMenuOpen;
+                if (isMenuOpen) {
+                    mobileNav.classList.add('active');
+                    mobileMenuBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>';
+                } else {
+                    mobileNav.classList.remove('active');
+                    mobileMenuBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
