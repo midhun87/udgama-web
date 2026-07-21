@@ -46,11 +46,15 @@
 
         input, select, textarea { background-color: #1e293b; border-color: #334155; color: white; }
         input:focus, select:focus, textarea:focus { border-color: #00A3E0; outline: none; box-shadow: 0 0 0 1px #00A3E0; }
+        
+        /* Hide arrows on number input for clean UI */
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; }
     </style>
 </head>
 <body class="font-sans antialiased h-screen flex overflow-hidden selection:bg-brand-accent selection:text-white">
 
-    <!-- Sidebar -->
     <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col h-full flex-shrink-0 relative z-20">
         <div class="h-20 flex items-center px-6 border-b border-slate-800">
             <div>
@@ -86,12 +90,9 @@
         </div>
     </aside>
 
-    <!-- Main Content -->
     <main class="flex-1 flex flex-col h-full relative overflow-hidden bg-brand-surface">
-        <!-- Abstract Background -->
         <div class="absolute top-[-20%] right-[-10%] w-[800px] h-[800px] bg-brand-blue/5 blur-[120px] rounded-full pointer-events-none z-0"></div>
         
-        <!-- Header -->
         <header class="h-20 flex items-center justify-between px-8 border-b border-slate-800/50 glass-panel z-10">
             <h2 id="pageTitle" class="text-xl font-display font-bold text-white">Platform Overview</h2>
             <div class="flex items-center gap-4">
@@ -105,12 +106,9 @@
             </div>
         </header>
 
-        <!-- Scrollable Tab Content Container -->
         <div class="flex-1 overflow-y-auto p-8 z-10 relative">
             
-            <!-- TAB: Dashboard Overview -->
             <div id="tab-dashboard" class="tab-content active max-w-7xl mx-auto space-y-6">
-                <!-- KPI Cards -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                     <div class="glass-panel p-6 rounded-2xl">
                         <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Organizations</p>
@@ -143,7 +141,6 @@
                     </div>
                 </div>
 
-                <!-- Recent Activity / Chart Placeholder -->
                 <div class="glass-panel rounded-2xl p-6 border border-slate-800">
                     <div class="flex items-center justify-between mb-6">
                         <h3 class="text-lg font-display font-bold text-white">System Status</h3>
@@ -157,11 +154,9 @@
                 </div>
             </div>
 
-            <!-- TAB: Organizations -->
             <div id="tab-organizations" class="tab-content max-w-7xl mx-auto space-y-6">
                 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <!-- Create Form -->
                     <div class="lg:col-span-1 glass-panel rounded-2xl p-6 h-fit border-slate-800">
                         <h3 class="text-lg font-display font-bold text-white mb-4">Create Organization</h3>
                         <form id="createOrgForm" class="space-y-4">
@@ -183,10 +178,12 @@
                         </form>
                     </div>
 
-                    <!-- List -->
                     <div class="lg:col-span-2 glass-panel rounded-2xl p-6 border-slate-800 flex flex-col h-[600px]">
                         <div class="flex items-center justify-between mb-4">
-                            <h3 class="text-lg font-display font-bold text-white">Managed Organizations</h3>
+                            <div>
+                                <h3 class="text-lg font-display font-bold text-white">Managed Organizations</h3>
+                                <p class="text-xs text-slate-400 mt-1">Set "Order" values to prioritize display on the frontend.</p>
+                            </div>
                             <span class="px-2 py-1 bg-slate-800 text-slate-300 text-xs font-bold rounded" id="orgCountBadge">0</span>
                         </div>
                         
@@ -199,11 +196,9 @@
                 </div>
             </div>
 
-            <!-- TAB: Coordinators -->
             <div id="tab-coordinators" class="tab-content max-w-7xl mx-auto space-y-6">
                 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <!-- Create Form -->
                     <div class="lg:col-span-1 glass-panel rounded-2xl p-6 h-fit border-slate-800">
                         <h3 class="text-lg font-display font-bold text-white mb-1">Assign Coordinator</h3>
                         <p class="text-xs text-slate-400 mb-4">Create credentials for org managers.</p>
@@ -233,7 +228,6 @@
                         </form>
                     </div>
 
-                    <!-- List (Simplified for UI display, backend doesn't explicitly expose GET all coords yet, so we mock or leave structural) -->
                     <div class="lg:col-span-2 glass-panel rounded-2xl p-6 border-slate-800 flex flex-col h-[600px]">
                         <h3 class="text-lg font-display font-bold text-white mb-4">Active Coordinators</h3>
                         <div class="flex-1 overflow-y-auto border border-slate-700 rounded-xl bg-slate-900/50 p-4 flex flex-col items-center justify-center text-center">
@@ -246,13 +240,12 @@
                 </div>
             </div>
 
-            <!-- TAB: Global Events -->
             <div id="tab-events" class="tab-content max-w-7xl mx-auto space-y-6">
                 <div class="glass-panel rounded-2xl p-6 border-slate-800 min-h-[600px] flex flex-col">
                     <div class="flex items-center justify-between mb-6">
                         <div>
                             <h3 class="text-lg font-display font-bold text-white">Global Events Master View</h3>
-                            <p class="text-xs text-slate-400">Read-only view of all events created by coordinators across organizations.</p>
+                            <p class="text-xs text-slate-400">Read-only view of all events. Update positions to control display order.</p>
                         </div>
                         <button onclick="loadGlobalData()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white text-sm font-bold rounded-lg transition-colors border border-slate-600">Refresh Data</button>
                     </div>
@@ -261,7 +254,8 @@
                         <table class="w-full text-left text-sm text-slate-300">
                             <thead class="text-xs text-slate-400 uppercase bg-slate-800/50">
                                 <tr>
-                                    <th scope="col" class="px-6 py-4 rounded-tl-xl font-bold tracking-wider">Event Name</th>
+                                    <th scope="col" class="px-6 py-4 rounded-tl-xl font-bold tracking-wider w-32">Order</th>
+                                    <th scope="col" class="px-6 py-4 font-bold tracking-wider">Event Name</th>
                                     <th scope="col" class="px-6 py-4 font-bold tracking-wider">Organization</th>
                                     <th scope="col" class="px-6 py-4 font-bold tracking-wider">Type</th>
                                     <th scope="col" class="px-6 py-4 font-bold tracking-wider">Status</th>
@@ -270,7 +264,7 @@
                             </thead>
                             <tbody id="globalEventsTableBody" class="divide-y divide-slate-800">
                                 <!-- Populated dynamically -->
-                                <tr><td colspan="5" class="px-6 py-10 text-center"><div class="w-6 h-6 border-2 border-slate-600 border-t-brand-accent rounded-full animate-spin mx-auto"></div></td></tr>
+                                <tr><td colspan="6" class="px-6 py-10 text-center"><div class="w-6 h-6 border-2 border-slate-600 border-t-brand-accent rounded-full animate-spin mx-auto"></div></td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -284,13 +278,10 @@
     <div id="toast-container"></div>
 
     <script>
-        // API Base configuration
-        const API_BASE = '/api'; // Assuming served from same origin. Adjust if needed.
+        const API_BASE = '/api'; 
         let authToken = null;
         let globalOrganizations = [];
 
-        // --- Core Utilities ---
-        
         function showToast(message, type = 'success') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
@@ -303,10 +294,7 @@
             toast.innerHTML = `${icon} <span class="text-sm font-medium">${message}</span>`;
             container.appendChild(toast);
             
-            // Trigger animation
             setTimeout(() => toast.classList.add('show'), 10);
-            
-            // Remove after 4s
             setTimeout(() => {
                 toast.classList.remove('show');
                 setTimeout(() => toast.remove(), 300);
@@ -333,7 +321,6 @@
             }
         }
 
-        // --- Navigation Logic ---
         const pageTitles = {
             'dashboard': 'Platform Overview',
             'organizations': 'Organization Management',
@@ -342,7 +329,6 @@
         };
 
         function switchTab(tabId) {
-            // Update buttons
             document.querySelectorAll('.nav-btn').forEach(btn => {
                 btn.classList.remove('bg-brand-blue/20', 'text-brand-accent');
                 btn.classList.add('text-slate-400');
@@ -353,32 +339,24 @@
                 activeBtn.classList.add('bg-brand-blue/20', 'text-brand-accent');
             }
 
-            // Update content
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
             document.getElementById(`tab-${tabId}`).classList.add('active');
-            
-            // Update Title
             document.getElementById('pageTitle').textContent = pageTitles[tabId];
 
-            // Refresh specific data based on tab
             if (tabId === 'dashboard') loadDashboardStats();
-            if (tabId === 'organizations') loadGlobalData(); // Refreshes orgs
-            if (tabId === 'events') loadGlobalData(); // Refreshes events
+            if (tabId === 'organizations') loadGlobalData(); 
+            if (tabId === 'events') loadGlobalData(); 
         }
 
-        // --- Initialization & Data Fetching ---
-
         async function init() {
-            // 1. Verify Authentication
             authToken = localStorage.getItem('token');
             const role = localStorage.getItem('role');
             
             if (!authToken || role !== 'admin') {
-                window.location.href = '/staff-login.html'; // Redirect to correct login page
+                window.location.href = '/staff-login.html'; 
                 return;
             }
 
-            // Setup Logout
             document.getElementById('logoutBtn').addEventListener('click', () => {
                 localStorage.removeItem('token');
                 localStorage.removeItem('role');
@@ -387,20 +365,13 @@
                 window.location.href = '/staff-login.html';
             });
 
-            // 2. Load Initial Data
             loadDashboardStats();
             loadGlobalData();
-            
-            // 3. Attach Form Listeners
             setupForms();
         }
 
         async function loadDashboardStats() {
             try {
-                // We use public data to count orgs/events, and assume a mock structure for regs/revenue 
-                // since the backend doesn't currently expose a global stats endpoint for the new flow yet.
-                // In production, you would create a `/api/admin/global-stats` endpoint.
-                
                 const data = await apiCall('/public/data');
                 const orgs = data.organizations || [];
                 const events = data.events || [];
@@ -408,11 +379,8 @@
                 document.getElementById('stat-orgs').textContent = orgs.length;
                 document.getElementById('stat-events').textContent = events.length;
                 
-                // MOCK DATA for Registrations and Revenue (As Master Admin sees everything)
-                // Replace with actual API call when implemented in backend
                 animateValue('stat-regs', 0, 1248, 1500); 
                 animateValue('stat-revenue', 0, 485000, 1500, '₹');
-
             } catch (error) {
                 console.error("Failed to load stats", error);
             }
@@ -433,8 +401,6 @@
             }
         }
 
-        // --- Rendering Helpers ---
-
         function renderOrganizationsList(orgs) {
             const container = document.getElementById('orgsListContainer');
             document.getElementById('orgCountBadge').textContent = orgs.length;
@@ -444,13 +410,27 @@
                 return;
             }
 
-            container.innerHTML = orgs.map(org => {
+            const sortedOrgs = [...orgs].sort((a, b) => {
+                const orderA = a.displayOrder !== undefined && a.displayOrder !== null ? a.displayOrder : 999;
+                const orderB = b.displayOrder !== undefined && b.displayOrder !== null ? b.displayOrder : 999;
+                return orderA - orderB;
+            });
+
+            container.innerHTML = sortedOrgs.map(org => {
                 const iconHtml = org.logoUrl 
                     ? `<img src="${org.logoUrl}" alt="${org.name}" class="w-full h-full object-contain p-1 rounded-lg">`
                     : `${org.name.substring(0, 2).toUpperCase()}`;
 
+                const currentOrder = org.displayOrder !== undefined && org.displayOrder !== null ? org.displayOrder : '';
+
                 return `
                 <div class="p-4 bg-slate-800/50 rounded-xl border border-slate-700 hover:border-brand-accent/50 transition-colors flex items-center gap-4">
+                    <div class="flex items-center gap-2">
+                        <input type="number" id="org-order-${org.orgId}" value="${currentOrder}" placeholder="0" class="w-16 px-2 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-center text-white focus:border-brand-accent focus:outline-none focus:ring-1 focus:ring-brand-accent transition-all text-sm font-mono shadow-inner">
+                        <button onclick="updateOrgOrder('${org.orgId}', this)" class="p-1.5 text-slate-400 hover:text-emerald-400 hover:bg-slate-800 rounded-lg transition-colors border border-transparent hover:border-slate-700" title="Save Order">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+                        </button>
+                    </div>
                     <div class="w-10 h-10 rounded-lg bg-slate-900 flex items-center justify-center text-brand-accent font-display font-bold border border-slate-700 shrink-0 overflow-hidden bg-white">
                         ${iconHtml}
                     </div>
@@ -458,10 +438,34 @@
                         <h4 class="text-white font-bold text-sm truncate">${org.name}</h4>
                         <p class="text-xs text-slate-400 truncate">${org.description || 'No description provided'}</p>
                     </div>
-                    <div class="text-xs text-slate-500 font-mono shrink-0">${org.orgId}</div>
+                    <div class="text-xs text-slate-500 font-mono shrink-0 hidden sm:block">${org.orgId}</div>
                 </div>
                 `}).join('');
         }
+
+        window.updateOrgOrder = async function(orgId, btnElement) {
+            const inputField = document.getElementById(`org-order-${orgId}`);
+            const newOrder = parseInt(inputField.value, 10);
+            
+            if (isNaN(newOrder)) {
+                showToast("Please enter a valid number", "error");
+                return;
+            }
+
+            const originalHtml = btnElement.innerHTML;
+            btnElement.innerHTML = `<div class="w-4 h-4 border-2 border-slate-400 border-t-transparent rounded-full animate-spin"></div>`;
+            btnElement.disabled = true;
+
+            try {
+                await apiCall(`/admin/organizations/${orgId}/order`, 'PUT', { displayOrder: newOrder });
+                showToast('Organization position updated successfully');
+                loadGlobalData(); 
+            } catch (error) {
+                showToast(error.message, 'error');
+                btnElement.innerHTML = originalHtml;
+                btnElement.disabled = false;
+            }
+        };
 
         function updateCoordinatorOrgDropdown(orgs) {
             const select = document.getElementById('coordOrgSelect');
@@ -473,18 +477,34 @@
             const tbody = document.getElementById('globalEventsTableBody');
             
             if (events.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="px-6 py-8 text-center text-slate-500 text-sm">No events active on the platform.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="6" class="px-6 py-8 text-center text-slate-500 text-sm">No events active on the platform.</td></tr>`;
                 return;
             }
 
-            tbody.innerHTML = events.map(event => {
+            const sortedEvents = [...events].sort((a, b) => {
+                const orderA = a.displayOrder !== undefined && a.displayOrder !== null ? a.displayOrder : 999;
+                const orderB = b.displayOrder !== undefined && b.displayOrder !== null ? b.displayOrder : 999;
+                return orderA - orderB;
+            });
+
+            tbody.innerHTML = sortedEvents.map(event => {
                 const org = orgs.find(o => o.orgId === event.orgId) || { name: 'Unknown' };
                 const typeBadge = event.isTeam 
                     ? `<span class="px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-400 text-xs font-bold border border-indigo-500/20">Team (Max ${event.teamSize})</span>`
                     : `<span class="px-2 py-0.5 rounded bg-slate-700 text-slate-300 text-xs font-bold border border-slate-600">Individual</span>`;
                 
+                const currentOrder = event.displayOrder !== undefined && event.displayOrder !== null ? event.displayOrder : '';
+
                 return `
                 <tr class="hover:bg-slate-800/50 transition-colors">
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center gap-2">
+                            <input type="number" id="order-${event.eventId}" value="${currentOrder}" placeholder="0" class="w-16 px-2 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-center text-white focus:border-brand-accent focus:outline-none focus:ring-1 focus:ring-brand-accent transition-all text-sm font-mono shadow-inner">
+                            <button onclick="updateEventOrder('${event.eventId}', this)" class="p-1.5 text-slate-400 hover:text-emerald-400 hover:bg-slate-800 rounded-lg transition-colors border border-transparent hover:border-slate-700" title="Save Order">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+                            </button>
+                        </div>
+                    </td>
                     <td class="px-6 py-4 whitespace-nowrap font-bold text-white">${event.title}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-slate-300">${org.name}</td>
                     <td class="px-6 py-4 whitespace-nowrap">${typeBadge}</td>
@@ -500,10 +520,31 @@
             }).join('');
         }
 
-        // --- Form Handling ---
+        window.updateEventOrder = async function(eventId, btnElement) {
+            const inputField = document.getElementById(`order-${eventId}`);
+            const newOrder = parseInt(inputField.value, 10);
+            
+            if (isNaN(newOrder)) {
+                showToast("Please enter a valid number", "error");
+                return;
+            }
+
+            const originalHtml = btnElement.innerHTML;
+            btnElement.innerHTML = `<div class="w-4 h-4 border-2 border-slate-400 border-t-transparent rounded-full animate-spin"></div>`;
+            btnElement.disabled = true;
+
+            try {
+                await apiCall(`/admin/events/${eventId}/order`, 'PUT', { displayOrder: newOrder });
+                showToast('Display position updated successfully');
+                loadGlobalData(); 
+            } catch (error) {
+                showToast(error.message, 'error');
+                btnElement.innerHTML = originalHtml;
+                btnElement.disabled = false;
+            }
+        };
 
         function setupForms() {
-            // Create Organization
             document.getElementById('createOrgForm').addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const btn = document.getElementById('btnCreateOrg');
@@ -521,7 +562,7 @@
                     await apiCall('/admin/organizations', 'POST', payload);
                     showToast('Organization created successfully');
                     document.getElementById('createOrgForm').reset();
-                    loadGlobalData(); // Refresh list
+                    loadGlobalData(); 
                 } catch (error) {
                     showToast(error.message, 'error');
                 } finally {
@@ -530,7 +571,6 @@
                 }
             });
 
-            // Create Coordinator
             document.getElementById('createCoordForm').addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const btn = document.getElementById('btnCreateCoord');
@@ -547,7 +587,7 @@
                     };
                     
                     await apiCall('/admin/coordinators', 'POST', payload);
-                    showToast('Coordinator account created. They can now login.');
+                    showToast('Coordinator account created.');
                     document.getElementById('createCoordForm').reset();
                 } catch (error) {
                     showToast(error.message, 'error');
@@ -558,32 +598,22 @@
             });
         }
 
-        // Simple number counter animation
         function animateValue(id, start, end, duration, prefix = '') {
             if (start === end) return;
             var range = end - start;
             var current = start;
             var increment = end > start? 1 : -1;
             var stepTime = Math.abs(Math.floor(duration / range));
-            
-            // Limit fast increments
-            if(stepTime < 10) {
-                 increment = Math.ceil(range / (duration / 10));
-                 stepTime = 10;
-            }
+            if(stepTime < 10) { increment = Math.ceil(range / (duration / 10)); stepTime = 10; }
             
             var obj = document.getElementById(id);
             var timer = setInterval(function() {
                 current += increment;
-                if ((increment > 0 && current >= end) || (increment < 0 && current <= end)) {
-                    current = end;
-                    clearInterval(timer);
-                }
+                if ((increment > 0 && current >= end) || (increment < 0 && current <= end)) { current = end; clearInterval(timer); }
                 obj.innerHTML = prefix + current.toLocaleString('en-IN');
             }, stepTime);
         }
 
-        // Start Application
         document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
