@@ -159,6 +159,18 @@
                         <input type="text" id="title" required class="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-blue focus:border-brand-blue outline-none transition-all">
                     </div>
 
+                    <!-- NEW: Add Sub-Events block -->
+                    <div class="border border-blue-100 rounded-xl p-4 bg-white/70">
+                        <label class="block text-sm font-bold text-brand-blue mb-1">Sub-Events (Optional)</label>
+                        <p class="text-xs text-slate-500 mb-3">Users will be asked to select exactly one of these during registration. Leave empty for standard registration.</p>
+                        <div class="flex gap-2 mb-3">
+                            <input type="text" id="subEventInput" placeholder="e.g. Ideathon Phase 1" class="flex-1 px-4 py-2 border border-slate-300 rounded-lg outline-none focus:ring-2 focus:ring-brand-blue">
+                            <button type="button" onclick="addSubEvent()" class="px-5 py-2 bg-slate-800 text-white rounded-lg font-bold hover:bg-slate-900 transition-colors shadow-sm">Add</button>
+                        </div>
+                        <div id="subEventsList" class="flex flex-wrap gap-2 min-h-[1.5rem]"></div>
+                    </div>
+                    <!-- End Sub-Events -->
+
                     <div class="bg-blue-50/50 border border-blue-100 p-4 rounded-xl">
                         <label for="bannerUrl" class="block text-sm font-bold text-slate-700 mb-1">
                             Event Cover Image Link
@@ -271,6 +283,7 @@
         let orgId = '';
         let events = [];
         let registrations = [];
+        let currentSubEvents = []; // Manage Sub-events locally during creation
 
         // Auth Check
         document.addEventListener('DOMContentLoaded', () => {
@@ -380,6 +393,10 @@
                     <div class="p-5 flex flex-col flex-1">
                         <h3 class="font-display font-bold text-lg text-slate-900 mb-1 line-clamp-1">${event.title}</h3>
                         <p class="text-xs text-slate-500 mb-4 line-clamp-2">${event.shortDescription}</p>
+                        ${event.subEvents && event.subEvents.length > 0 
+                            ? `<div class="mb-4 flex flex-wrap gap-1">${event.subEvents.slice(0,3).map(se => `<span class="bg-slate-100 text-slate-600 text-[10px] font-bold px-2 py-0.5 rounded">${se}</span>`).join('')}${event.subEvents.length > 3 ? `<span class="bg-slate-100 text-slate-600 text-[10px] font-bold px-2 py-0.5 rounded">+${event.subEvents.length - 3}</span>` : ''}</div>`
+                            : ''
+                        }
                         <div class="mt-auto pt-4 border-t border-slate-100 flex justify-between items-center">
                             <span class="text-xs font-bold ${event.status === 'opened' ? 'text-emerald-500 bg-emerald-50' : 'text-red-500 bg-red-50'} px-2.5 py-1 rounded-md uppercase">
                                 ${event.status}
@@ -403,17 +420,13 @@
             container.innerHTML = registrations.map(reg => {
                 const lead = reg.participants && reg.participants[0] ? reg.participants[0] : { fullName: 'Unknown', email: 'N/A', mobile: 'N/A' };
                 
-                // Calculate Base Amount (without tax) based on participants and event pricing
                 let baseAmountDisplay = reg.totalAmountPaid;
                 const eventObj = events.find(e => e.eventId === reg.eventId);
                 if (eventObj && reg.participants) {
                     let calcBase = 0;
                     reg.participants.forEach(p => {
-                        if (p.isIeee === 'Yes' || p.isIeee === true) {
-                            calcBase += Number(eventObj.ieeeAmount || 0);
-                        } else {
-                            calcBase += Number(eventObj.nonIeeeAmount || 0);
-                        }
+                        if (p.isIeee === 'Yes' || p.isIeee === true) calcBase += Number(eventObj.ieeeAmount || 0);
+                        else calcBase += Number(eventObj.nonIeeeAmount || 0);
                     });
                     baseAmountDisplay = calcBase;
                 }
@@ -422,7 +435,10 @@
                 <tr class="hover:bg-slate-50 transition-colors group">
                     <td class="py-4 px-6 border-b border-slate-100">
                         <p class="font-mono text-xs font-bold text-brand-blue bg-blue-50 inline-block px-2 py-0.5 rounded mb-1">${reg.registrationId}</p>
-                        <p class="text-sm font-bold text-slate-700">${reg.eventName}</p>
+                        <p class="text-sm font-bold text-slate-700">
+                            ${reg.eventName} 
+                            ${reg.selectedSubEvent ? `<br><span class="text-[11px] text-brand-blue font-bold px-1.5 py-0.5 bg-blue-50 rounded mt-1 inline-block">${reg.selectedSubEvent}</span>` : ''}
+                        </p>
                     </td>
                     <td class="py-4 px-6 border-b border-slate-100">
                         <p class="text-sm font-bold text-slate-900">${lead.fullName}</p>
@@ -450,8 +466,6 @@
         function getExportData() {
             const flatData = [];
             registrations.forEach(reg => {
-                
-                // Calculate Base Amount for Exports
                 let baseAmountDisplay = reg.totalAmountPaid;
                 const eventObj = events.find(e => e.eventId === reg.eventId);
                 if (eventObj && reg.participants) {
@@ -466,7 +480,7 @@
                 (reg.participants || []).forEach((p, index) => {
                     flatData.push({
                         'Registration ID': reg.registrationId,
-                        'Event Name': reg.eventName,
+                        'Event Name': reg.selectedSubEvent ? `${reg.eventName} - ${reg.selectedSubEvent}` : reg.eventName,
                         'Payment Status': reg.paymentStatus,
                         'Base Paid (Excl. Tax)': `Rs. ${baseAmountDisplay}`,
                         'Total Paid (Inc. Tax)': `Rs. ${reg.totalAmountPaid}`,
@@ -501,7 +515,7 @@
             doc.text("UDGAMA 2026 - Registrations", 14, 15);
             
             const data = getExportData();
-            const headers = [['Reg ID', 'Event', 'Role', 'Name', 'Email', 'Mobile', 'Institution', 'IEEE', 'Base Paid', 'Status']];
+            const headers = [['Reg ID', 'Event (Sub-Event)', 'Role', 'Name', 'Email', 'Mobile', 'Institution', 'IEEE', 'Base Paid', 'Status']];
             const rows = data.map(d => [
                 d['Registration ID'], d['Event Name'], d['Role'], d['Name'], d['Email'], 
                 d['Mobile'], d['Institution'], d['IEEE Member'],
@@ -513,7 +527,7 @@
                 body: rows,
                 startY: 20,
                 styles: { fontSize: 7, cellPadding: 2 },
-                headStyles: { fillColor: [0, 98, 155] } // brand-blue
+                headStyles: { fillColor: [0, 98, 155] } 
             });
             
             doc.save('UDGAMA_Registrations.pdf');
@@ -523,7 +537,7 @@
             const reg = registrations.find(r => r.registrationId === regId);
             if(!reg) return;
 
-            document.getElementById('teamModalTitle').textContent = reg.eventName;
+            document.getElementById('teamModalTitle').innerHTML = `${reg.eventName} ${reg.selectedSubEvent ? `<span class="text-sm font-bold text-brand-blue bg-blue-50 px-2 py-1 rounded ml-2">${reg.selectedSubEvent}</span>` : ''}`;
             document.getElementById('teamModalRegId').textContent = `Registration ID: ${reg.registrationId}`;
             
             const container = document.getElementById('teamMembersContainer');
@@ -567,6 +581,35 @@
             }, 300);
         }
 
+        // --- SUB EVENTS LOGIC ---
+        function renderSubEvents() {
+            const container = document.getElementById('subEventsList');
+            container.innerHTML = currentSubEvents.map((se, idx) => `
+                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 rounded-full text-xs font-bold text-slate-700 shadow-sm group">
+                    ${se}
+                    <button type="button" onclick="removeSubEvent(${idx})" class="text-slate-400 hover:text-red-500 transition-colors">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </span>
+            `).join('');
+        }
+
+        function addSubEvent() {
+            const input = document.getElementById('subEventInput');
+            const val = input.value.trim();
+            if(val && !currentSubEvents.includes(val)) {
+                currentSubEvents.push(val);
+                renderSubEvents();
+                input.value = '';
+                input.focus();
+            }
+        }
+
+        window.removeSubEvent = function(index) {
+            currentSubEvents.splice(index, 1);
+            renderSubEvents();
+        }
+
         function toggleTeamSize(isTeam) {
             const container = document.getElementById('teamSizeContainer');
             if(isTeam) {
@@ -581,6 +624,10 @@
             document.getElementById('eventForm').reset();
             document.getElementById('editEventId').value = '';
             document.getElementById('modalTitle').textContent = 'Create New Event';
+            
+            currentSubEvents = [];
+            renderSubEvents();
+            
             toggleTeamSize(false);
             
             const modal = document.getElementById('eventModal');
@@ -601,6 +648,9 @@
             document.getElementById('longDesc').value = ev.detailedDescription;
             document.getElementById('bannerUrl').value = ev.bannerUrl || ''; 
             
+            currentSubEvents = ev.subEvents || [];
+            renderSubEvents();
+
             const teamToggle = document.getElementById('isTeam');
             teamToggle.checked = ev.isTeam;
             toggleTeamSize(ev.isTeam);
@@ -641,6 +691,7 @@
                 shortDescription: document.getElementById('shortDesc').value,
                 detailedDescription: document.getElementById('longDesc').value,
                 bannerUrl: document.getElementById('bannerUrl').value,
+                subEvents: currentSubEvents, // Send Sub Events Array
                 isTeam: document.getElementById('isTeam').checked,
                 teamSize: Number(document.getElementById('teamSize').value),
                 ieeeAmount: Number(document.getElementById('ieeeBase').value),
