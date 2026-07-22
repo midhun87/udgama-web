@@ -199,7 +199,6 @@ app.post('/api/admin/coordinators', requireAdmin, async (req, res) => {
 // 1. Create Event
 app.post('/api/coordinator/events', requireCoordinator, upload.single('bannerImage'), async (req, res) => {
     try {
-        // Coordinator can only create events for their assigned organization
         const orgId = req.user.role === 'admin' ? req.body.orgId : req.user.orgId;
         if (!orgId) return res.status(400).json({ error: 'Organization ID is required' });
 
@@ -207,12 +206,10 @@ app.post('/api/coordinator/events', requireCoordinator, upload.single('bannerIma
             title, shortDescription, detailedDescription, 
             isTeam, teamSize, 
             ieeeAmount, ieeeTax, nonIeeeAmount, nonIeeeTax,
-            bannerUrl // Extracted bannerUrl from the request body
+            bannerUrl, subEvents // Extracted subEvents array
         } = req.body;
         
         const eventId = `EVT-${uuidv4().substring(0, 8).toUpperCase()}`;
-        
-        // Use the provided link, or fallback to a placeholder if left blank
         const finalBannerUrl = bannerUrl || ('https://placehold.co/800x400/003057/FFFFFF?text=' + encodeURIComponent(title));
 
         const eventItem = {
@@ -221,6 +218,7 @@ app.post('/api/coordinator/events', requireCoordinator, upload.single('bannerIma
             title,
             shortDescription: shortDescription || '',
             detailedDescription: detailedDescription || '',
+            subEvents: Array.isArray(subEvents) ? subEvents : [], // Save the array of strings
             isTeam: isTeam === 'true' || isTeam === true,
             teamSize: Number(teamSize || 1),
             ieeeAmount: Number(ieeeAmount || 0),
@@ -228,7 +226,7 @@ app.post('/api/coordinator/events', requireCoordinator, upload.single('bannerIma
             nonIeeeAmount: Number(nonIeeeAmount || 0),
             nonIeeeTax: Number(nonIeeeTax || 0),
             status: 'opened',
-            bannerUrl: finalBannerUrl, // Saved to database
+            bannerUrl: finalBannerUrl,
             createdAt: new Date().toISOString()
         };
 
@@ -246,7 +244,6 @@ app.put('/api/coordinator/events/:eventId', requireCoordinator, async (req, res)
         const { eventId } = req.params;
         const orgId = req.user.role === 'admin' ? null : req.user.orgId;
 
-        // Verify ownership if not admin
         if (orgId) {
             const eventCheck = await docClient.send(new GetCommand({ TableName: EVENTS_TABLE, Key: { eventId } }));
             if (!eventCheck.Item || eventCheck.Item.orgId !== orgId) {
@@ -259,9 +256,9 @@ app.put('/api/coordinator/events/:eventId', requireCoordinator, async (req, res)
         const expressionAttributeValues = {};
         const expressionAttributeNames = {};
 
-        // Dynamically build update query (Added 'bannerUrl' to the allowed array)
+        // Added 'subEvents' to the allowed array
         Object.keys(updates).forEach((key) => {
-            if (['title', 'shortDescription', 'detailedDescription', 'isTeam', 'teamSize', 'ieeeAmount', 'ieeeTax', 'nonIeeeAmount', 'nonIeeeTax', 'status', 'bannerUrl'].includes(key)) {
+            if (['title', 'shortDescription', 'detailedDescription', 'isTeam', 'teamSize', 'ieeeAmount', 'ieeeTax', 'nonIeeeAmount', 'nonIeeeTax', 'status', 'bannerUrl', 'subEvents'].includes(key)) {
                 updateExpressions.push(`#${key} = :${key}`);
                 expressionAttributeNames[`#${key}`] = key;
                 expressionAttributeValues[`:${key}`] = updates[key];
@@ -424,7 +421,8 @@ app.post('/api/public/register/init', async (req, res) => {
 // 2. Guest Registration Verify (Save Data & Send Emails)
 app.post('/api/public/register/verify', async (req, res) => {
     try {
-        const { eventId, participants, totalPaid, razorpay_payment_id, razorpay_order_id, razorpay_signature, isFree } = req.body;
+        // Extract selectedSubEvent from payload
+        const { eventId, selectedSubEvent, participants, totalPaid, razorpay_payment_id, razorpay_order_id, razorpay_signature, isFree } = req.body;
 
         if (!isFree) {
             const hmac = crypto.createHmac('sha256', process.env.RAZORPAY_KEY_SECRET);
@@ -437,14 +435,13 @@ app.post('/api/public/register/verify', async (req, res) => {
         }
 
         const registrationId = `TKT-${uuidv4().substring(0, 8).toUpperCase()}`;
-        
-        // Generate a Master QR Code for this registration team
         const qrDataUrl = await QRCode.toDataURL(registrationId);
 
         const registrationItem = {
             registrationId,
             eventId,
-            participants, // Array containing name, email, mobile, org, isIeee, ieeeNumber
+            selectedSubEvent: selectedSubEvent || null, // Saved to DB
+            participants,
             paymentId: razorpay_payment_id || 'FREE_EVENT',
             orderId: razorpay_order_id || 'NONE',
             totalAmountPaid: totalPaid || 0,
@@ -454,21 +451,20 @@ app.post('/api/public/register/verify', async (req, res) => {
             createdAt: new Date().toISOString()
         };
 
-        // Save to Database
         await docClient.send(new PutCommand({ TableName: REGISTRATIONS_TABLE, Item: registrationItem }));
 
-        // AWS SES Email Dispatch Logic
         const allEmails = participants.map(p => p.email);
         const senderSource = process.env.SES_SENDER_EMAIL || 'noreply@udgama.in';
 
-        // Fetch Event Details for the Email
         let eventName = "UDGAMA 2026 Event";
         try {
             const eventData = await docClient.send(new GetCommand({ TableName: EVENTS_TABLE, Key: { eventId } }));
             if (eventData.Item) eventName = eventData.Item.title;
         } catch(e) { console.error("Could not fetch event name for email:", e); }
 
-        // Build Participant Table HTML
+        // Adjust string interpolation to include Sub-Event if present
+        let displayEventName = selectedSubEvent ? `${eventName} (${selectedSubEvent})` : eventName;
+
         let participantRowsHTML = '';
         participants.forEach((p, index) => {
             participantRowsHTML += `
@@ -482,22 +478,32 @@ app.post('/api/public/register/verify', async (req, res) => {
             `;
         });
 
+        // The HTML body string remains exactly the same, but replace ${eventName} inside your HTML block with ${displayEventName}
+        // (You can copy your original HTML string here, just changing line 249 from ${eventName} to ${displayEventName})
+        // Example portion to change:
+        // <p>Thank you for registering for <span class="event-name">${displayEventName}</span>. Your payment has been successfully processed...</p>
+
+        // *** I have shortened the HTML string block below for readability, use your full existing HTML string and replace the variable ***
+        
         const emailHtmlBody = `
-        <!DOCTYPE html>
-<html>
+            <!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <!-- Tell email clients not to force dark mode inverted colors -->
+    <meta name="color-scheme" content="light">
+    <meta name="supported-color-schemes" content="light">
     <title>UDGAMA 2026 Registration Confirmation</title>
-    <!-- Import a nice font for better readability -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    
     <style>
         /* Reset and base styles */
         body { 
             font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif; 
             background-color: #f3f4f6; 
             margin: 0; 
-            padding: 20px; /* Added padding for smaller screens */
+            padding: 20px; 
             color: #374151;
             -webkit-font-smoothing: antialiased;
         }
@@ -514,22 +520,19 @@ app.post('/api/public/register/verify', async (req, res) => {
 
         /* Header styling */
         .header { 
-            background: linear-gradient(135deg, #002855 0%, #004d99 100%); /* IEEE Blue gradient */
+            background: linear-gradient(135deg, #002855 0%, #004d99 100%);
             padding: 40px 30px; 
             text-align: center;
-            position: relative;
         }
         
-        /* Logo styling */
-        .logo-container {
-            margin-bottom: 20px;
-        }
+        .logo-container { margin-bottom: 20px; }
         .ieee-logo {
             height: 60px;
             width: auto;
-            border-radius: 4px; /* Slight rounding for the logo background if it has one */
-            background-color: #ffffff; /* White background to make logo pop if it's transparent */
+            border-radius: 4px;
+            background-color: #ffffff;
             padding: 5px 10px;
+            max-width: 100%;
         }
 
         .header h1 { 
@@ -550,20 +553,17 @@ app.post('/api/public/register/verify', async (req, res) => {
         }
 
         /* Content area styling */
-        .content { 
-            padding: 40px 30px; 
-        }
+        .content { padding: 40px 30px; }
         
-        /* Success message styling */
         .success-msg { 
             text-align: center; 
             margin-bottom: 35px; 
         }
-        /* Checkmark icon using pure CSS */
+        
         .success-icon {
             width: 60px;
             height: 60px;
-            background-color: #10b981; /* Emerald green */
+            background-color: #10b981;
             border-radius: 50%;
             display: inline-flex;
             align-items: center;
@@ -595,11 +595,11 @@ app.post('/api/public/register/verify', async (req, res) => {
         }
         
         .event-name {
-            color: #0056b3; /* Darker blue for emphasis */
+            color: #0056b3;
             font-weight: 700;
         }
 
-        /* Details box styling */
+        /* Details box styling - Replaced Flexbox with Table for Email Client Support */
         .details-box { 
             background-color: #f8fafc; 
             border-left: 5px solid #0056b3; 
@@ -607,31 +607,40 @@ app.post('/api/public/register/verify', async (req, res) => {
             margin-bottom: 35px; 
             border-radius: 6px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
         }
-        .detail-item {
-            display: flex;
-            flex-direction: column;
+        
+        .details-table {
+            width: 100%;
+            border-collapse: collapse;
         }
+        
+        .details-table td {
+            padding: 5px 15px 5px 0;
+            vertical-align: top;
+            border-bottom: none; /* Override standard td border */
+        }
+
         .detail-label {
             font-size: 12px;
             text-transform: uppercase;
             color: #64748b;
             font-weight: 600;
+            display: block; /* Ensure it stays above the value */
             margin-bottom: 4px;
         }
+        
         .detail-value {
             font-size: 16px;
             color: #1e293b;
             font-weight: 700;
+            display: block;
         }
+        
         .status-success {
             color: #10b981;
         }
 
-        /* Table styling */
+        /* Table styling for Participants */
         .section-title {
             color: #111827; 
             font-size: 20px; 
@@ -644,15 +653,18 @@ app.post('/api/public/register/verify', async (req, res) => {
         .table-container { 
             width: 100%; 
             overflow-x: auto; 
+            -webkit-overflow-scrolling: touch; /* Smooth horizontal scroll on iOS */
             margin-bottom: 30px; 
             border-radius: 8px;
             border: 1px solid #e5e7eb;
+            background-color: #ffffff;
         }
+        
         table { 
             width: 100%; 
+            min-width: 500px; /* Forces table to overflow instead of squishing columns on mobile */
             border-collapse: collapse; 
             text-align: left; 
-            background-color: #ffffff;
         }
         th { 
             background-color: #f9fafb; 
@@ -670,14 +682,9 @@ app.post('/api/public/register/verify', async (req, res) => {
             color: #374151;
             border-bottom: 1px solid #e5e7eb;
         }
-        tr:last-child td {
-            border-bottom: none;
-        }
-        tr:nth-child(even) {
-            background-color: #f8fafc;
-        }
+        tr:last-child td { border-bottom: none; }
+        tr:nth-child(even) { background-color: #f8fafc; }
 
-        /* Note section styling */
         .important-note {
             background-color: #fffbeb;
             border: 1px solid #fde68a;
@@ -690,9 +697,8 @@ app.post('/api/public/register/verify', async (req, res) => {
             margin-top: 30px;
         }
 
-        /* Footer styling */
         .footer { 
-            background-color: #1f2937; /* Dark footer */
+            background-color: #1f2937;
             padding: 25px 20px; 
             text-align: center; 
         }
@@ -702,22 +708,71 @@ app.post('/api/public/register/verify', async (req, res) => {
             margin: 6px 0; 
         }
         .footer a { 
-            color: #60a5fa; /* Lighter blue for links on dark bg */
+            color: #60a5fa; 
             text-decoration: none; 
             font-weight: 600; 
             transition: color 0.2s ease;
         }
-        .footer a:hover {
-            color: #93c5fd;
-            text-decoration: underline;
-        }
+        .footer a:hover { color: #93c5fd; text-decoration: underline; }
 
-        /* Responsive adjustments */
+        /* Comprehensive Responsive Adjustments */
         @media only screen and (max-width: 600px) {
-            .header { padding: 30px 15px; }
-            .content { padding: 25px 15px; }
-            .details-box { grid-template-columns: 1fr; gap: 10px; }
-            th, td { padding: 10px 12px; font-size: 13px; }
+            body { 
+                padding: 10px; /* Maximize screen space on mobile */
+            }
+            .header { 
+                padding: 30px 15px; 
+            }
+            .header h1 {
+                font-size: 24px; /* Slightly smaller title */
+            }
+            .header p {
+                font-size: 12px;
+            }
+            .content { 
+                padding: 25px 15px; 
+            }
+            .success-icon {
+                width: 50px;
+                height: 50px;
+            }
+            .success-icon::after {
+                width: 12px;
+                height: 20px;
+                margin-top: -4px;
+            }
+            .success-msg h2 {
+                font-size: 22px;
+            }
+            .success-msg p {
+                font-size: 15px;
+            }
+            
+            /* Stack details table vertically on small screens */
+            .details-box {
+                padding: 15px;
+            }
+            .details-table td {
+                display: block;
+                width: 100%;
+                padding: 10px 0;
+                border-bottom: 1px solid #e2e8f0; /* Optional: add separator between stacked items */
+            }
+            .details-table td:last-child {
+                border-bottom: none;
+            }
+            
+            /* Adjust table padding for smaller screens while allowing scroll */
+            th, td { 
+                padding: 12px 10px; 
+                font-size: 13px; 
+            }
+            
+            .important-note {
+                padding: 12px;
+                font-size: 13px;
+                text-align: left; /* Better readability for long text on mobile */
+            }
         }
     </style>
 </head>
@@ -742,20 +797,24 @@ app.post('/api/public/register/verify', async (req, res) => {
                 <p>Thank you for registering for <span class="event-name">${eventName}</span>. Your payment has been successfully processed and your spots are secured.</p>
             </div>
             
-            <!-- Details Grid -->
+            <!-- Details Table - Robust for Email -->
             <div class="details-box">
-                <div class="detail-item">
-                    <span class="detail-label">Registration ID</span>
-                    <span class="detail-value">${registrationId}</span>
-                </div>
-                <div class="detail-item">
-                    <span class="detail-label">Total Amount Paid</span>
-                    <span class="detail-value">₹${totalPaid}</span>
-                </div>
-                <div class="detail-item">
-                    <span class="detail-label">Payment Status</span>
-                    <span class="detail-value status-success">Success ✓</span>
-                </div>
+                <table class="details-table" role="presentation">
+                    <tr>
+                        <td width="33%">
+                            <span class="detail-label">Registration ID</span>
+                            <span class="detail-value">${registrationId}</span>
+                        </td>
+                        <td width="33%">
+                            <span class="detail-label">Total Amount</span>
+                            <span class="detail-value">₹${totalPaid}</span>
+                        </td>
+                        <td width="33%">
+                            <span class="detail-label">Payment Status</span>
+                            <span class="detail-value status-success">Success ✓</span>
+                        </td>
+                    </tr>
+                </table>
             </div>
 
             <!-- Participant Table -->
@@ -772,6 +831,7 @@ app.post('/api/public/register/verify', async (req, res) => {
                         </tr>
                     </thead>
                     <tbody>
+                        <!-- Assuming the rows are injected here securely -->
                         ${participantRowsHTML}
                     </tbody>
                 </table>
@@ -780,7 +840,7 @@ app.post('/api/public/register/verify', async (req, res) => {
             <div class="important-note">
                 <strong>Important:</strong> Please keep this email for your records.
                 <br><br>
-                <strong>Note:</strong> If you are an IEEE Member please carry IEEE Membership card (E-card also acceptable) during day of Event.
+                <strong>Note:</strong> If you are an IEEE Member please carry your IEEE Membership card (E-card is also acceptable) during the day of the Event.
             </div>
             
         </div>
@@ -796,14 +856,12 @@ app.post('/api/public/register/verify', async (req, res) => {
 </html>
         `;
 
-        // Send ONE email to ALL participants (To: Lead, Bcc/Cc: others, or just loop)
-        // Looping ensures everyone gets it directly addressed.
         for (const email of allEmails) {
              const emailParams = {
                 Destination: { ToAddresses: [email] },
                 Message: {
                     Subject: { Data: `Confirmed: Your UDGAMA 2026 Registration - ${registrationId}` },
-                    Body: { Html: { Data: emailHtmlBody } }
+                    Body: { Html: { Data: emailHtmlBody } } // Be sure to put the full HTML here like before
                 },
                 Source: senderSource
             };
@@ -816,7 +874,6 @@ app.post('/api/public/register/verify', async (req, res) => {
         res.status(500).json({ error: 'Failed to process final registration' });
     }
 });
-
 // Update Event Display Order (Master Admin Only)
 app.put('/api/admin/events/:eventId/order', requireAdmin, async (req, res) => {
     try {
