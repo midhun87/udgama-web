@@ -11,9 +11,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Three.js for 3D Splash Screen -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
     <!-- =========================================
              SEO META TAGS
@@ -123,6 +120,9 @@
   ]
 }
 </script>
+    
+    <!-- Three.js for 3D Splash Screen -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
     <script>
         tailwind.config = {
@@ -143,6 +143,7 @@
                         'zoom-in': 'zoomIn 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards',
                         'progress': 'progressLine 2s cubic-bezier(0.4, 0, 0.2, 1) forwards',
                         'pulse-glow': 'pulseGlow 4s ease-in-out infinite alternate',
+                        'blur-reveal': 'blurReveal 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards',
                     },
                     keyframes: { 
                         float: { '0%, 100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-15px)' } },
@@ -150,7 +151,8 @@
                         fadeInUp: { '0%': { opacity: '0', transform: 'translateY(30px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } },
                         zoomIn: { '0%': { opacity: '0', transform: 'scale(0.9)' }, '100%': { opacity: '1', transform: 'scale(1)' } },
                         progressLine: { '0%': { width: '0%', opacity: '1' }, '80%': { opacity: '1' }, '100%': { width: '100%', opacity: '0' } },
-                        pulseGlow: { '0%': { opacity: '0.4', transform: 'scale(1)' }, '100%': { opacity: '0.8', transform: 'scale(1.05)' } }
+                        pulseGlow: { '0%': { opacity: '0.4', transform: 'scale(1)' }, '100%': { opacity: '0.8', transform: 'scale(1.05)' } },
+                        blurReveal: { '0%': { opacity: '0', filter: 'blur(20px)', transform: 'translateY(20px) scale(0.95)' }, '100%': { opacity: '1', filter: 'blur(0)', transform: 'translateY(0) scale(1)' } }
                     }
                 }
             }
@@ -175,19 +177,24 @@
 
         /* The Core Glossy Classes */
         .glass-panel {
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.6) 100%);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.8);
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.7) 100%);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.05), inset 0 0 0 1px rgba(255,255,255,0.5);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .glass-panel:hover {
+            box-shadow: 0 15px 45px -5px rgba(0, 98, 155, 0.15), inset 0 0 0 1px rgba(255,255,255,0.8);
+            transform: translateY(-4px);
         }
         
         .glass-nav {
-            background: rgba(255, 255, 255, 0.98);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.8);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.08);
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.05);
         }
 
         .glossy-btn-accent {
@@ -220,47 +227,58 @@
         /* Splash Screen Transition */
         .splash-active { overflow: hidden; height: 100vh; }
         #splash-screen.fade-out { opacity: 0; pointer-events: none; transition: all 0.8s ease-in-out; }
+        
+        /* Typography glow */
+        .text-glow { text-shadow: 0 0 20px rgba(0, 163, 224, 0.5); }
     </style>
 </head>
 <body class="text-slate-800 font-sans antialiased selection:bg-brand-accent selection:text-white overflow-x-hidden splash-active">
 
     <!-- Extraordinary 3D Splash Screen -->
-    <div id="splash-screen" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#020617]">
+    <div id="splash-screen" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#020617] transition-opacity duration-1000">
         <!-- 3D Canvas Background -->
-        <canvas id="splash-canvas" class="absolute inset-0 w-full h-full z-0 opacity-80"></canvas>
+        <canvas id="splash-canvas" class="absolute inset-0 w-full h-full z-0 opacity-90"></canvas>
         
         <!-- UI Overlay -->
         <div class="relative z-10 flex flex-col items-center justify-center w-full px-6 h-full pointer-events-none">
             
-            <div class="flex flex-col items-center justify-center flex-1 w-full animate-zoom-in">
+            <div class="flex flex-col items-center justify-center flex-1 w-full">
                 <!-- Glossy Logo Container -->
-                <div class="relative w-28 h-28 sm:w-36 sm:h-36 mb-8 group">
-                    <div class="absolute inset-0 bg-gradient-to-tr from-white/20 to-white/5 rounded-[2rem] backdrop-blur-xl border border-white/20 shadow-[0_0_50px_rgba(0,163,224,0.3)] p-2">
+                <div class="relative w-28 h-28 sm:w-36 sm:h-36 mb-8 group opacity-0 animate-blur-reveal" style="animation-delay: 0.2s;">
+                    <div class="absolute inset-0 bg-gradient-to-tr from-white/20 to-white/5 rounded-[2rem] backdrop-blur-xl border border-white/30 shadow-[0_0_60px_rgba(0,163,224,0.4)] p-2">
                         <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQRQUOVTVuLAWuWWCkcSow3IBBsUkVKziDB3e5VpyN02Q&s=10" alt="UDGAMA Logo" class="w-full h-full object-cover rounded-[1.5rem] shadow-inner">
                     </div>
                 </div>
                 
                 <!-- Elegant Typography -->
-                <h1 class="text-4xl md:text-6xl lg:text-7xl font-display font-medium text-white tracking-wide animate-fade-in-up drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]" style="opacity: 0; animation-delay: 0.3s;">
-                    UDGAMA <span class="text-brand-accent font-light">2026</span>
+                <h1 class="text-5xl md:text-7xl lg:text-8xl font-display font-bold text-white tracking-wide opacity-0 animate-blur-reveal text-glow" style="animation-delay: 0.4s;">
+                    UDGAMA <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-accent to-blue-200 font-light">2026</span>
                 </h1>
                 
-                <p class="text-blue-200/80 text-xs sm:text-sm tracking-[0.3em] mt-4 uppercase animate-fade-in-up" style="opacity: 0; animation-delay: 0.5s;">
+                <p class="text-blue-100/90 text-xs sm:text-sm tracking-[0.4em] mt-5 uppercase opacity-0 animate-blur-reveal font-semibold" style="animation-delay: 0.6s;">
                     IEEE Guntur Subsection
                 </p>
 
                 <!-- Elegant Progress Bar -->
-                <div class="w-48 sm:w-64 h-[2px] bg-white/10 rounded-full mt-10 overflow-hidden relative opacity-0 animate-fade-in-up" style="animation-delay: 0.7s; animation-fill-mode: forwards;">
-                    <div class="absolute top-0 left-0 h-full bg-gradient-to-r from-brand-accent via-white to-brand-accent animate-progress"></div>
+                <div class="w-56 sm:w-72 h-[3px] bg-white/10 rounded-full mt-12 overflow-hidden relative opacity-0 animate-fade-in-up shadow-[0_0_15px_rgba(0,163,224,0.5)]" style="animation-delay: 0.8s; animation-fill-mode: forwards;">
+                    <div class="absolute top-0 left-0 h-full bg-gradient-to-r from-transparent via-brand-accent to-white animate-progress"></div>
                 </div>
             </div>
 
             <!-- Professional Xeta Tech Branding -->
-            <div class="pb-10 animate-fade-in-up flex flex-col items-center" style="opacity: 0; animation-delay: 1.2s;">
-                <span class="text-slate-400 text-[0.65rem] font-bold uppercase tracking-[0.3em] mb-4">Designed & Developed By</span>
+            <div class="pb-10 opacity-0 animate-blur-reveal flex flex-col items-center" style="animation-delay: 1.2s;">
+                <!-- Fixed readability: Solid white color with drop shadow instead of gradient -->
+                <span class="text-white text-[0.7rem] sm:text-xs font-bold uppercase tracking-[0.3em] mb-4 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">Designed & Developed By</span>
                 
-                <div class="flex items-center gap-4 px-6 py-3 rounded-2xl bg-white/10 border border-white/20 backdrop-blur-md shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
-                    <img src="https://res.cloudinary.com/dpz44zf0z/image/upload/v1760704788/XETA_SOLUTIONS_LOGO_bcsbwh.png" alt="Xeta Solutions Logo" class="h-6 sm:h-8 w-auto object-contain drop-shadow-[0_0_10px_rgba(255,255,255,0.2)]">
+                <div class="relative group">
+                    <div class="absolute -inset-1 bg-gradient-to-r from-brand-accent to-purple-600 rounded-2xl blur-md opacity-60 group-hover:opacity-100 transition duration-500 animate-pulse-glow"></div>
+                    <div class="relative flex items-center gap-3 sm:gap-4 px-5 sm:px-8 py-3 sm:py-3.5 rounded-2xl bg-[#020617]/95 border border-white/30 backdrop-blur-xl shadow-2xl">
+                        <img src="https://res.cloudinary.com/dpz44zf0z/image/upload/v1760704788/XETA_SOLUTIONS_LOGO_bcsbwh.png" alt="Xeta Solutions Logo" class="h-6 sm:h-8 w-auto object-contain drop-shadow-[0_0_10px_rgba(255,255,255,0.2)]">
+                        
+                        <!-- Added explicitly spelled out text next to the logo -->
+                        <div class="w-px h-6 sm:h-8 bg-white/20"></div>
+                        <span class="text-white font-black text-xs sm:text-base tracking-wider whitespace-nowrap">Xeta Tech Solutions</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1230,14 +1248,17 @@
             </div>
             
             <!-- Bottom Footer bar -->
-            <div class="pt-8 mt-12 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-slate-500 font-medium">
+            <div class="pt-8 mt-12 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center gap-6 text-sm text-slate-500 font-medium">
                 <p>&copy; 2026 IEEE Hyderabad Section SAC. All rights reserved.</p>
-                <p>
-                    Designed & Developed by 
-                    <a href="https://xetatech.in" target="_blank" rel="noopener noreferrer" class="font-bold text-[#b490ff] hover:text-white transition-colors ml-1 hover:underline">
-                        Xeta Tech Solutions
+                <div class="flex items-center gap-3 bg-slate-800/50 px-5 py-2.5 rounded-full border border-slate-700/50 hover:border-brand-accent/50 transition-colors shadow-lg">
+                    <span class="text-[0.65rem] uppercase tracking-widest text-slate-400 font-bold">Designed & Developed by</span>
+                    <a href="https://xetatech.in" target="_blank" rel="noopener noreferrer" class="relative group flex items-center">
+                        <span class="font-black text-transparent bg-clip-text bg-gradient-to-r from-brand-accent to-purple-400 group-hover:from-white group-hover:to-blue-200 transition-all duration-300">
+                            Xeta Tech Solutions
+                        </span>
+                        <div class="absolute -bottom-1 left-0 w-0 h-px bg-gradient-to-r from-brand-accent to-purple-400 group-hover:w-full transition-all duration-300"></div>
                     </a>
-                </p>
+                </div>
             </div>
         </div>
     </footer>
@@ -1249,67 +1270,104 @@
             if (!canvas) return;
 
             const scene = new THREE.Scene();
-            scene.fog = new THREE.FogExp2(0x020617, 0.001);
+            scene.fog = new THREE.FogExp2(0x020617, 0.002);
 
             const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camera.position.z = 300;
+            camera.position.z = 160; 
 
             const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-            // Floating Node Particles
-            const geometry = new THREE.BufferGeometry();
-            const vertices = [];
-            for ( let i = 0; i < 2000; i ++ ) {
-                vertices.push( (Math.random() - 0.5) * 2000, (Math.random() - 0.5) * 2000, (Math.random() - 0.5) * 2000 );
+            // 1. Outer Tech Particle Sphere (The Nodes)
+            const particlesGeometry = new THREE.BufferGeometry();
+            const particlesCount = 2500;
+            const posArray = new Float32Array(particlesCount * 3);
+            const colorsArray = new Float32Array(particlesCount * 3);
+
+            const colorBrand = new THREE.Color(0x00A3E0); 
+            const colorWhite = new THREE.Color(0xffffff); 
+
+            for(let i = 0; i < particlesCount; i++) {
+                // Distribute points in a spherical shell
+                const radius = 70 + (Math.random() * 25); 
+                const theta = 2 * Math.PI * Math.random();
+                const phi = Math.acos(2 * Math.random() - 1);
+                
+                posArray[i*3] = radius * Math.sin(phi) * Math.cos(theta);
+                posArray[i*3+1] = radius * Math.sin(phi) * Math.sin(theta);
+                posArray[i*3+2] = radius * Math.cos(phi);
+
+                // Mix colors between brand blue and white for depth
+                const mixedColor = colorBrand.clone().lerp(colorWhite, Math.random() * 0.5);
+                colorsArray[i*3] = mixedColor.r;
+                colorsArray[i*3+1] = mixedColor.g;
+                colorsArray[i*3+2] = mixedColor.b;
             }
-            geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
+
+            particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+            particlesGeometry.setAttribute('color', new THREE.BufferAttribute(colorsArray, 3));
             
-            // Modern Dot Material
-            const material = new THREE.PointsMaterial({ 
-                color: 0x00A3E0, 
-                size: 2.5, 
-                transparent: true, 
-                opacity: 0.8 
+            const particlesMaterial = new THREE.PointsMaterial({
+                size: 1.2,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.8,
+                blending: THREE.AdditiveBlending
             });
-            const particles = new THREE.Points( geometry, material );
-            scene.add( particles );
 
-            // Abstract Core Geometry (Icosahedron behind logo)
-            const coreGeometry = new THREE.IcosahedronGeometry(120, 1);
-            const coreMaterial = new THREE.MeshBasicMaterial({ 
-                color: 0x00A3E0, 
-                wireframe: true, 
-                transparent: true, 
-                opacity: 0.15 
+            const particleGlobe = new THREE.Points(particlesGeometry, particlesMaterial);
+            scene.add(particleGlobe);
+
+            // 2. Inner Glowing Core (Geometric structure)
+            const coreGeom = new THREE.IcosahedronGeometry(45, 1);
+            const coreMat = new THREE.MeshBasicMaterial({
+                color: 0x00A3E0,
+                wireframe: true,
+                transparent: true,
+                opacity: 0.15
             });
-            const core = new THREE.Mesh(coreGeometry, coreMaterial);
-            scene.add(core);
+            const coreMesh = new THREE.Mesh(coreGeom, coreMat);
+            scene.add(coreMesh);
 
-            // Outer tech ring
-            const ringGeometry = new THREE.TorusGeometry( 180, 0.5, 16, 100 );
-            const ringMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true, transparent: true, opacity: 0.1 });
-            const ring = new THREE.Mesh( ringGeometry, ringMaterial );
-            ring.rotation.x = Math.PI / 2;
-            scene.add( ring );
+            // 3. Subtle ambient dust in the background
+            const dustGeom = new THREE.BufferGeometry();
+            const dustPos = new Float32Array(1000 * 3);
+            for(let i=0; i<1000*3; i++) dustPos[i] = (Math.random() - 0.5) * 800;
+            dustGeom.setAttribute('position', new THREE.BufferAttribute(dustPos, 3));
+            const dustMat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.8, transparent: true, opacity: 0.2 });
+            const ambientDust = new THREE.Points(dustGeom, dustMat);
+            scene.add(ambientDust);
 
-            // Animation Loop
+            // Animation Loop variables
             let animationId;
+            let isExiting = false;
+
             function animate() {
                 animationId = requestAnimationFrame(animate);
                 
-                // Rotate particles slowly
-                particles.rotation.y += 0.0005;
-                particles.rotation.x += 0.0002;
-                
-                // Rotate core opposite direction
-                core.rotation.x -= 0.001;
-                core.rotation.y -= 0.002;
-                
-                // Rotate outer ring
-                ring.rotation.z += 0.001;
-                ring.rotation.x -= 0.0005;
+                if (!isExiting) {
+                    // Elegant, slow rotation representing global network
+                    particleGlobe.rotation.y += 0.001;
+                    particleGlobe.rotation.x += 0.0005;
+                    
+                    // Core rotates in opposite direction
+                    coreMesh.rotation.y -= 0.002;
+                    coreMesh.rotation.z += 0.001;
+                    
+                    ambientDust.rotation.y -= 0.0005;
+                } else {
+                    // Cinematic Exit: Warp speed fly-through
+                    camera.position.z -= 6; // Zoom camera extremely fast
+                    
+                    particleGlobe.rotation.y += 0.02; // Spin up
+                    coreMesh.rotation.x -= 0.03;
+                    
+                    // Fade out materials to transition to website
+                    if (particlesMaterial.opacity > 0) particlesMaterial.opacity -= 0.02;
+                    if (coreMat.opacity > 0) coreMat.opacity -= 0.02;
+                    if (dustMat.opacity > 0) dustMat.opacity -= 0.02;
+                }
                 
                 renderer.render(scene, camera);
             }
@@ -1322,22 +1380,32 @@
                 renderer.setSize(window.innerWidth, window.innerHeight);
             });
 
-            return { renderer, animationId };
+            return { renderer, animationId, triggerExit: () => { isExiting = true; } };
         }
 
         window.addEventListener('load', () => {
-            const { renderer, animationId } = init3DSplash();
+            const { renderer, animationId, triggerExit } = init3DSplash();
             
+            // Wait for 3 seconds of showing the splash
             setTimeout(() => {
+                // Trigger the 3D fly-through animation
+                triggerExit();
+                
                 const splash = document.getElementById('splash-screen');
                 document.body.classList.remove('splash-active');
-                splash.style.opacity = '0';
                 
+                // Start fading the DOM overlay slightly after fly-through starts
                 setTimeout(() => {
-                    splash.style.display = 'none';
-                    cancelAnimationFrame(animationId); // Stop 3D animation to save resources
-                }, 800); // Wait for CSS transition
-            }, 3000); // Show splash screen for 3 seconds
+                    splash.style.opacity = '0';
+                    
+                    // Completely hide and clean up after CSS transition
+                    setTimeout(() => {
+                        splash.style.display = 'none';
+                        cancelAnimationFrame(animationId); 
+                    }, 1000); 
+                }, 400); 
+                
+            }, 3000); 
         });
 
         // Toggle Logic for Tracks and Schedule using Pill Buttons
