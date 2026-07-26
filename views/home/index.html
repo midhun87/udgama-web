@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>UDGAMA 2026 | IEEE Guntur Subsection Student Congress</title>
     
-    <link rel="icon" type="image/jpeg" href="https://res.cloudinary.com/dzuxwvamy/image/upload/v1784910536/udgama_xves0r.jpg">
+    <link rel="icon" type="image/jpeg" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQRQUOVTVuLAWuWWCkcSow3IBBsUkVKziDB3e5VpyN02Q&s=10">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -127,7 +127,7 @@
                 <!-- Glossy Logo Container -->
                 <div class="relative w-28 h-28 sm:w-36 sm:h-36 mb-8 group">
                     <div class="absolute inset-0 bg-gradient-to-tr from-white/20 to-white/5 rounded-[2rem] backdrop-blur-xl border border-white/20 shadow-[0_0_50px_rgba(0,163,224,0.3)] p-2">
-                        <img src="https://res.cloudinary.com/dzuxwvamy/image/upload/v1784910536/udgama_xves0r.jpg" alt="UDGAMA Logo" class="w-full h-full object-cover rounded-[1.5rem] shadow-inner">
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQRQUOVTVuLAWuWWCkcSow3IBBsUkVKziDB3e5VpyN02Q&s=10" alt="UDGAMA Logo" class="w-full h-full object-cover rounded-[1.5rem] shadow-inner">
                     </div>
                 </div>
                 
@@ -162,7 +162,7 @@
             <div class="flex justify-between items-center h-20">
                 <a href="/" class="flex items-center gap-3 group">
                     <div class="w-11 h-11 rounded-xl p-0.5 bg-white shadow-sm border border-slate-200 overflow-hidden transform transition-transform group-hover:scale-105">
-                        <img src="https://res.cloudinary.com/dzuxwvamy/image/upload/v1784910536/udgama_xves0r.jpg" alt="UDGAMA Logo" class="w-full h-full object-cover rounded-lg">
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQRQUOVTVuLAWuWWCkcSow3IBBsUkVKziDB3e5VpyN02Q&s=10" alt="UDGAMA Logo" class="w-full h-full object-cover rounded-lg">
                     </div>
                     <div class="flex flex-col justify-center">
                         <h1 class="text-xl font-display font-extrabold tracking-tight text-brand-dark leading-none">UDGAMA</h1>
@@ -311,12 +311,14 @@
 
     <section id="themes" class="py-20 relative">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div class="text-center mb-12">
+            <div class="text-center mb-8">
                 <span class="text-brand-blue font-bold tracking-widest uppercase text-xs mb-2 block bg-brand-blue/10 inline-block px-3 py-1 rounded-full border border-brand-blue/20">Technical Competitions</span>
-                <h2 class="text-3xl md:text-4xl font-display font-bold text-slate-800 mb-6">Explore The Tracks</h2>
+                <h2 class="text-3xl md:text-4xl font-display font-bold text-slate-800">Explore The Tracks</h2>
+            </div>
                 
-                <!-- Glossy Tracks Toggle -->
-                <div class="glass-panel p-1.5 rounded-full inline-flex mx-auto relative shadow-sm border border-slate-200">
+            <!-- Glossy Tracks Toggle (Sticky) -->
+            <div class="sticky top-24 z-40 flex justify-center mb-12 pointer-events-none">
+                <div class="glass-panel p-1.5 rounded-full inline-flex relative shadow-lg border border-slate-200 pointer-events-auto bg-white/70 backdrop-blur-xl">
                     <button id="tracks-btn-day1" onclick="toggleSection('tracks', 1)" class="relative z-10 px-6 sm:px-8 py-3 rounded-full text-sm font-bold glossy-btn-accent shadow-md transition-all duration-300">
                         Day 1 (Chalapathi)
                     </button>
@@ -547,12 +549,14 @@
 
     <section id="schedule" class="py-20 relative">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div class="text-center mb-10">
+            <div class="text-center mb-8">
                 <span class="text-brand-blue font-bold tracking-widest uppercase text-xs mb-2 block bg-brand-blue/10 inline-block px-3 py-1 rounded-full border border-brand-blue/20">Event Itinerary</span>
-                <h2 class="text-3xl md:text-4xl font-display font-bold text-brand-dark mb-6">Congress Schedule</h2>
+                <h2 class="text-3xl md:text-4xl font-display font-bold text-brand-dark">Congress Schedule</h2>
+            </div>
                 
-                <!-- Glossy Schedule Toggle -->
-                <div class="glass-panel p-1.5 rounded-full inline-flex mx-auto relative shadow-sm border border-slate-200">
+            <!-- Glossy Schedule Toggle (Sticky) -->
+            <div class="sticky top-24 z-40 flex justify-center mb-10 pointer-events-none">
+                <div class="glass-panel p-1.5 rounded-full inline-flex relative shadow-lg border border-slate-200 pointer-events-auto bg-white/70 backdrop-blur-xl">
                     <button id="schedule-btn-day1" onclick="toggleSection('schedule', 1)" class="relative z-10 px-6 sm:px-8 py-3 rounded-full text-sm font-bold glossy-btn-accent shadow-md transition-all duration-300">
                         Day 1 (Chalapathi)
                     </button>
@@ -1007,13 +1011,37 @@
 
     <footer class="bg-[#0f172a] text-slate-300 py-16 border-t border-slate-800">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <!-- Added Organization Banner Section (Glossy Style) -->
+            <div class="mb-16 bg-white/5 border border-white/10 rounded-[2rem] p-6 sm:p-8 backdrop-blur-md flex flex-col md:flex-row items-center justify-between gap-8 shadow-[0_8px_32px_rgba(0,0,0,0.2)]">
+                <div class="text-center md:text-left flex-1">
+                    <p class="text-brand-accent text-sm font-bold tracking-widest uppercase mb-2">Organized By</p>
+                    <h3 class="text-xl md:text-2xl font-display font-bold text-white mb-1">IEEE Guntur Sub Section</h3>
+                    <p class="text-slate-400 text-sm font-medium">In Association with IEEE SAC Hyderabad</p>
+                </div>
+                
+                <div class="flex items-center justify-center gap-6 sm:gap-10 shrink-0">
+                    <!-- Guntur Sub Section Logo -->
+                    <div class="bg-white p-2 rounded-xl shadow-lg transform hover:scale-105 transition-transform">
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTFlaHxatQkNn2Eoh4HWZ0h8xBO_IM4Fkh1nedAPaKttA&s=10" alt="IEEE Guntur Sub Section Logo" class="h-12 sm:h-16 w-auto object-contain mix-blend-multiply">
+                    </div>
+                    
+                    <div class="h-12 w-px bg-slate-700"></div> <!-- Divider -->
+                    
+                    <!-- SAC Hyderabad Logo -->
+                    <div class="bg-white p-2 rounded-xl shadow-lg transform hover:scale-105 transition-transform">
+                        <img src="https://sac.ieeehyd.org/images/ieee-hyderabad-sac-logo.png" alt="IEEE SAC Hyderabad Logo" class="h-12 sm:h-16 w-auto object-contain">
+                    </div>
+                </div>
+            </div>
+
             <div class="grid grid-cols-1 md:grid-cols-12 gap-12 lg:gap-8">
                 
                 <!-- Brand & About -->
                 <div class="md:col-span-5 lg:col-span-5">
                     <div class="inline-flex items-center gap-3 bg-white/5 border border-white/10 p-2 pr-6 rounded-xl mb-6 shadow-sm">
                         <div class="w-10 h-10 bg-white rounded-lg flex items-center justify-center p-1 overflow-hidden">
-                            <img src="https://res.cloudinary.com/dzuxwvamy/image/upload/v1784910536/udgama_xves0r.jpg" alt="IEEE Logo" class="w-full h-full object-cover">
+                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQRQUOVTVuLAWuWWCkcSow3IBBsUkVKziDB3e5VpyN02Q&s=10" alt="IEEE Logo" class="w-full h-full object-cover">
                         </div>
                         <h4 class="font-display font-bold text-white tracking-wide">UDGAMA 2026</h4>
                     </div>
