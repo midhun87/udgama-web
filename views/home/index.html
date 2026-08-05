@@ -230,6 +230,21 @@
         
         /* Typography glow */
         .text-glow { text-shadow: 0 0 20px rgba(0, 163, 224, 0.5); }
+
+        /* Scrolling Ticker Animation */
+        @keyframes ticker-scroll {
+            0% { transform: translateX(100vw); }
+            100% { transform: translateX(-100%); }
+        }
+        .animate-ticker {
+            display: inline-block;
+            white-space: nowrap;
+            animation: ticker-scroll 30s linear infinite;
+            will-change: transform;
+        }
+        .animate-ticker:hover {
+            animation-play-state: paused;
+        }
     </style>
 </head>
 <body class="text-slate-800 font-sans antialiased selection:bg-brand-accent selection:text-white overflow-x-hidden splash-active">
@@ -284,8 +299,8 @@
         </div>
     </div>
 
-    <nav class="glass-nav fixed top-0 w-full z-50 transition-all duration-300">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <nav class="glass-nav fixed top-0 w-full z-50 transition-all duration-300 flex flex-col">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
             <div class="flex justify-between items-center h-20">
                 <a href="/" class="flex items-center gap-3 group">
                     <div class="w-11 h-11 rounded-xl p-0.5 bg-white shadow-sm border border-slate-200 overflow-hidden transform transition-transform group-hover:scale-105">
@@ -322,6 +337,18 @@
                         </svg>
                     </button>
                 </div>
+            </div>
+        </div>
+
+        <!-- Event Updates Scrolling Ticker -->
+        <div class="w-full bg-brand-dark/95 backdrop-blur-md text-white overflow-hidden border-t border-white/10 shadow-[0_4px_12px_rgba(0,0,0,0.15)] relative">
+            <div class="animate-ticker py-2 flex items-center">
+                <span class="text-xs sm:text-sm font-medium flex items-center gap-2 mx-8">
+                    <span class="text-brand-accent animate-pulse">🔔</span> All the registered participants can avail bus facility to the host institute on day of event by showing event ticket.
+                </span>
+                <span class="text-xs sm:text-sm font-medium flex items-center gap-2 mx-8">
+                    <span class="text-brand-accent animate-pulse">🎫</span> All the registered participants should download the event tickets from <a href="https://udgama2026.in/ticket" target="_blank" class="text-brand-accent hover:text-white underline decoration-dashed underline-offset-2 transition-colors relative z-50">udgama2026.in/ticket</a>.
+                </span>
             </div>
         </div>
         
@@ -444,7 +471,7 @@
             </div>
                 
             <!-- Glossy Tracks Toggle (Sticky) -->
-            <div class="sticky top-24 z-40 flex justify-center mb-12 pointer-events-none">
+            <div class="sticky top-24 z-40 flex justify-center mb-12 pointer-events-none mt-10">
                 <div class="glass-panel p-1.5 rounded-full inline-flex relative shadow-lg border border-slate-200 pointer-events-auto bg-white/70 backdrop-blur-xl">
                     <button id="tracks-btn-day1" onclick="toggleSection('tracks', 1)" class="relative z-10 px-6 sm:px-8 py-3 rounded-full text-sm font-bold glossy-btn-accent shadow-md transition-all duration-300">
                         Day 1 (Chalapathi)
@@ -682,7 +709,7 @@
             </div>
                 
             <!-- Glossy Schedule Toggle (Sticky) -->
-            <div class="sticky top-24 z-40 flex justify-center mb-10 pointer-events-none">
+            <div class="sticky top-32 z-40 flex justify-center mb-10 pointer-events-none mt-10">
                 <div class="glass-panel p-1.5 rounded-full inline-flex relative shadow-lg border border-slate-200 pointer-events-auto bg-white/70 backdrop-blur-xl">
                     <button id="schedule-btn-day1" onclick="toggleSection('schedule', 1)" class="relative z-10 px-6 sm:px-8 py-3 rounded-full text-sm font-bold glossy-btn-accent shadow-md transition-all duration-300">
                         Day 1 (Chalapathi)
@@ -982,13 +1009,24 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
                 <!-- Day 1 Venue -->
                 <div class="glass-panel rounded-[2rem] overflow-hidden flex flex-col group hover:-translate-y-2 hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.1)] transition-all duration-300 p-2 border border-slate-200">
-                    <div class="h-56 w-full overflow-hidden relative rounded-[1.5rem]">
-                        <div class="absolute inset-0 bg-brand-dark/20 group-hover:bg-transparent transition-colors z-10"></div>
-                        <img src="https://city.ac.in/img/breadcromes/AboutUslowercollegephoto.webp" alt="Chalapathi Institute" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700">
+                    
+                    <a href="https://www.google.com/maps/place/Chalapathi+Institute+of+Technology/@16.3752188,80.2858169,17z/data=!3m1!4b1!4m6!3m5!1s0x3a4a79679802cfad:0xe67e2a901bbd33fe!8m2!3d16.3752188!4d80.2858169!16s%2Fg%2F122r446z" target="_blank" rel="noopener noreferrer" class="block h-56 w-full overflow-hidden relative rounded-[1.5rem] group/map cursor-pointer">
+                        <div class="absolute inset-0 bg-brand-dark/20 group-hover/map:bg-brand-dark/50 transition-colors duration-500 z-10"></div>
+                        
+                        <!-- Map Icon Overlay -->
+                        <div class="absolute inset-0 flex items-center justify-center z-30 opacity-0 group-hover/map:opacity-100 transition-opacity duration-300">
+                            <span class="bg-white text-brand-blue px-5 py-2.5 rounded-full font-bold text-sm shadow-xl flex items-center gap-2 transform translate-y-4 group-hover/map:translate-y-0 transition-transform duration-300">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                                View on Google Maps
+                            </span>
+                        </div>
+
+                        <img src="https://city.ac.in/img/breadcromes/AboutUslowercollegephoto.webp" alt="Chalapathi Institute" class="w-full h-full object-cover transform group-hover/map:scale-110 transition-transform duration-700">
                         <div class="absolute top-4 left-4 z-20 glass-nav text-brand-dark px-4 py-1.5 rounded-full text-[0.65rem] font-bold shadow-md tracking-wide">
                             DAY 1 HOST (7 Aug)
                         </div>
-                    </div>
+                    </a>
+
                     <div class="p-6 sm:p-8 flex flex-col flex-1 relative bg-white/50 rounded-[1.5rem] mt-2 border border-slate-100">
                         <h3 class="text-2xl font-display font-bold text-slate-900 mb-2 group-hover:text-brand-blue transition-colors">Chalapathi University</h3>
                         <p class="text-slate-600 font-medium text-sm mb-6">Mothadaka, Guntur, Andhra Pradesh</p>
@@ -1011,13 +1049,24 @@
 
                 <!-- Day 2 Venue -->
                 <div class="glass-panel rounded-[2rem] overflow-hidden flex flex-col group hover:-translate-y-2 hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.1)] transition-all duration-300 p-2 border border-slate-200">
-                    <div class="h-56 w-full overflow-hidden relative rounded-[1.5rem]">
-                        <div class="absolute inset-0 bg-brand-dark/20 group-hover:bg-transparent transition-colors z-10"></div>
-                        <img src="https://res.cloudinary.com/djdwpjm7x/image/upload/v1769924817/admin-block_kgxvrc.jpg" alt="LBRCE Engineering College" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700">
+                    
+                    <a href="https://goo.gl/maps/KaKQ6idLmvXX9v2a7" target="_blank" rel="noopener noreferrer" class="block h-56 w-full overflow-hidden relative rounded-[1.5rem] group/map cursor-pointer">
+                        <div class="absolute inset-0 bg-brand-dark/20 group-hover/map:bg-brand-dark/50 transition-colors duration-500 z-10"></div>
+                        
+                        <!-- Map Icon Overlay -->
+                        <div class="absolute inset-0 flex items-center justify-center z-30 opacity-0 group-hover/map:opacity-100 transition-opacity duration-300">
+                            <span class="bg-white text-brand-blue px-5 py-2.5 rounded-full font-bold text-sm shadow-xl flex items-center gap-2 transform translate-y-4 group-hover/map:translate-y-0 transition-transform duration-300">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                                View on Google Maps
+                            </span>
+                        </div>
+
+                        <img src="https://res.cloudinary.com/djdwpjm7x/image/upload/v1769924817/admin-block_kgxvrc.jpg" alt="LBRCE Engineering College" class="w-full h-full object-cover transform group-hover/map:scale-110 transition-transform duration-700">
                         <div class="absolute top-4 left-4 z-20 glass-nav text-slate-800 px-4 py-1.5 rounded-full text-[0.65rem] font-bold shadow-md tracking-wide">
                             DAY 2 HOST (8 Aug)
                         </div>
-                    </div>
+                    </a>
+
                     <div class="p-6 sm:p-8 flex flex-col flex-1 bg-white/50 rounded-[1.5rem] mt-2 border border-slate-100">
                         <h3 class="text-2xl font-display font-bold text-slate-900 mb-2 group-hover:text-brand-blue transition-colors">Lakireddy Bali Reddy College of Engineering</h3>
                         <p class="text-slate-600 font-medium text-sm mb-6">Mylavaram, NTR District, Andhra Pradesh</p>
@@ -1263,6 +1312,45 @@
         </div>
     </footer>
 
+    <!-- Announcement Pop-up Modal -->
+    <div id="announcement-modal" class="fixed inset-0 z-[60] flex items-center justify-center px-4 opacity-0 pointer-events-none transition-opacity duration-500 hidden">
+        <!-- Blur Backdrop -->
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeAnnouncementModal()"></div>
+        
+        <!-- Modal Content Card -->
+        <div class="glass-panel relative w-full max-w-lg rounded-3xl p-6 sm:p-8 shadow-[0_20px_50px_-10px_rgba(0,0,0,0.3)] transform scale-95 transition-transform duration-500" id="announcement-card">
+            <!-- Close Button -->
+            <button onclick="closeAnnouncementModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 bg-white/50 hover:bg-white rounded-full p-2 transition-all focus:outline-none">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            
+            <div class="flex items-center gap-3 mb-6">
+                <div class="w-10 h-10 bg-gradient-to-br from-brand-accent to-brand-blue text-white rounded-xl flex items-center justify-center shrink-0 shadow-sm">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+                </div>
+                <h3 class="text-xl font-display font-bold text-slate-800">Important Updates</h3>
+            </div>
+            
+            <div class="space-y-4">
+                <!-- Update 1 -->
+                <div class="bg-white/60 border border-white rounded-2xl p-4 flex gap-4 items-start shadow-sm hover:shadow-md transition-shadow">
+                    <div class="text-2xl shrink-0 mt-0.5 bg-blue-50 w-10 h-10 rounded-full flex items-center justify-center border border-blue-100">🚌</div>
+                    <p class="text-sm text-slate-700 font-medium leading-relaxed">All registered participants can avail <span class="text-brand-blue font-bold">bus facility</span> to the host institute on the day of the event by showing the event ticket.</p>
+                </div>
+                <!-- Update 2 -->
+                <div class="bg-white/60 border border-white rounded-2xl p-4 flex gap-4 items-start shadow-sm hover:shadow-md transition-shadow">
+                    <div class="text-2xl shrink-0 mt-0.5 bg-emerald-50 w-10 h-10 rounded-full flex items-center justify-center border border-emerald-100">🎫</div>
+                    <p class="text-sm text-slate-700 font-medium leading-relaxed">All registered participants should <span class="text-brand-blue font-bold">download their event tickets</span> from <a href="https://udgama2026.in/ticket" target="_blank" class="text-brand-accent font-bold hover:underline">udgama2026.in/ticket</a>.</p>
+                </div>
+            </div>
+            
+            <button onclick="closeAnnouncementModal()" class="mt-8 w-full glossy-btn-accent py-3.5 rounded-xl text-white font-bold text-sm shadow-md flex justify-center items-center gap-2 group">
+                Got it, Thanks!
+                <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+            </button>
+        </div>
+    </div>
+
     <script>
         // 3D Splash Screen using Three.js
         function init3DSplash() {
@@ -1405,8 +1493,40 @@
                     }, 1000); 
                 }, 400); 
                 
+                // Show Announcement Modal shortly after splash screen disappears
+                setTimeout(() => {
+                    const modal = document.getElementById('announcement-modal');
+                    const card = document.getElementById('announcement-card');
+                    
+                    modal.classList.remove('hidden');
+                    // Force a reflow to enable transition
+                    void modal.offsetWidth; 
+                    
+                    modal.classList.remove('opacity-0', 'pointer-events-none');
+                    modal.classList.add('opacity-100', 'pointer-events-auto');
+                    
+                    card.classList.remove('scale-95');
+                    card.classList.add('scale-100');
+                }, 4200); // 3000 + 1200 ms to ensure it loads smoothly after splash
+                
             }, 3000); 
         });
+
+        // Close Announcement Modal Logic
+        function closeAnnouncementModal() {
+            const modal = document.getElementById('announcement-modal');
+            const card = document.getElementById('announcement-card');
+            
+            modal.classList.remove('opacity-100', 'pointer-events-auto');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            
+            card.classList.remove('scale-100');
+            card.classList.add('scale-95');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 500); // Wait for fade out transition
+        }
 
         // Toggle Logic for Tracks and Schedule using Pill Buttons
         function toggleSection(section, day) {
