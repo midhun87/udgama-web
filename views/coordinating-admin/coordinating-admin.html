@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coordinating Admin | UDGAMA 2026</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Export Libraries for Download Feature -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'], display: ['Outfit', 'sans-serif'] },
+                    colors: { brand: { blue: '#00629B', dark: '#001b3a', accent: '#00A3E0', surface: '#F8FAFC' } },
+                    boxShadow: { 'float': '0 10px 40px -10px rgba(0,0,0,0.08)' }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body { background-color: #F8FAFC; }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        .fade-in { animation: fadeIn 0.4s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .modal-overlay { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); }
+        .glass-nav { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(226, 232, 240, 0.8); }
+
+        /* Toast Notifications */
+        #toast-container { position: fixed; bottom: 1rem; right: 1rem; z-index: 9999; display: flex; flex-direction: column; gap: 0.5rem; }
+        .toast { padding: 1rem; border-radius: 0.75rem; background: #1e293b; color: white; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5); transform: translateX(120%); transition: transform 0.3s ease-out; display: flex; align-items: center; gap: 0.75rem; font-size: 0.875rem; font-weight: 500;}
+        .toast.show { transform: translateX(0); }
+        .toast.success { border-left: 4px solid #10b981; }
+        .toast.error { border-left: 4px solid #ef4444; }
+    </style>
+</head>
+<body class="text-slate-800 font-sans antialiased min-h-screen flex flex-col">
+
+    <nav class="glass-nav sticky top-0 z-40 w-full">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-emerald-600 text-white rounded-lg flex items-center justify-center font-display font-bold">C</div>
+                    <span class="font-display font-bold text-lg text-brand-dark">Coordinating Admin</span>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="text-right hidden sm:block">
+                        <p class="text-sm font-bold text-slate-700" id="coordName">Loading...</p>
+                        <p class="text-xs text-slate-500">Multi-Org Overseer</p>
+                    </div>
+                    <button onclick="logout()" class="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors font-medium text-sm flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                        <span class="hidden sm:inline">Logout</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 flex flex-col">
+        
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+            <div class="flex flex-wrap bg-slate-200/50 p-1 rounded-xl w-full sm:w-auto">
+                <button onclick="switchTab('analytics')" id="tab-analytics" class="flex-1 sm:flex-none px-6 py-2.5 rounded-lg text-sm font-bold bg-white text-emerald-600 shadow-sm transition-all">Global Analytics</button>
+                <button onclick="switchTab('orgs')" id="tab-orgs" class="flex-1 sm:flex-none px-6 py-2.5 rounded-lg text-sm font-bold text-slate-600 hover:text-slate-900 transition-all">Assigned Orgs</button>
+                <button onclick="switchTab('registrations')" id="tab-registrations" class="flex-1 sm:flex-none px-6 py-2.5 rounded-lg text-sm font-bold text-slate-600 hover:text-slate-900 transition-all">All Registrations</button>
+            </div>
+            
+            <button onclick="fetchDashboardData()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-5 py-2.5 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 border border-slate-200">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                Refresh Data
+            </button>
+        </div>
+
+        <div id="view-analytics" class="fade-in block space-y-6">
+            <h3 class="text-lg font-display font-bold text-slate-800">Aggregated Analytics Overview</h3>
+            
+            <!-- Key Statistics Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+                
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between">
+                    <p class="text-sm font-bold text-slate-500 mb-2">Assigned Orgs</p>
+                    <div class="flex items-center justify-between mt-2">
+                        <h4 class="text-4xl font-display font-bold text-slate-800" id="stat-total-orgs">0</h4>
+                        <div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-500">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between">
+                    <p class="text-sm font-bold text-slate-500 mb-2">Total Tickets Sold</p>
+                    <div class="flex items-center justify-between mt-2">
+                        <h4 class="text-4xl font-display font-bold text-brand-blue" id="stat-total-regs">0</h4>
+                        <div class="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-brand-blue">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"></path></svg>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Participants Breakdown Card -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between">
+                    <p class="text-sm font-bold text-slate-500 mb-2">Total Participants</p>
+                    <div class="flex items-center justify-between mt-2">
+                        <h4 class="text-4xl font-display font-bold text-slate-800" id="stat-total-parts">0</h4>
+                        <div class="flex flex-col gap-1 text-right">
+                            <span class="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded uppercase">IEEE: <span id="stat-ieee-parts">0</span></span>
+                            <span class="text-[11px] font-bold text-slate-600 bg-slate-100 px-2.5 py-0.5 rounded uppercase">NON: <span id="stat-non-ieee-parts">0</span></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Total Revenue Collected Card (Excluding Taxes) -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between lg:col-span-2">
+                    <div class="flex justify-between items-start">
+                        <p class="text-sm font-bold text-slate-500">Total Revenue Collected <span class="text-[10px] font-medium text-slate-400 block sm:inline">(Excluding Taxes)</span></p>
+                        <div class="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-600">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </div>
+                    </div>
+                    <h4 class="text-4xl font-display font-bold text-emerald-600 mt-2" id="stat-total-amount">₹0</h4>
+                </div>
+            </div>
+
+            <!-- Sub-Event Wise Registrations Section -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="px-6 py-5 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
+                    <h4 class="font-bold text-slate-800 text-sm">Detailed Sub-Event Performance</h4>
+                    <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                </div>
+                <div class="p-6">
+                    <div id="analytics-sub-events" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div class="col-span-full py-8 text-center text-slate-500 text-sm">
+                            <svg class="w-8 h-8 mx-auto mb-2 text-slate-300 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                            Analyzing data...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-orgs" class="fade-in hidden">
+            <h3 class="text-lg font-display font-bold text-slate-800 mb-6">Assigned Organizations Breakdown</h3>
+            <div id="orgsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="col-span-full text-center py-12 text-slate-500">
+                    <svg class="w-12 h-12 mx-auto mb-3 text-slate-300 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                    Loading organizations...
+                </div>
+            </div>
+        </div>
+
+        <div id="view-registrations" class="fade-in hidden flex-col flex-1">
+            <div class="flex flex-wrap justify-between items-center mb-4 gap-4">
+                <h3 class="text-lg font-display font-bold text-slate-800">Global Registration List</h3>
+                <div class="flex gap-2">
+                    <button onclick="exportExcel()" class="px-4 py-2 bg-emerald-50 text-emerald-600 rounded-lg text-sm font-bold border border-emerald-200 hover:bg-emerald-100 flex items-center gap-2 transition-colors shadow-sm">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        Export Excel
+                    </button>
+                    <button onclick="exportPDF()" class="px-4 py-2 bg-red-50 text-red-600 rounded-lg text-sm font-bold border border-red-200 hover:bg-red-100 flex items-center gap-2 transition-colors shadow-sm">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                        Export PDF
+                    </button>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-2xl shadow-float border border-slate-200 overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50 border-b border-slate-200">
+                                <th class="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Reg ID / Event</th>
+                                <th class="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Organization</th>
+                                <th class="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Lead Participant</th>
+                                <th class="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Amount (Base)</th>
+                                <th class="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Status</th>
+                                <th class="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="registrationsContainer" class="divide-y divide-slate-100">
+                            <tr><td colspan="6" class="py-8 text-center text-slate-500">Loading registrations...</td></tr>
+                        </tbody>
+                        <tfoot id="registrationsFooter" class="hidden bg-slate-50 border-t-2 border-slate-200 font-bold text-slate-800">
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="teamModal" class="fixed inset-0 z-50 hidden items-center justify-center modal-overlay p-4 opacity-0 transition-opacity duration-300">
+        <div class="bg-white rounded-[2rem] w-full max-w-4xl shadow-2xl transform scale-95 transition-transform duration-300 flex flex-col max-h-[90vh]">
+            <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-white rounded-t-[2rem]">
+                <div>
+                    <h2 class="text-xl font-display font-bold text-slate-900" id="teamModalTitle">Team Details</h2>
+                    <p class="text-sm font-medium text-emerald-600 mt-1" id="teamModalRegId"></p>
+                </div>
+                <button onclick="closeTeamModal()" class="text-slate-400 hover:text-slate-700 bg-slate-100 hover:bg-slate-200 p-2 rounded-full transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            
+            <div class="p-6 overflow-y-auto flex-1 bg-slate-50/50">
+                <div class="overflow-x-auto bg-white rounded-xl shadow-sm border border-slate-200">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50 border-b border-slate-200">
+                                <th class="py-3 px-4 text-xs font-bold text-slate-500 uppercase">Role</th>
+                                <th class="py-3 px-4 text-xs font-bold text-slate-500 uppercase">Participant</th>
+                                <th class="py-3 px-4 text-xs font-bold text-slate-500 uppercase">Contact</th>
+                                <th class="py-3 px-4 text-xs font-bold text-slate-500 uppercase">Institution</th>
+                                <th class="py-3 px-4 text-xs font-bold text-slate-500 uppercase">IEEE Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="teamMembersContainer" class="divide-y divide-slate-100">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="p-5 border-t border-slate-100 bg-white rounded-b-[2rem] flex justify-end">
+                <button type="button" onclick="closeTeamModal()" class="px-6 py-2.5 rounded-xl font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 transition-colors">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-container"></div>
+
+    <script>
+        const API_BASE = '/api';
+        let currentTab = 'analytics';
+        let allEvents = [];
+        let registrations = [];
+        let assignedOrgs = [];
+        let orgStatsData = {};
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem('token');
+            const role = localStorage.getItem('role');
+            const name = localStorage.getItem('name');
+
+            if (!token || (role !== 'coordinating_admin' && role !== 'admin')) {
+                console.warn("Invalid session detected. Redirecting.");
+                localStorage.clear(); 
+                window.location.replace('/staff-login'); 
+                return;
+            }
+
+            document.getElementById('coordName').textContent = name || 'Coordinating Admin';
+            fetchDashboardData();
+        });
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = '/staff-login';
+        }
+
+        function switchTab(tab) {
+            currentTab = tab;
+            const tabs = ['analytics', 'orgs', 'registrations'];
+            
+            tabs.forEach(t => {
+                const btn = document.getElementById(`tab-${t}`);
+                const view = document.getElementById(`view-${t}`);
+                
+                if (t === tab) {
+                    btn.className = 'flex-1 sm:flex-none px-6 py-2.5 rounded-lg text-sm font-bold bg-white text-emerald-600 shadow-sm transition-all';
+                    view.classList.remove('hidden');
+                    if (t === 'registrations') {
+                        view.classList.add('flex');
+                    } else {
+                        view.classList.add('block');
+                    }
+                } else {
+                    btn.className = 'flex-1 sm:flex-none px-6 py-2.5 rounded-lg text-sm font-bold text-slate-600 hover:text-slate-900 transition-all';
+                    view.classList.add('hidden');
+                    view.classList.remove('block', 'flex');
+                }
+            });
+        }
+
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = type === 'success' 
+                ? `<svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> <span>${message}</span>`
+                : `<svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> <span>${message}</span>`;
+            
+            container.appendChild(toast);
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 300); }, 3000);
+        }
+
+        async function fetchDashboardData() {
+            try {
+                const token = localStorage.getItem('token');
+                
+                // 1. Fetch public events data (so we have pricing rules for tax exclusion)
+                const pubRes = await fetch(`${API_BASE}/public/data`);
+                const pubData = await pubRes.json();
+                allEvents = pubData.events || [];
+                
+                // 2. Fetch specific coordinating admin dashboard endpoint
+                const caRes = await fetch(`${API_BASE}/coordinating-admin/dashboard`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const caData = await caRes.json();
+                
+                registrations = caData.allRegistrations || [];
+                assignedOrgs = caData.assignedOrgsDetails || [];
+
+                calculateAnalytics();
+                renderRegistrations();
+                renderOrgs();
+
+            } catch (error) {
+                console.error(error);
+                showToast('Failed to load data.', 'error');
+            }
+        }
+
+        function calculateAnalytics() {
+            let totalRegs = 0;
+            let totalParts = 0;
+            let ieeeCount = 0;
+            let nonIeeeCount = 0;
+            let totalBaseAmount = 0;
+            
+            let subEventCounts = {}; // Track participants and revenue per sub event
+            orgStatsData = {}; // Track performance per assigned org
+
+            // Initialize org tracking map
+            assignedOrgs.forEach(org => {
+                orgStatsData[org.orgId] = {
+                    name: org.name,
+                    participants: 0,
+                    revenue: 0,
+                    ieee: 0,
+                    nonIeee: 0
+                };
+            });
+
+            registrations.forEach(reg => {
+                // Only count successful payments
+                if (reg.paymentStatus !== 'Paid') return;
+
+                totalRegs++;
+
+                let regBaseAmount = 0;
+                let regParticipantCount = 0;
+                
+                const eventObj = allEvents.find(e => e.eventId === reg.eventId);
+                const eventName = eventObj ? eventObj.title : (reg.eventName || 'Unknown Event');
+                const orgId = eventObj ? eventObj.orgId : 'Unknown';
+                const subEventName = reg.selectedSubEvent ? reg.selectedSubEvent : 'Standard';
+                const trackingKey = `${eventName} ::: ${subEventName}`;
+
+                if (!subEventCounts[trackingKey]) {
+                    subEventCounts[trackingKey] = { participants: 0, revenue: 0, name: subEventName, event: eventName };
+                }
+
+                // Granular calculation using participants array (ignores tax inherently)
+                if (reg.participants && eventObj) {
+                    reg.participants.forEach(p => {
+                        totalParts++;
+                        regParticipantCount++;
+                        const isIeee = (p.isIeee === 'Yes' || p.isIeee === true);
+                        
+                        let memberFee = 0;
+                        if (isIeee) {
+                            ieeeCount++;
+                            memberFee = Number(eventObj.ieeeAmount || 0);
+                            if(orgStatsData[orgId]) orgStatsData[orgId].ieee++;
+                        } else {
+                            nonIeeeCount++;
+                            memberFee = Number(eventObj.nonIeeeAmount || 0);
+                            if(orgStatsData[orgId]) orgStatsData[orgId].nonIeee++;
+                        }
+                        
+                        regBaseAmount += memberFee;
+                    });
+                } else {
+                    // Fallback for corrupt data
+                    regBaseAmount = Number(reg.totalAmountPaid || 0);
+                    regParticipantCount = reg.participants ? reg.participants.length : 1;
+                    totalParts += regParticipantCount;
+                }
+
+                // Add to Global Totals
+                totalBaseAmount += regBaseAmount;
+                
+                // Add to Sub Event Totals
+                subEventCounts[trackingKey].participants += regParticipantCount;
+                subEventCounts[trackingKey].revenue += regBaseAmount;
+
+                // Add to Org Totals
+                if(orgStatsData[orgId]) {
+                    orgStatsData[orgId].participants += regParticipantCount;
+                    orgStatsData[orgId].revenue += regBaseAmount;
+                }
+            });
+
+            // Bind values to UI Overview Cards
+            document.getElementById('stat-total-orgs').textContent = assignedOrgs.length;
+            document.getElementById('stat-total-regs').textContent = totalRegs;
+            document.getElementById('stat-total-parts').textContent = totalParts;
+            document.getElementById('stat-ieee-parts').textContent = ieeeCount;
+            document.getElementById('stat-non-ieee-parts').textContent = nonIeeeCount;
+            document.getElementById('stat-total-amount').textContent = `₹${totalBaseAmount}`;
+
+            // Render Sub-Event Statistics
+            const subEventContainer = document.getElementById('analytics-sub-events');
+            const subEventArray = Object.values(subEventCounts).sort((a, b) => b.revenue - a.revenue); // Sort by highest revenue
+            
+            if (subEventArray.length === 0) {
+                subEventContainer.innerHTML = '<div class="col-span-full py-4 text-center text-slate-500 text-sm">No registrations yet across assigned organizations.</div>';
+            } else {
+                subEventContainer.innerHTML = subEventArray.map(se => `
+                    <div class="flex flex-col p-5 bg-white rounded-xl border border-slate-200 shadow-sm transition-all hover:border-emerald-400 hover:shadow-md">
+                        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider line-clamp-1 mb-1">${se.event}</span>
+                        <span class="text-sm font-bold text-slate-800 mb-4 line-clamp-1">${se.name}</span>
+                        
+                        <div class="mt-auto grid grid-cols-2 gap-4 border-t border-slate-100 pt-3">
+                            <div>
+                                <span class="text-[10px] text-slate-500 uppercase font-bold block mb-0.5">Participants</span>
+                                <span class="text-slate-800 font-bold">${se.participants}</span>
+                            </div>
+                            <div>
+                                <span class="text-[10px] text-slate-500 uppercase font-bold block mb-0.5">Revenue</span>
+                                <span class="text-emerald-600 font-bold text-sm">₹${se.revenue}</span>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function renderOrgs() {
+            const container = document.getElementById('orgsContainer');
+            
+            if (assignedOrgs.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full bg-white rounded-2xl p-12 text-center border border-slate-200 border-dashed">
+                        <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-400">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                        </div>
+                        <h3 class="text-lg font-bold text-slate-800 mb-1">No Organizations</h3>
+                        <p class="text-slate-500 text-sm">You haven't been assigned any organizations yet.</p>
+                    </div>`;
+                return;
+            }
+
+            container.innerHTML = assignedOrgs.map(org => {
+                const stats = orgStatsData[org.orgId] || { participants: 0, revenue: 0, ieee: 0, nonIeee: 0 };
+                
+                return `
+                <div class="bg-white rounded-2xl border border-slate-200 p-6 flex flex-col hover:border-emerald-400 hover:shadow-lg transition-all">
+                    <div class="flex items-start gap-4 mb-5">
+                        <div class="w-12 h-12 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center overflow-hidden shrink-0">
+                            ${org.logoUrl ? `<img src="${org.logoUrl}" class="w-full h-full object-contain p-1">` : `<span class="font-display font-bold text-slate-400">${org.name.substring(0,2).toUpperCase()}</span>`}
+                        </div>
+                        <div>
+                            <h3 class="font-display font-bold text-slate-900 line-clamp-2 leading-tight mb-1">${org.name}</h3>
+                            <p class="text-[10px] text-slate-400 font-mono">${org.orgId}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-4 mt-auto">
+                        <div class="flex justify-between items-end pb-3 border-b border-slate-100">
+                            <span class="text-sm font-bold text-slate-500">Revenue (No Tax)</span>
+                            <span class="text-emerald-600 font-bold text-lg">₹${stats.revenue}</span>
+                        </div>
+                        
+                        <div class="flex justify-between items-end pb-3 border-b border-slate-100">
+                            <span class="text-sm font-bold text-slate-500">Total Participants</span>
+                            <span class="text-slate-800 font-bold text-lg">${stats.participants}</span>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-3 pt-1">
+                            <div class="bg-emerald-50 rounded-lg p-2 text-center border border-emerald-100">
+                                <span class="block text-[10px] font-bold text-emerald-600 uppercase tracking-widest">IEEE</span>
+                                <span class="text-emerald-700 font-bold">${stats.ieee}</span>
+                            </div>
+                            <div class="bg-slate-50 rounded-lg p-2 text-center border border-slate-200">
+                                <span class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest">NON-IEEE</span>
+                                <span class="text-slate-700 font-bold">${stats.nonIeee}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `}).join('');
+        }
+
+        function renderRegistrations() {
+            const container = document.getElementById('registrationsContainer');
+            const footer = document.getElementById('registrationsFooter');
+            
+            if (registrations.length === 0) {
+                container.innerHTML = `<tr><td colspan="6" class="py-12 text-center text-slate-500 font-medium">No registrations received yet.</td></tr>`;
+                if(footer) footer.classList.add('hidden');
+                return;
+            }
+
+            let overallTotalAmount = 0;
+
+            container.innerHTML = registrations.map(reg => {
+                const lead = reg.participants && reg.participants[0] ? reg.participants[0] : { fullName: 'Unknown', email: 'N/A', mobile: 'N/A' };
+                
+                let baseAmountDisplay = reg.totalAmountPaid;
+                const eventObj = allEvents.find(e => e.eventId === reg.eventId);
+                
+                // Calculate Exact Base
+                if (eventObj && reg.participants) {
+                    let calcBase = 0;
+                    reg.participants.forEach(p => {
+                        if (p.isIeee === 'Yes' || p.isIeee === true) calcBase += Number(eventObj.ieeeAmount || 0);
+                        else calcBase += Number(eventObj.nonIeeeAmount || 0);
+                    });
+                    baseAmountDisplay = calcBase;
+                }
+
+                if (reg.paymentStatus === 'Paid') {
+                    overallTotalAmount += baseAmountDisplay;
+                }
+
+                return `
+                <tr class="hover:bg-slate-50 transition-colors group">
+                    <td class="py-4 px-6 border-b border-slate-100">
+                        <p class="font-mono text-xs font-bold text-emerald-600 bg-emerald-50 inline-block px-2 py-0.5 rounded mb-1">${reg.registrationId}</p>
+                        <p class="text-sm font-bold text-slate-700">
+                            ${reg.eventName || 'Unknown Event'} 
+                            ${reg.selectedSubEvent ? `<br><span class="text-[10px] text-emerald-600 font-bold px-1.5 py-0.5 bg-emerald-50 rounded mt-1 inline-block">${reg.selectedSubEvent}</span>` : ''}
+                        </p>
+                    </td>
+                    <td class="py-4 px-6 border-b border-slate-100 text-sm font-medium text-slate-600">
+                        ${reg.orgName || 'Unknown Org'}
+                    </td>
+                    <td class="py-4 px-6 border-b border-slate-100">
+                        <p class="text-sm font-bold text-slate-900">${lead.fullName}</p>
+                        <p class="text-xs text-slate-500">${lead.email}</p>
+                        ${reg.participants.length > 1 ? `<p class="text-[0.65rem] font-bold text-emerald-600 mt-1.5 bg-emerald-50 inline-block px-2 py-0.5 rounded-full">+ ${reg.participants.length - 1} more member(s)</p>` : ''}
+                    </td>
+                    <td class="py-4 px-6 border-b border-slate-100 text-sm font-bold text-emerald-600">
+                        ₹${baseAmountDisplay}
+                    </td>
+                    <td class="py-4 px-6 border-b border-slate-100">
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold ${reg.paymentStatus === 'Paid' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-600'}">
+                            <span class="w-1.5 h-1.5 rounded-full ${reg.paymentStatus === 'Paid' ? 'bg-emerald-500' : 'bg-slate-400'}"></span>
+                            ${reg.paymentStatus}
+                        </span>
+                    </td>
+                    <td class="py-4 px-6 border-b border-slate-100 text-right">
+                        <button onclick="viewTeam('${reg.registrationId}')" class="px-3 py-1.5 bg-white border border-slate-200 hover:border-emerald-500 hover:text-emerald-600 rounded-lg text-xs font-bold text-slate-600 shadow-sm transition-all">
+                            View Team
+                        </button>
+                    </td>
+                </tr>
+            `}).join('');
+
+            if(footer) {
+                footer.innerHTML = `
+                    <tr>
+                        <td colspan="3" class="py-4 px-6 text-right uppercase tracking-wider text-sm text-slate-600">Total Valid Base Revenue:</td>
+                        <td class="py-4 px-6 text-emerald-600 text-base">₹${overallTotalAmount}</td>
+                        <td colspan="2"></td>
+                    </tr>
+                `;
+                footer.classList.remove('hidden');
+            }
+        }
+
+        function getExportData() {
+            const flatData = [];
+            registrations.forEach(reg => {
+                let baseAmountDisplay = reg.totalAmountPaid;
+                const eventObj = allEvents.find(e => e.eventId === reg.eventId);
+                if (eventObj && reg.participants) {
+                    let calcBase = 0;
+                    reg.participants.forEach(p => {
+                        if (p.isIeee === 'Yes' || p.isIeee === true) calcBase += Number(eventObj.ieeeAmount || 0);
+                        else calcBase += Number(eventObj.nonIeeeAmount || 0);
+                    });
+                    baseAmountDisplay = calcBase;
+                }
+
+                (reg.participants || []).forEach((p, index) => {
+                    flatData.push({
+                        'Registration ID': reg.registrationId,
+                        'Organization': reg.orgName || 'N/A',
+                        'Event Name': reg.selectedSubEvent ? `${reg.eventName} - ${reg.selectedSubEvent}` : reg.eventName,
+                        'Payment Status': reg.paymentStatus,
+                        'Total Base Amount': `Rs. ${baseAmountDisplay}`,
+                        'Role': index === 0 ? 'Lead' : 'Member',
+                        'Name': p.fullName || 'N/A',
+                        'Email': p.email || 'N/A',
+                        'Mobile': p.mobile || 'N/A',
+                        'Institution': p.organization || 'N/A',
+                        'IEEE Member': (p.isIeee === 'Yes' || p.isIeee === true) ? 'Yes' : 'No'
+                    });
+                });
+            });
+            return flatData;
+        }
+
+        function exportExcel() {
+            if (registrations.length === 0) return showToast("No data to export", "error");
+            const data = getExportData();
+            const ws = XLSX.utils.json_to_sheet(data);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Global Registrations");
+            XLSX.writeFile(wb, "UDGAMA_Global_Registrations.xlsx");
+        }
+
+        function exportPDF() {
+            if (registrations.length === 0) return showToast("No data to export", "error");
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('landscape');
+            
+            doc.setFontSize(14);
+            doc.text("UDGAMA 2026 - Global Registrations (Assigned Orgs)", 14, 15);
+            
+            const data = getExportData();
+            const headers = [['Reg ID', 'Organization', 'Event (Sub-Event)', 'Role', 'Name', 'Email', 'Institution', 'IEEE', 'Total Base', 'Status']];
+            const rows = data.map(d => [
+                d['Registration ID'], d['Organization'], d['Event Name'], d['Role'], d['Name'], d['Email'], 
+                d['Institution'], d['IEEE Member'],
+                d['Total Base Amount'], d['Payment Status']
+            ]);
+            
+            doc.autoTable({
+                head: headers,
+                body: rows,
+                startY: 20,
+                styles: { fontSize: 7, cellPadding: 2 },
+                headStyles: { fillColor: [5, 150, 105] } // emerald-600
+            });
+            
+            doc.save('UDGAMA_Global_Registrations.pdf');
+        }
+
+        function viewTeam(regId) {
+            const reg = registrations.find(r => r.registrationId === regId);
+            if(!reg) return;
+
+            document.getElementById('teamModalTitle').innerHTML = `${reg.eventName} ${reg.selectedSubEvent ? `<span class="text-sm font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded ml-2">${reg.selectedSubEvent}</span>` : ''}`;
+            document.getElementById('teamModalRegId').textContent = `Registration ID: ${reg.registrationId} | Org: ${reg.orgName}`;
+            
+            const container = document.getElementById('teamMembersContainer');
+            container.innerHTML = (reg.participants || []).map((p, idx) => `
+                <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="py-3 px-4 border-b border-slate-100">
+                        <span class="inline-block px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider ${idx === 0 ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500'}">
+                            ${idx === 0 ? 'Lead' : 'Member'}
+                        </span>
+                    </td>
+                    <td class="py-3 px-4 border-b border-slate-100">
+                        <p class="text-sm font-bold text-slate-900">${p.fullName}</p>
+                    </td>
+                    <td class="py-3 px-4 border-b border-slate-100">
+                        <p class="text-xs text-slate-600">${p.email}</p>
+                        <p class="text-xs text-slate-600">${p.mobile}</p>
+                    </td>
+                    <td class="py-3 px-4 border-b border-slate-100 text-sm text-slate-700">
+                        ${p.organization}
+                    </td>
+                    <td class="py-3 px-4 border-b border-slate-100">
+                        ${(p.isIeee === 'Yes' || p.isIeee === true) 
+                            ? `<span class="text-emerald-600 text-xs font-bold">YES</span><br><span class="text-[10px] text-slate-400 font-mono">${p.ieeeNumber || ''}</span>`
+                            : `<span class="text-slate-400 text-xs font-bold">NO</span>`}
+                    </td>
+                </tr>
+            `).join('');
+
+            const modal = document.getElementById('teamModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            setTimeout(() => modal.classList.remove('opacity-0'), 10);
+        }
+
+        function closeTeamModal() {
+            const modal = document.getElementById('teamModal');
+            modal.classList.add('opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }, 300);
+        }
+    </script>
+</body>
+</html>
