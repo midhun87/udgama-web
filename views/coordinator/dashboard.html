@@ -10,10 +10,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Export Libraries -->
+    <!-- Export & Scanning Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
     
     <script>
         tailwind.config = {
@@ -46,6 +47,11 @@
         .toast.show { transform: translateX(0); }
         .toast.success { border-left: 4px solid #10b981; }
         .toast.error { border-left: 4px solid #ef4444; }
+
+        /* Scanner Overrides */
+        #reader { border: none !important; border-radius: 1rem; overflow: hidden; width: 100%; }
+        #reader video { border-radius: 1rem; object-fit: cover; width: 100% !important; }
+        #qr-shaded-region { border: 4px solid rgba(255,255,255,0.4) !important; border-radius: 1rem; }
     </style>
 </head>
 <body class="text-slate-800 font-sans antialiased min-h-screen flex flex-col">
@@ -79,6 +85,10 @@
                 <button onclick="switchTab('analytics')" id="tab-analytics" class="flex-1 sm:flex-none px-6 py-2.5 rounded-lg text-sm font-bold bg-white text-brand-blue shadow-sm transition-all">Overview</button>
                 <button onclick="switchTab('events')" id="tab-events" class="flex-1 sm:flex-none px-6 py-2.5 rounded-lg text-sm font-bold text-slate-600 hover:text-slate-900 transition-all">My Events</button>
                 <button onclick="switchTab('registrations')" id="tab-registrations" class="flex-1 sm:flex-none px-6 py-2.5 rounded-lg text-sm font-bold text-slate-600 hover:text-slate-900 transition-all">Registrations</button>
+                <button onclick="switchTab('scanner')" id="tab-scanner" class="flex-1 sm:flex-none px-6 py-2.5 rounded-lg text-sm font-bold text-emerald-600 hover:text-emerald-700 bg-emerald-50/50 hover:bg-emerald-100 transition-all flex items-center justify-center gap-1.5">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg>
+                    Scan Pass
+                </button>
             </div>
             
             <button id="createEventBtn" onclick="openEventModal()" class="hidden bg-brand-blue hover:bg-brand-dark text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-md transition-all flex items-center justify-center gap-2">
@@ -115,22 +125,36 @@
                     </div>
                 </div>
 
+                <!-- Total Attended Card (NEW) -->
+                <div class="bg-gradient-to-br from-emerald-50 to-white p-6 rounded-2xl shadow-sm border border-emerald-100 flex flex-col justify-between relative overflow-hidden">
+                    <div class="absolute -right-4 -bottom-4 opacity-10">
+                        <svg class="w-32 h-32 text-emerald-500" fill="currentColor" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"></path></svg>
+                    </div>
+                    <p class="text-sm font-bold text-emerald-700 mb-2 relative z-10">Total Checked-In</p>
+                    <div class="flex items-center justify-between mt-2 relative z-10">
+                        <h4 class="text-4xl font-display font-bold text-emerald-600" id="stat-total-attended">0</h4>
+                        <div class="text-xs font-bold text-emerald-800 bg-emerald-100/50 px-3 py-1.5 rounded-lg border border-emerald-200">
+                            <span id="stat-attendance-rate">0%</span> Rate
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Total Revenue Collected Card -->
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between md:col-span-2 lg:col-span-2">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between">
                     <div class="flex justify-between items-start">
                         <p class="text-sm font-bold text-slate-500">Amount Collected <span class="text-[10px] font-medium text-slate-400 block sm:inline">(Excluding Taxes)</span></p>
                         <div class="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-600">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                         </div>
                     </div>
-                    <h4 class="text-4xl font-display font-bold text-emerald-600 mt-2" id="stat-total-amount">₹0</h4>
+                    <h4 class="text-3xl font-display font-bold text-emerald-600 mt-2" id="stat-total-amount">₹0</h4>
                 </div>
             </div>
 
             <!-- Sub-Event Wise Registrations Section -->
             <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
                 <div class="px-6 py-5 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
-                    <h4 class="font-bold text-slate-800 text-sm">Sub-Event Wise Registrations</h4>
+                    <h4 class="font-bold text-slate-800 text-sm">Sub-Event Wise Registrations & Attendance</h4>
                     <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
                 </div>
                 <div class="p-6">
@@ -141,6 +165,59 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- Scanner View -->
+        <div id="view-scanner" class="fade-in hidden flex-col items-center flex-1 max-w-3xl mx-auto w-full">
+            <div class="text-center mb-6 w-full">
+                <h3 class="text-2xl font-display font-black text-slate-900">QR Code Scanner</h3>
+                <p class="text-slate-500 text-sm font-medium mt-1">Scan participant passes to mark attendance automatically.</p>
+            </div>
+
+            <div class="w-full bg-white p-3 rounded-3xl shadow-float border border-slate-200 mb-6 relative overflow-hidden flex flex-col items-center" id="scanner-container">
+                
+                <!-- Scanner UI Controls -->
+                <div id="scanner-ui-controls" class="w-full flex justify-center py-8">
+                    <button onclick="initScanner()" class="px-6 py-3 bg-brand-blue hover:bg-brand-dark text-white rounded-xl font-bold shadow-md transition-colors flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                        Start Camera Scanner
+                    </button>
+                </div>
+
+                <!-- Scanner element -->
+                <div id="reader" class="w-full min-h-[300px] bg-slate-900 rounded-2xl hidden"></div>
+                
+                <!-- Overlay for success state -->
+                <div id="scan-success-overlay" class="absolute inset-0 bg-white/95 backdrop-blur-md z-20 hidden flex-col items-center justify-center p-6 text-center transition-all">
+                    <div class="w-20 h-20 bg-emerald-100 text-emerald-500 rounded-full flex items-center justify-center mb-5 shadow-sm border-4 border-emerald-50">
+                        <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                    <h4 class="text-2xl font-black text-slate-800 mb-2">Check-in Successful!</h4>
+                    <div class="bg-slate-50 border border-slate-100 rounded-xl p-4 w-full max-w-sm mb-6">
+                        <p class="text-slate-700 text-sm mb-1" id="scanned-participant-name">Loading...</p>
+                        <p class="text-emerald-600 text-xs font-bold uppercase tracking-wide">Attendance Marked</p>
+                    </div>
+                    <button onclick="resumeScanner()" class="px-8 py-3.5 bg-brand-blue hover:bg-brand-dark text-white rounded-xl font-bold shadow-lg transition-transform hover:scale-105 active:scale-95">
+                        Scan Next Pass
+                    </button>
+                </div>
+
+                <!-- Overlay for loading state -->
+                <div id="scan-loading-overlay" class="absolute inset-0 bg-white/90 backdrop-blur-sm z-20 hidden flex-col items-center justify-center p-6 text-center">
+                    <div class="w-14 h-14 border-4 border-slate-200 border-t-brand-blue rounded-full animate-spin mb-4"></div>
+                    <p class="font-bold text-slate-700 text-lg">Verifying pass...</p>
+                    <p class="text-sm text-slate-500 mt-1">Please hold the QR steady</p>
+                </div>
+            </div>
+            
+            <!-- Manual Entry Fallback -->
+            <div class="w-full bg-slate-50 border border-slate-200 rounded-xl p-5 text-center">
+                <p class="text-sm font-bold text-slate-600 mb-3">Camera not working? Fallback to manual entry:</p>
+                <form id="manualScanForm" class="flex gap-2 justify-center" onsubmit="handleManualScan(event)">
+                    <input type="text" id="manualQrData" placeholder="TKT-XXXX:::email@example.com" required class="flex-1 max-w-sm px-4 py-2 border border-slate-300 rounded-lg outline-none focus:ring-2 focus:ring-brand-blue text-sm">
+                    <button type="submit" class="px-5 py-2 bg-slate-800 text-white rounded-lg font-bold hover:bg-slate-900 transition-colors">Submit</button>
+                </form>
             </div>
         </div>
 
@@ -292,6 +369,7 @@
         </div>
     </div>
 
+    <!-- Team Details Modal (Updated for Attendance) -->
     <div id="teamModal" class="fixed inset-0 z-50 hidden items-center justify-center modal-overlay p-4 opacity-0 transition-opacity duration-300">
         <div class="bg-white rounded-[2rem] w-full max-w-4xl shadow-2xl transform scale-95 transition-transform duration-300 flex flex-col max-h-[90vh]">
             <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-white rounded-t-[2rem]">
@@ -309,7 +387,7 @@
                     <table class="w-full text-left border-collapse">
                         <thead>
                             <tr class="bg-slate-50 border-b border-slate-200">
-                                <th class="py-3 px-4 text-xs font-bold text-slate-500 uppercase">Role</th>
+                                <th class="py-3 px-4 text-xs font-bold text-slate-500 uppercase">Role / Check-In</th>
                                 <th class="py-3 px-4 text-xs font-bold text-slate-500 uppercase">Participant</th>
                                 <th class="py-3 px-4 text-xs font-bold text-slate-500 uppercase">Contact</th>
                                 <th class="py-3 px-4 text-xs font-bold text-slate-500 uppercase">Institution</th>
@@ -333,11 +411,12 @@
 
     <script>
         const API_BASE = '/api';
-        let currentTab = 'analytics'; // Analytics set as default view
+        let currentTab = 'analytics'; 
         let orgId = '';
         let events = [];
         let registrations = [];
         let currentSubEvents = []; 
+        let html5QrCode = null; // Changed to base Html5Qrcode instance
 
         // Auth Check
         document.addEventListener('DOMContentLoaded', () => {
@@ -358,29 +437,45 @@
         });
 
         function logout() {
+            if (html5QrcodeScanner) html5QrcodeScanner.clear();
             localStorage.clear();
             window.location.href = '/staff-login';
         }
 
-        // Updated switchTab to handle the 3 views correctly
+        // Updated switchTab to handle the 4 views correctly including scanner
         function switchTab(tab) {
             currentTab = tab;
-            const tabs = ['analytics', 'events', 'registrations'];
+            const tabs = ['analytics', 'events', 'registrations', 'scanner'];
             
             tabs.forEach(t => {
                 const btn = document.getElementById(`tab-${t}`);
                 const view = document.getElementById(`view-${t}`);
                 
                 if (t === tab) {
-                    btn.className = 'flex-1 sm:flex-none px-6 py-2.5 rounded-lg text-sm font-bold bg-white text-brand-blue shadow-sm transition-all';
+                    if (t === 'scanner') {
+                        btn.className = 'flex-1 sm:flex-none px-6 py-2.5 rounded-lg text-sm font-bold text-emerald-700 bg-emerald-100 shadow-sm transition-all flex items-center justify-center gap-1.5';
+                    } else {
+                        btn.className = 'flex-1 sm:flex-none px-6 py-2.5 rounded-lg text-sm font-bold bg-white text-brand-blue shadow-sm transition-all';
+                    }
+                    
                     view.classList.remove('hidden');
-                    if (t === 'registrations') {
+                    if (t === 'registrations' || t === 'scanner') {
                         view.classList.add('flex');
                     } else {
                         view.classList.add('block');
                     }
                 } else {
-                    btn.className = 'flex-1 sm:flex-none px-6 py-2.5 rounded-lg text-sm font-bold text-slate-600 hover:text-slate-900 transition-all';
+                    if (t === 'scanner') {
+                        btn.className = 'flex-1 sm:flex-none px-6 py-2.5 rounded-lg text-sm font-bold text-emerald-600 hover:text-emerald-700 bg-emerald-50/50 hover:bg-emerald-100 transition-all flex items-center justify-center gap-1.5';
+                        if (html5QrCode && html5QrCode.isScanning) {
+                            html5QrCode.stop().catch(e => console.log("Stop error:", e));
+                            document.getElementById('reader').classList.add('hidden');
+                            document.getElementById('scanner-ui-controls').classList.remove('hidden');
+                        }
+                    } else {
+                        btn.className = 'flex-1 sm:flex-none px-6 py-2.5 rounded-lg text-sm font-bold text-slate-600 hover:text-slate-900 transition-all';
+                    }
+                    
                     view.classList.add('hidden');
                     view.classList.remove('block', 'flex');
                 }
@@ -419,7 +514,7 @@
                 registrations = regData.registrations || [];
                 
                 renderRegistrations();
-                calculateAnalytics(); // Call Analytics computation after fetching
+                calculateAnalytics(); 
 
             } catch (error) {
                 console.error(error);
@@ -430,13 +525,13 @@
         function calculateAnalytics() {
             let totalRegistrations = 0;
             let totalParticipants = 0;
+            let totalAttended = 0; // NEW: Attendance Tracker
             let ieeeCount = 0;
             let nonIeeeCount = 0;
             let totalBaseAmount = 0;
-            let subEventCounts = {}; // Key format: "EventName - SubEvent"
+            let subEventCounts = {}; // Track regs, participants, attended
 
             registrations.forEach(reg => {
-                // Ensure we only count completed transactions/Free success
                 if (reg.paymentStatus !== 'Paid') return;
 
                 totalRegistrations++;
@@ -444,27 +539,33 @@
                 let regBaseAmount = 0;
                 const eventObj = events.find(e => e.eventId === reg.eventId);
                 
-                // Track sub-events
                 const eventName = eventObj ? eventObj.title : 'Unknown Event';
                 const subEventName = reg.selectedSubEvent ? reg.selectedSubEvent : 'Standard';
                 const trackingKey = `${eventName} - ${subEventName}`;
 
                 if (!subEventCounts[trackingKey]) {
-                    subEventCounts[trackingKey] = 0;
+                    subEventCounts[trackingKey] = { regs: 0, participants: 0, attended: 0 };
                 }
-                subEventCounts[trackingKey]++;
+                subEventCounts[trackingKey].regs++;
 
-                // Calculate participant breakdown and base amounts strictly
                 if (reg.participants && eventObj) {
                     reg.participants.forEach(p => {
                         totalParticipants++;
+                        subEventCounts[trackingKey].participants++;
+                        
+                        // Check Attendance
+                        if (p.attended) {
+                            totalAttended++;
+                            subEventCounts[trackingKey].attended++;
+                        }
+
                         const isIeee = (p.isIeee === 'Yes' || p.isIeee === true);
                         if (isIeee) {
                             ieeeCount++;
-                            regBaseAmount += Number(eventObj.ieeeAmount || 0); // Excluding Tax
+                            regBaseAmount += Number(eventObj.ieeeAmount || 0);
                         } else {
                             nonIeeeCount++;
-                            regBaseAmount += Number(eventObj.nonIeeeAmount || 0); // Excluding Tax
+                            regBaseAmount += Number(eventObj.nonIeeeAmount || 0);
                         }
                     });
                 }
@@ -474,11 +575,15 @@
             // Bind values to UI
             document.getElementById('stat-total-regs').textContent = totalRegistrations;
             document.getElementById('stat-total-parts').textContent = totalParticipants;
+            document.getElementById('stat-total-attended').textContent = totalAttended;
             document.getElementById('stat-ieee-parts').textContent = ieeeCount;
             document.getElementById('stat-non-ieee-parts').textContent = nonIeeeCount;
             document.getElementById('stat-total-amount').textContent = `₹${totalBaseAmount}`;
+            
+            const attendanceRate = totalParticipants > 0 ? Math.round((totalAttended / totalParticipants) * 100) : 0;
+            document.getElementById('stat-attendance-rate').textContent = `${attendanceRate}%`;
 
-            // Render Sub-Event Statistics
+            // Render Sub-Event Statistics with Attendance
             const subEventContainer = document.getElementById('analytics-sub-events');
             
             if (Object.keys(subEventCounts).length === 0) {
@@ -486,10 +591,20 @@
             } else {
                 subEventContainer.innerHTML = Object.entries(subEventCounts).map(([name, count]) => `
                     <div class="flex flex-col p-4 bg-slate-50 rounded-xl border border-slate-200 shadow-sm transition-all hover:border-brand-blue hover:shadow-md">
-                        <span class="text-sm font-bold text-slate-700 mb-3">${name}</span>
-                        <div class="mt-auto flex justify-between items-center">
-                            <span class="text-xs text-slate-500 font-medium">Registrations</span>
-                            <span class="px-3 py-1 bg-brand-blue/10 text-brand-blue rounded-lg text-sm font-bold">${count}</span>
+                        <span class="text-sm font-bold text-slate-700 mb-3 truncate" title="${name}">${name}</span>
+                        <div class="mt-auto flex flex-col gap-2">
+                            <div class="flex justify-between items-center">
+                                <span class="text-xs text-slate-500 font-medium">Tickets / Regs</span>
+                                <span class="px-2 py-0.5 bg-slate-200 text-slate-700 rounded text-xs font-bold">${count.regs}</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-xs text-slate-500 font-medium">Total Participants</span>
+                                <span class="px-2 py-0.5 bg-blue-100 text-brand-blue rounded text-xs font-bold">${count.participants}</span>
+                            </div>
+                            <div class="flex justify-between items-center pt-2 border-t border-slate-200">
+                                <span class="text-xs text-emerald-600 font-bold uppercase">Checked-in</span>
+                                <span class="px-2 py-0.5 bg-emerald-100 text-emerald-700 rounded text-xs font-bold">${count.attended}</span>
+                            </div>
                         </div>
                     </div>
                 `).join('');
@@ -618,30 +733,31 @@
         function getExportData() {
             const flatData = [];
             registrations.forEach(reg => {
-                let baseAmountDisplay = reg.totalAmountPaid;
                 const eventObj = events.find(e => e.eventId === reg.eventId);
-                if (eventObj && reg.participants) {
-                    let calcBase = 0;
-                    reg.participants.forEach(p => {
-                        if (p.isIeee === 'Yes' || p.isIeee === true) calcBase += Number(eventObj.ieeeAmount || 0);
-                        else calcBase += Number(eventObj.nonIeeeAmount || 0);
-                    });
-                    baseAmountDisplay = calcBase;
-                }
 
                 (reg.participants || []).forEach((p, index) => {
+                    let participantBaseAmount = 0;
+                    
+                    if (eventObj) {
+                        if (p.isIeee === 'Yes' || p.isIeee === true) {
+                            participantBaseAmount = Number(eventObj.ieeeAmount || 0);
+                        } else {
+                            participantBaseAmount = Number(eventObj.nonIeeeAmount || 0);
+                        }
+                    }
+
                     flatData.push({
                         'Registration ID': reg.registrationId,
                         'Event Name': reg.selectedSubEvent ? `${reg.eventName} - ${reg.selectedSubEvent}` : reg.eventName,
-                        'Payment Status': reg.paymentStatus,
-                        'Amount Paid': `Rs. ${baseAmountDisplay}`,
                         'Role': index === 0 ? 'Lead' : 'Member',
                         'Name': p.fullName || 'N/A',
                         'Email': p.email || 'N/A',
                         'Mobile': p.mobile || 'N/A',
                         'Institution': p.organization || 'N/A',
                         'IEEE Member': (p.isIeee === 'Yes' || p.isIeee === true) ? 'Yes' : 'No',
-                        'IEEE Number': p.ieeeNumber || 'N/A'
+                        'Amount (Indiv)': `Rs. ${participantBaseAmount}`,
+                        'Payment Status': reg.paymentStatus,
+                        'Attended (Check-in)': p.attended ? 'Yes' : 'No'
                     });
                 });
             });
@@ -666,11 +782,11 @@
             doc.text("UDGAMA 2026 - Registrations", 14, 15);
             
             const data = getExportData();
-            const headers = [['Reg ID', 'Event (Sub-Event)', 'Role', 'Name', 'Email', 'Mobile', 'Institution', 'IEEE', 'Amount Paid', 'Status']];
+            const headers = [['Reg ID', 'Event (Sub-Event)', 'Role', 'Name', 'Email', 'Mobile', 'Institution', 'IEEE', 'Attended', 'Indiv Amt']];
             const rows = data.map(d => [
                 d['Registration ID'], d['Event Name'], d['Role'], d['Name'], d['Email'], 
-                d['Mobile'], d['Institution'], d['IEEE Member'],
-                d['Amount Paid'], d['Payment Status']
+                d['Mobile'], d['Institution'], d['IEEE Member'], d['Attended (Check-in)'],
+                d['Amount (Indiv)']
             ]);
             
             doc.autoTable({
@@ -694,10 +810,14 @@
             const container = document.getElementById('teamMembersContainer');
             container.innerHTML = (reg.participants || []).map((p, idx) => `
                 <tr class="hover:bg-slate-50 transition-colors">
-                    <td class="py-3 px-4 border-b border-slate-100">
-                        <span class="inline-block px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider ${idx === 0 ? 'bg-blue-100 text-brand-blue' : 'bg-slate-100 text-slate-500'}">
+                    <td class="py-3 px-4 border-b border-slate-100 text-center sm:text-left">
+                        <span class="inline-block px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider ${idx === 0 ? 'bg-blue-100 text-brand-blue' : 'bg-slate-100 text-slate-500'} mb-2">
                             ${idx === 0 ? 'Lead' : 'Member'}
-                        </span>
+                        </span><br>
+                        <!-- NEW: Attendance visual indicator inside Modal -->
+                        ${p.attended 
+                            ? `<span class="bg-emerald-100 text-emerald-700 text-[10px] font-bold px-2 py-0.5 rounded border border-emerald-200">Present</span>` 
+                            : `<span class="bg-amber-50 text-amber-600 text-[10px] font-bold px-2 py-0.5 rounded border border-amber-200">Pending</span>`}
                     </td>
                     <td class="py-3 px-4 border-b border-slate-100">
                         <p class="text-sm font-bold text-slate-900">${p.fullName}</p>
@@ -730,6 +850,103 @@
                 modal.classList.add('hidden');
                 modal.classList.remove('flex');
             }, 300);
+        }
+
+        // --- SCANNER IMPLEMENTATION ---
+        async function initScanner() {
+            document.getElementById('scanner-ui-controls').classList.add('hidden');
+            document.getElementById('reader').classList.remove('hidden');
+            
+            if (!html5QrCode) {
+                html5QrCode = new Html5Qrcode("reader");
+            }
+
+            try {
+                await html5QrCode.start(
+                    { facingMode: "environment" },
+                    { fps: 10, qrbox: { width: 250, height: 250 }, aspectRatio: 1.0 },
+                    onScanSuccess,
+                    onScanFailure
+                );
+            } catch (err) {
+                console.error("Camera error:", err);
+                showToast("Camera access denied or unavailable", "error");
+                document.getElementById('reader').classList.add('hidden');
+                document.getElementById('scanner-ui-controls').classList.remove('hidden');
+            }
+        }
+
+        async function onScanSuccess(decodedText) {
+            // Immediately stop camera to freeze the frame and prevent multiple scans
+            if (html5QrCode && html5QrCode.isScanning) {
+                try { await html5QrCode.stop(); } catch(e) { console.log("Failed to stop scanner", e); }
+            }
+            await processScanData(decodedText);
+        }
+
+        function onScanFailure(error) { /* Ignore background scanning errors */ }
+
+        async function handleManualScan(e) {
+            e.preventDefault();
+            const data = document.getElementById('manualQrData').value.trim();
+            if(!data) return;
+            
+            if (html5QrCode && html5QrCode.isScanning) {
+                try { await html5QrCode.stop(); } catch(e) {}
+            }
+            
+            await processScanData(data);
+            document.getElementById('manualQrData').value = '';
+        }
+
+        async function processScanData(qrData) {
+            document.getElementById('scan-loading-overlay').classList.remove('hidden');
+            document.getElementById('scan-loading-overlay').classList.add('flex');
+            
+            try {
+                const token = localStorage.getItem('token');
+                const res = await fetch(`${API_BASE}/coordinator/ticket/scan`, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}` 
+                    },
+                    body: JSON.stringify({ qrData })
+                });
+
+                const data = await res.json();
+                document.getElementById('scan-loading-overlay').classList.add('hidden');
+                document.getElementById('scan-loading-overlay').classList.remove('flex');
+
+                if (!res.ok) {
+                    showToast(data.error || 'Failed to mark attendance', 'error');
+                    setTimeout(resumeScanner, 2000); 
+                    return;
+                }
+
+                // Update UI visually for Check-in
+                document.getElementById('scanned-participant-name').innerHTML = `
+                    <span class="font-bold text-lg block text-slate-900">${data.participant.fullName}</span>
+                    <span class="text-slate-500">${data.participant.email}</span>
+                `;
+                document.getElementById('scan-success-overlay').classList.remove('hidden');
+                document.getElementById('scan-success-overlay').classList.add('flex');
+
+                fetchDashboardData();
+
+            } catch(e) {
+                document.getElementById('scan-loading-overlay').classList.add('hidden');
+                document.getElementById('scan-loading-overlay').classList.remove('flex');
+                showToast("Network Error", "error");
+                setTimeout(resumeScanner, 2000);
+            }
+        }
+
+        function resumeScanner() {
+            document.getElementById('scan-success-overlay').classList.add('hidden');
+            document.getElementById('scan-success-overlay').classList.remove('flex');
+            // Restart the scanner securely
+            initScanner();
         }
 
         // Sub-Events Handling
