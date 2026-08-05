@@ -36,13 +36,14 @@ app.use('/admin', express.static(path.join(__dirname, 'views', 'admin'), staticO
 // 3. Serve everything in views/coordinator under the /coordinator path (e.g., /coordinator/dashboard)
 app.use('/coordinator', express.static(path.join(__dirname, 'views', 'coordinator'), staticOptions));
 
-// 4. Serve your public assets (images, global css, etc.)
+// 4. Serve everything in views/coordinating-admin under the /coordinating-admin path
+app.use('/coordinating-admin', express.static(path.join(__dirname, 'views', 'coordinating-admin'), staticOptions));
+
+// 5. Serve your public assets (images, global css, etc.)
 app.use('/assets', express.static(path.join(__dirname, 'public', 'assets')));
 
 // ==========================================
-// FIX: Backward Compatibility Redirects
-// If your old HTML files redirect to these old URLs, 
-// the server will automatically forward them to the new correct folders.
+// Backward Compatibility Redirects
 // ==========================================
 app.get('/coordinator_dashboard.html', (req, res) => res.redirect('/coordinator/dashboard'));
 app.get('/admin_dashboard.html', (req, res) => res.redirect('/admin/dashboard'));
@@ -110,6 +111,15 @@ const requireCoordinator = (req, res, next) => {
     });
 };
 
+const requireCoordinatingAdmin = (req, res, next) => {
+    authenticateToken(req, res, () => {
+        if (req.user.role !== 'coordinating_admin' && req.user.role !== 'admin') {
+            return res.status(403).json({ error: 'Forbidden: Coordinating Admin access required' });
+        }
+        next();
+    });
+};
+
 const upload = multer({ storage: multer.memoryStorage() });
 
 // --- API: Staff Authentication ---
@@ -130,7 +140,7 @@ app.post('/api/auth/login', async (req, res) => {
             adminId: user.adminId, 
             email: user.email, 
             role: user.role,
-            orgId: user.orgId // Will be undefined for Master Admin
+            orgId: user.orgId // Will be undefined for Master/Coordinating Admin
         }, JWT_SECRET, { expiresIn: '24h' });
         
         res.json({ message: 'Login successful', token, role: user.role, orgId: user.orgId, name: user.name });
@@ -166,6 +176,7 @@ app.post('/api/admin/organizations', requireAdmin, async (req, res) => {
         res.status(500).json({ error: 'Failed to create organization' });
     }
 });
+
 // 2. Create Organization Coordinator
 app.post('/api/admin/coordinators', requireAdmin, async (req, res) => {
     try {
@@ -192,6 +203,177 @@ app.post('/api/admin/coordinators', requireAdmin, async (req, res) => {
     } catch (error) {
         console.error('Create Coord Error:', error);
         res.status(500).json({ error: 'Failed to create coordinator' });
+    }
+});
+
+// 3. Create Coordinating Admin (NEW)
+app.post('/api/admin/coordinating-admins', requireAdmin, async (req, res) => {
+    try {
+        const { email, password, name, assignedOrgs } = req.body;
+        
+        if (!assignedOrgs || !Array.isArray(assignedOrgs) || assignedOrgs.length === 0) {
+            return res.status(400).json({ error: 'At least one organization must be assigned.' });
+        }
+
+        const existing = await docClient.send(new GetCommand({ TableName: ADMINS_TABLE, Key: { email } }));
+        if (existing.Item) return res.status(400).json({ error: 'Email already exists' });
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const adminId = `CO-ADMIN-${uuidv4().substring(0, 8)}`;
+
+        const coordAdminItem = {
+            email, 
+            adminId,
+            name,
+            password: hashedPassword,
+            role: 'coordinating_admin',
+            assignedOrgs, // Array of Org IDs e.g. ['ORG-123', 'ORG-456']
+            createdAt: new Date().toISOString()
+        };
+
+        await docClient.send(new PutCommand({ TableName: ADMINS_TABLE, Item: coordAdminItem }));
+        res.json({ message: 'Coordinating Admin created successfully', email });
+    } catch (error) {
+        console.error('Create Coordinating Admin Error:', error);
+        res.status(500).json({ error: 'Failed to create coordinating admin' });
+    }
+});
+
+// --- API: Coordinating Admin Routes (NEW) ---
+app.get('/api/coordinating-admin/dashboard', requireCoordinatingAdmin, async (req, res) => {
+    try {
+        // 1. Get the Coordinating Admin details to find assigned orgs
+        const userRes = await docClient.send(new GetCommand({ TableName: ADMINS_TABLE, Key: { email: req.user.email } }));
+        const user = userRes.Item;
+        
+        if (!user || user.role !== 'coordinating_admin') {
+            return res.status(403).json({ error: 'Invalid user role' });
+        }
+        
+        const assignedOrgIds = user.assignedOrgs || [];
+        
+        if (assignedOrgIds.length === 0) {
+            return res.json({ stats: null, orgStats: [], subEventStats: [], assignedOrgsDetails: [] });
+        }
+
+        // 2. Fetch Organizations Details
+        const orgsScan = await docClient.send(new ScanCommand({ TableName: ORGS_TABLE }));
+        const allOrgs = orgsScan.Items || [];
+        const assignedOrgsDetails = allOrgs.filter(org => assignedOrgIds.includes(org.orgId));
+
+        // 3. Fetch Events belonging to assigned orgs
+        const eventsScan = await docClient.send(new ScanCommand({ TableName: EVENTS_TABLE }));
+        const allEvents = eventsScan.Items || [];
+        const orgEvents = allEvents.filter(e => assignedOrgIds.includes(e.orgId));
+        const orgEventIds = orgEvents.map(e => e.eventId);
+
+        // 4. Fetch all registrations
+        const regScan = await docClient.send(new ScanCommand({ TableName: REGISTRATIONS_TABLE }));
+        const allRegs = regScan.Items || [];
+        const orgRegistrations = allRegs.filter(reg => orgEventIds.includes(reg.eventId));
+
+        // 5. Aggregate Analytics
+        let totalRevenue = 0;
+        let totalRegistrations = orgRegistrations.length;
+        let totalParticipants = 0;
+        let ieeeCount = 0;
+        let nonIeeeCount = 0;
+        let orgStatsMap = {};
+        let subEventStatsMap = {};
+
+        // Initialize org stats map
+        assignedOrgsDetails.forEach(org => {
+            orgStatsMap[org.orgId] = {
+                orgId: org.orgId,
+                orgName: org.name,
+                registrations: 0,
+                participants: 0,
+                revenue: 0,
+                ieee: 0,
+                nonIeee: 0
+            };
+        });
+
+        // Process Registrations
+        const detailedRegistrations = [];
+
+        orgRegistrations.forEach(reg => {
+            const event = orgEvents.find(e => e.eventId === reg.eventId);
+            if (!event) return;
+
+            const orgId = event.orgId;
+            const amount = Number(reg.totalAmountPaid || 0);
+            const subEventName = reg.selectedSubEvent || 'Main Event';
+            const subEventKey = `${event.eventId}_${subEventName}`; // Unique key per sub-event
+            
+            totalRevenue += amount;
+            
+            if(orgStatsMap[orgId]) {
+                orgStatsMap[orgId].registrations += 1; // Ticket count
+                orgStatsMap[orgId].revenue += amount;
+            }
+
+            if (!subEventStatsMap[subEventKey]) {
+                subEventStatsMap[subEventKey] = {
+                    eventName: event.title,
+                    subEvent: subEventName,
+                    revenue: 0,
+                    participants: 0,
+                    orgName: orgStatsMap[orgId] ? orgStatsMap[orgId].orgName : 'Unknown Org'
+                };
+            }
+            
+            subEventStatsMap[subEventKey].revenue += amount;
+
+            let regParticipantsCount = 0;
+
+            // Deep dive into Participants array to count ACTUAL people (teams = multiple people)
+            if (reg.participants && Array.isArray(reg.participants)) {
+                regParticipantsCount = reg.participants.length;
+                totalParticipants += regParticipantsCount;
+                
+                if(orgStatsMap[orgId]) orgStatsMap[orgId].participants += regParticipantsCount;
+                subEventStatsMap[subEventKey].participants += regParticipantsCount;
+
+                reg.participants.forEach(p => {
+                    const isIeee = (p.isIeee === 'Yes' || p.isIeee === true);
+                    if (isIeee) {
+                        ieeeCount++;
+                        if(orgStatsMap[orgId]) orgStatsMap[orgId].ieee++;
+                    } else {
+                        nonIeeeCount++;
+                        if(orgStatsMap[orgId]) orgStatsMap[orgId].nonIeee++;
+                    }
+                });
+            }
+            
+            detailedRegistrations.push({
+                ...reg,
+                eventName: event.title,
+                orgName: orgStatsMap[orgId] ? orgStatsMap[orgId].orgName : 'Unknown Org',
+                participantCount: regParticipantsCount
+            });
+        });
+
+        res.json({
+            stats: {
+                totalRevenue,
+                totalRegistrations, // Number of tickets
+                totalParticipants,  // Number of actual human beings
+                ieeeCount,
+                nonIeeeCount,
+                totalAssignedOrgs: assignedOrgIds.length
+            },
+            orgStats: Object.values(orgStatsMap),
+            subEventStats: Object.values(subEventStatsMap),
+            assignedOrgsDetails,
+            recentRegistrations: detailedRegistrations.slice(-10).reverse(), 
+            allRegistrations: detailedRegistrations // Complete set for CSV export
+        });
+
+    } catch (error) {
+        console.error('Fetch Coordinating Admin Dashboard Error:', error);
+        res.status(500).json({ error: 'Failed to fetch dashboard data' });
     }
 });
 
@@ -477,13 +659,6 @@ app.post('/api/public/register/verify', async (req, res) => {
                 </tr>
             `;
         });
-
-        // The HTML body string remains exactly the same, but replace ${eventName} inside your HTML block with ${displayEventName}
-        // (You can copy your original HTML string here, just changing line 249 from ${eventName} to ${displayEventName})
-        // Example portion to change:
-        // <p>Thank you for registering for <span class="event-name">${displayEventName}</span>. Your payment has been successfully processed...</p>
-
-        // *** I have shortened the HTML string block below for readability, use your full existing HTML string and replace the variable ***
         
         const emailHtmlBody = `
             <!DOCTYPE html>
@@ -794,7 +969,7 @@ app.post('/api/public/register/verify', async (req, res) => {
             <div class="success-msg">
                 <div class="success-icon"></div>
                 <h2>Registration Confirmed!</h2>
-                <p>Thank you for registering for <span class="event-name">${eventName}</span>. Your payment has been successfully processed and your spots are secured.</p>
+                <p>Thank you for registering for <span class="event-name">${displayEventName}</span>. Your payment has been successfully processed and your spots are secured.</p>
             </div>
             
             <!-- Details Table - Robust for Email -->
@@ -874,6 +1049,7 @@ app.post('/api/public/register/verify', async (req, res) => {
         res.status(500).json({ error: 'Failed to process final registration' });
     }
 });
+
 // Update Event Display Order (Master Admin Only)
 app.put('/api/admin/events/:eventId/order', requireAdmin, async (req, res) => {
     try {
@@ -919,6 +1095,106 @@ app.put('/api/admin/organizations/:orgId/order', requireAdmin, async (req, res) 
     } catch (error) {
         console.error('Update Org Order Error:', error);
         res.status(500).json({ error: 'Failed to update organization order' });
+    }
+});
+
+
+// --- API: Public Ticket Fetch ---
+app.get('/api/public/ticket/:regId', async (req, res) => {
+    try {
+        const { regId } = req.params;
+        const response = await docClient.send(new GetCommand({
+            TableName: REGISTRATIONS_TABLE,
+            Key: { registrationId: regId }
+        }));
+        
+        if (!response.Item) {
+            return res.status(404).json({ error: 'Ticket not found. Please check your Registration ID.' });
+        }
+        
+        // Fetch event details to get the actual event name
+        const eventRes = await docClient.send(new GetCommand({
+            TableName: EVENTS_TABLE,
+            Key: { eventId: response.Item.eventId }
+        }));
+        const eventName = eventRes.Item ? eventRes.Item.title : 'UDGAMA 2026 Event';
+
+        res.json({ registration: response.Item, eventName });
+    } catch (error) {
+        console.error('Fetch Ticket Error:', error);
+        res.status(500).json({ error: 'Failed to fetch ticket details' });
+    }
+});
+
+// --- API: Coordinator QR Scan & Attendance ---
+app.post('/api/coordinator/ticket/scan', requireCoordinator, async (req, res) => {
+    try {
+        const { qrData } = req.body; // Expected format: "TKT-XYZ123:::user@email.com"
+        
+        if (!qrData || !qrData.includes(':::')) {
+            return res.status(400).json({ error: 'Invalid QR Code format' });
+        }
+
+        const [regId, email] = qrData.split(':::');
+        
+        // 1. Get Registration
+        const response = await docClient.send(new GetCommand({
+            TableName: REGISTRATIONS_TABLE,
+            Key: { registrationId: regId }
+        }));
+        
+        if (!response.Item) return res.status(404).json({ error: 'Registration not found' });
+        
+        let reg = response.Item;
+        let participantIndex = reg.participants.findIndex(p => p.email === email);
+        
+        if (participantIndex === -1) {
+            return res.status(404).json({ error: 'Participant not found in this registration' });
+        }
+        
+        if (reg.participants[participantIndex].attended) {
+            return res.json({ message: 'Already marked as attended', participant: reg.participants[participantIndex] });
+        }
+
+        // 2. Mark as attended
+        reg.participants[participantIndex].attended = true;
+        await docClient.send(new UpdateCommand({
+            TableName: REGISTRATIONS_TABLE,
+            Key: { registrationId: regId },
+            UpdateExpression: 'SET participants = :p',
+            ExpressionAttributeValues: { ':p': reg.participants }
+        }));
+
+        // 3. Send Thank You Email
+        const eventRes = await docClient.send(new GetCommand({ TableName: EVENTS_TABLE, Key: { eventId: reg.eventId } }));
+        const eventName = eventRes.Item ? eventRes.Item.title : 'UDGAMA 2026 Event';
+        
+        const emailHtml = `
+            <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto; background-color: #f8fafc; border-radius: 10px;">
+                <h2 style="color: #00629B;">Thank you for attending!</h2>
+                <p style="color: #334155; font-size: 16px;">Dear ${reg.participants[participantIndex].fullName},</p>
+                <p style="color: #334155; font-size: 16px;">Thank you for participating in <strong>${eventName}</strong> at UDGAMA 2026. We hope you had a valuable and enriching experience.</p>
+                <p style="color: #334155; font-size: 16px;">Certificates will be distributed soon.</p>
+                <br>
+                <p style="color: #64748b; font-size: 14px;">Best Regards,<br>UDGAMA 2026 Organizing Committee</p>
+            </div>
+        `;
+        
+        const emailParams = {
+            Destination: { ToAddresses: [email] },
+            Message: {
+                Subject: { Data: `Thank you for attending ${eventName} - UDGAMA 2026` },
+                Body: { Html: { Data: emailHtml } }
+            },
+            Source: process.env.SES_SENDER_EMAIL || 'noreply@udgama.in'
+        };
+        
+        await sesClient.send(new SendEmailCommand(emailParams)).catch(err => console.error("Thank You Email failed:", err));
+
+        res.json({ message: 'Attendance marked and email sent successfully', participant: reg.participants[participantIndex] });
+    } catch (error) {
+        console.error('Scan Ticket Error:', error);
+        res.status(500).json({ error: 'Failed to process ticket scan' });
     }
 });
 
