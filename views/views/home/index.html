@@ -5,10 +5,124 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>UDGAMA 2026 | IEEE Guntur Subsection Student Congress</title>
     
+    <link rel="icon" type="image/jpeg" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQRQUOVTVuLAWuWWCkcSow3IBBsUkVKziDB3e5VpyN02Q&s=10">
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- =========================================
+             SEO META TAGS
+========================================= -->
+
+<title>UDGAMA 2026 | IEEE Guntur Subsection Student Congress</title>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta name="title" content="UDGAMA 2026 | IEEE Guntur Subsection Student Congress">
+
+<meta name="description" content="Join UDGAMA 2026, the flagship IEEE Guntur Subsection Student Congress featuring Research Poster Competition, Innovation Project Expo, Startup Pitch, Coding Competition, AI, 6G, IoT, Robotics, keynote sessions, networking opportunities, and technical events for engineering students across India.">
+
+<meta name="keywords" content="UDGAMA 2026, IEEE Guntur Subsection, IEEE Student Congress, IEEE Event, Engineering Events India, Technical Fest 2026, Poster Competition, Innovation Project Expo, Startup Pitch Competition, Coding Competition, Artificial Intelligence, AI Event, 6G Technology, IoT, Robotics, Engineering Students, Student Congress, IEEE Andhra Pradesh, Lakireddy Bali Reddy College, Chalapathi Institute of Technology, IEEE Conference, Technical Competition">
+
+<meta name="author" content="IEEE Guntur Subsection">
+
+<meta name="robots" content="index, follow, max-image-preview:large">
+
+<meta name="language" content="English">
+
+<meta name="revisit-after" content="7 days">
+
+<meta name="theme-color" content="#00629B">
+
+<meta name="application-name" content="UDGAMA 2026">
+
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+<meta name="apple-mobile-web-app-title" content="UDGAMA 2026">
+
+<meta name="format-detection" content="telephone=no">
+
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+<link rel="canonical" href="https://udgama2026.in/">
+
+<!-- =========================================
+          OPEN GRAPH (Facebook, LinkedIn)
+========================================= -->
+
+<meta property="og:type" content="website">
+
+<meta property="og:url" content="https://udgama2026.in/">
+
+<meta property="og:site_name" content="UDGAMA 2026">
+
+<meta property="og:title" content="UDGAMA 2026 | IEEE Guntur Subsection Student Congress">
+
+<meta property="og:description" content="Empowering Future Engineers Through Innovation, Leadership and IEEE Excellence. Participate in Research Posters, Project Expo, Coding Competition, Startup Pitch, AI & 6G Sessions, Networking and Technical Competitions.">
+
+<meta property="og:image" content="https://res.cloudinary.com/dzuxwvamy/image/upload/v1784976083/udgama_broucher_iv7aex.jpg">
+
+<meta property="og:image:width" content="1200">
+
+<meta property="og:image:height" content="630">
+
+<meta property="og:locale" content="en_IN">
+
+<!-- =========================================
+              TWITTER CARD
+========================================= -->
+
+<meta name="twitter:card" content="summary_large_image">
+
+<meta name="twitter:title" content="UDGAMA 2026 | IEEE Guntur Subsection Student Congress">
+
+<meta name="twitter:description" content="Join IEEE Guntur Subsection Student Congress featuring AI, 6G, IoT, Coding Competition, Research Posters, Project Expo, Innovation Challenge and Startup Pitch.">
+
+<meta name="twitter:image" content="https://res.cloudinary.com/dzuxwvamy/image/upload/v1784976083/udgama_broucher_iv7aex.jpg">
+
+<!-- =========================================
+             STRUCTURED DATA
+========================================= -->
+
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"Event",
+  "name":"UDGAMA 2026",
+  "description":"IEEE Guntur Subsection Student Congress featuring keynote sessions, AI, 6G, IoT, Robotics, Coding Competition, Research Poster Competition, Innovation Project Expo, Startup Pitch and networking opportunities.",
+  "eventAttendanceMode":"https://schema.org/OfflineEventAttendanceMode",
+  "eventStatus":"https://schema.org/EventScheduled",
+  "startDate":"2026-08-07",
+  "endDate":"2026-08-08",
+  "url":"https://udgama2026.in",
+  "image":[
+    "https://res.cloudinary.com/dzuxwvamy/image/upload/v1784976083/udgama_broucher_iv7aex.jpg"
+  ],
+  "organizer":{
+    "@type":"Organization",
+    "name":"IEEE Guntur Subsection",
+    "url":"https://udgama2026.in"
+  },
+  "location":[
+    {
+      "@type":"Place",
+      "name":"Chalapathi Institute of Technology"
+    },
+    {
+      "@type":"Place",
+      "name":"Lakireddy Bali Reddy College of Engineering"
+    }
+  ]
+}
+</script>
+    
+    <!-- Three.js for 3D Splash Screen -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
     <script>
         tailwind.config = {
@@ -16,15 +130,29 @@
                 extend: {
                     fontFamily: { sans: ['Inter', 'sans-serif'], display: ['Outfit', 'sans-serif'], },
                     colors: { brand: { blue: '#00629B', dark: '#001b3a', accent: '#00A3E0', surface: '#F8FAFC' } },
-                    boxShadow: { 'float': '0 20px 40px -10px rgba(0,0,0,0.1)', 'glow': '0 0 20px rgba(0, 163, 224, 0.4)' },
+                    boxShadow: { 
+                        'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.07)',
+                        'glass-hover': '0 12px 40px 0 rgba(31, 38, 135, 0.12)',
+                        'glossy': 'inset 0 1px 1px rgba(255, 255, 255, 0.6), 0 8px 20px -6px rgba(0, 163, 224, 0.5)',
+                        'glossy-hover': 'inset 0 1px 1px rgba(255, 255, 255, 0.8), 0 12px 25px -6px rgba(0, 163, 224, 0.7)',
+                    },
                     animation: { 
                         'float': 'float 6s ease-in-out infinite', 
-                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                        'fade-in': 'fadeIn 0.4s ease-out forwards'
+                        'fade-in': 'fadeIn 0.6s ease-out forwards',
+                        'fade-in-up': 'fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                        'zoom-in': 'zoomIn 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                        'progress': 'progressLine 2s cubic-bezier(0.4, 0, 0.2, 1) forwards',
+                        'pulse-glow': 'pulseGlow 4s ease-in-out infinite alternate',
+                        'blur-reveal': 'blurReveal 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards',
                     },
                     keyframes: { 
-                        float: { '0%, 100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-20px)' } },
-                        fadeIn: { '0%': { opacity: '0', transform: 'translateY(10px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } }
+                        float: { '0%, 100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-15px)' } },
+                        fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
+                        fadeInUp: { '0%': { opacity: '0', transform: 'translateY(30px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } },
+                        zoomIn: { '0%': { opacity: '0', transform: 'scale(0.9)' }, '100%': { opacity: '1', transform: 'scale(1)' } },
+                        progressLine: { '0%': { width: '0%', opacity: '1' }, '80%': { opacity: '1' }, '100%': { width: '100%', opacity: '0' } },
+                        pulseGlow: { '0%': { opacity: '0.4', transform: 'scale(1)' }, '100%': { opacity: '0.8', transform: 'scale(1.05)' } },
+                        blurReveal: { '0%': { opacity: '0', filter: 'blur(20px)', transform: 'translateY(20px) scale(0.95)' }, '100%': { opacity: '1', filter: 'blur(0)', transform: 'translateY(0) scale(1)' } }
                     }
                 }
             }
@@ -32,43 +160,137 @@
     </script>
     
     <style>
-        body { background-color: #F8FAFC; }
+        body { 
+            background-color: #F8FAFC; 
+            background-image: 
+                radial-gradient(at 0% 0%, hsla(203,100%,85%,0.3) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, hsla(203,100%,85%,0.3) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, hsla(216,100%,85%,0.3) 0px, transparent 50%),
+                radial-gradient(at 0% 100%, hsla(216,100%,85%,0.3) 0px, transparent 50%);
+            background-attachment: fixed;
+        }
+        
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        ::-webkit-scrollbar-thumb { background: rgba(0, 163, 224, 0.4); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(0, 163, 224, 0.7); }
 
-        .glass-nav { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(226, 232, 240, 0.8); }
-        .hero-gradient { background: linear-gradient(135deg, #001b3a 0%, #003057 50%, #00629B 100%); position: relative; overflow: hidden; }
-        .hero-pattern { background-image: radial-gradient(#00A3E0 1px, transparent 1px); background-size: 30px 30px; opacity: 0.1; }
+        /* The Core Glossy Classes */
+        .glass-panel {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.7) 100%);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.05), inset 0 0 0 1px rgba(255,255,255,0.5);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .glass-panel:hover {
+            box-shadow: 0 15px 45px -5px rgba(0, 98, 155, 0.15), inset 0 0 0 1px rgba(255,255,255,0.8);
+            transform: translateY(-4px);
+        }
         
-        .fade-in-up { animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(30px); }
-        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.05);
+        }
 
+        .glossy-btn-accent {
+            background: linear-gradient(180deg, #00A3E0 0%, #00629B 100%);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.5), 0 8px 20px -6px rgba(0, 98, 155, 0.6);
+            transition: all 0.3s ease;
+        }
+        .glossy-btn-accent:hover {
+            background: linear-gradient(180deg, #00b4f5 0%, #0074b3 100%);
+            box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.7), 0 12px 25px -6px rgba(0, 98, 155, 0.8);
+            transform: translateY(-2px);
+        }
+
+        .hero-gradient { 
+            background: linear-gradient(135deg, #001229 0%, #002347 50%, #004b7a 100%); 
+            position: relative; 
+            overflow: hidden; 
+        }
+        
         .clip-diagonal { clip-path: polygon(0 0, 100% 0, 100% 90%, 0 100%); }
         
         /* Timeline styling */
         .timeline-item::before {
-            content: '';
-            position: absolute;
-            left: 1.25rem;
-            top: 2rem;
-            bottom: -2rem;
-            width: 2px;
-            background-color: #e2e8f0;
-            z-index: 0;
+            content: ''; position: absolute; left: 1.25rem; top: 2rem; bottom: -2rem;
+            width: 2px; background: linear-gradient(to bottom, #cbd5e1, rgba(203, 213, 225, 0)); z-index: 0;
         }
         .timeline-item:last-child::before { display: none; }
+        
+        /* Splash Screen Transition */
+        .splash-active { overflow: hidden; height: 100vh; }
+        #splash-screen.fade-out { opacity: 0; pointer-events: none; transition: all 0.8s ease-in-out; }
+        
+        /* Typography glow */
+        .text-glow { text-shadow: 0 0 20px rgba(0, 163, 224, 0.5); }
     </style>
 </head>
-<body class="text-slate-800 font-sans antialiased selection:bg-brand-accent selection:text-white overflow-x-hidden">
+<body class="text-slate-800 font-sans antialiased selection:bg-brand-accent selection:text-white overflow-x-hidden splash-active">
+
+    <!-- Extraordinary 3D Splash Screen -->
+    <div id="splash-screen" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#020617] transition-opacity duration-1000">
+        <!-- 3D Canvas Background -->
+        <canvas id="splash-canvas" class="absolute inset-0 w-full h-full z-0 opacity-90"></canvas>
+        
+        <!-- UI Overlay -->
+        <div class="relative z-10 flex flex-col items-center justify-center w-full px-6 h-full pointer-events-none">
+            
+            <div class="flex flex-col items-center justify-center flex-1 w-full">
+                <!-- Glossy Logo Container -->
+                <div class="relative w-28 h-28 sm:w-36 sm:h-36 mb-8 group opacity-0 animate-blur-reveal" style="animation-delay: 0.2s;">
+                    <div class="absolute inset-0 bg-gradient-to-tr from-white/20 to-white/5 rounded-[2rem] backdrop-blur-xl border border-white/30 shadow-[0_0_60px_rgba(0,163,224,0.4)] p-2">
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQRQUOVTVuLAWuWWCkcSow3IBBsUkVKziDB3e5VpyN02Q&s=10" alt="UDGAMA Logo" class="w-full h-full object-cover rounded-[1.5rem] shadow-inner">
+                    </div>
+                </div>
+                
+                <!-- Elegant Typography -->
+                <h1 class="text-5xl md:text-7xl lg:text-8xl font-display font-bold text-white tracking-wide opacity-0 animate-blur-reveal text-glow" style="animation-delay: 0.4s;">
+                    UDGAMA <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-accent to-blue-200 font-light">2026</span>
+                </h1>
+                
+                <p class="text-blue-100/90 text-xs sm:text-sm tracking-[0.4em] mt-5 uppercase opacity-0 animate-blur-reveal font-semibold" style="animation-delay: 0.6s;">
+                    IEEE Guntur Subsection
+                </p>
+
+                <!-- Elegant Progress Bar -->
+                <div class="w-56 sm:w-72 h-[3px] bg-white/10 rounded-full mt-12 overflow-hidden relative opacity-0 animate-fade-in-up shadow-[0_0_15px_rgba(0,163,224,0.5)]" style="animation-delay: 0.8s; animation-fill-mode: forwards;">
+                    <div class="absolute top-0 left-0 h-full bg-gradient-to-r from-transparent via-brand-accent to-white animate-progress"></div>
+                </div>
+            </div>
+
+            <!-- Professional Xeta Tech Branding -->
+            <div class="pb-10 opacity-0 animate-blur-reveal flex flex-col items-center" style="animation-delay: 1.2s;">
+                <!-- Fixed readability: Solid white color with drop shadow instead of gradient -->
+                <span class="text-white text-[0.7rem] sm:text-xs font-bold uppercase tracking-[0.3em] mb-4 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">Designed & Developed By</span>
+                
+                <div class="relative group">
+                    <div class="absolute -inset-1 bg-gradient-to-r from-brand-accent to-purple-600 rounded-2xl blur-md opacity-60 group-hover:opacity-100 transition duration-500 animate-pulse-glow"></div>
+                    <div class="relative flex items-center gap-3 sm:gap-4 px-5 sm:px-8 py-3 sm:py-3.5 rounded-2xl bg-[#020617]/95 border border-white/30 backdrop-blur-xl shadow-2xl">
+                        <img src="https://res.cloudinary.com/dpz44zf0z/image/upload/v1760704788/XETA_SOLUTIONS_LOGO_bcsbwh.png" alt="Xeta Solutions Logo" class="h-6 sm:h-8 w-auto object-contain drop-shadow-[0_0_10px_rgba(255,255,255,0.2)]">
+                        
+                        <!-- Added explicitly spelled out text next to the logo -->
+                        <div class="w-px h-6 sm:h-8 bg-white/20"></div>
+                        <span class="text-white font-black text-xs sm:text-base tracking-wider whitespace-nowrap">Xeta Tech Solutions</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <nav class="glass-nav fixed top-0 w-full z-50 transition-all duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-20">
                 <a href="/" class="flex items-center gap-3 group">
-                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQRQUOVTVuLAWuWWCkcSow3IBBsUkVKziDB3e5VpyN02Q&s=10" 
-                         alt="UDGAMA Logo" class="h-10 w-auto object-contain transition-transform group-hover:scale-105 rounded-md shadow-sm">
+                    <div class="w-11 h-11 rounded-xl p-0.5 bg-white shadow-sm border border-slate-200 overflow-hidden transform transition-transform group-hover:scale-105">
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQRQUOVTVuLAWuWWCkcSow3IBBsUkVKziDB3e5VpyN02Q&s=10" alt="UDGAMA Logo" class="w-full h-full object-cover rounded-lg">
+                    </div>
                     <div class="flex flex-col justify-center">
                         <h1 class="text-xl font-display font-extrabold tracking-tight text-brand-dark leading-none">UDGAMA</h1>
                         <p class="text-[0.65rem] font-bold text-brand-blue uppercase tracking-widest mt-0.5">2026</p>
@@ -77,22 +299,24 @@
                 
                 <!-- Desktop Menu -->
                 <div class="hidden md:flex items-center gap-8">
-                    <a href="#about" class="text-sm font-bold text-slate-600 hover:text-brand-blue transition-colors">About</a>
-                    <a href="#themes" class="text-sm font-bold text-slate-600 hover:text-brand-blue transition-colors">Tracks</a>
-                    <a href="#schedule" class="text-sm font-bold text-slate-600 hover:text-brand-blue transition-colors">Schedule</a>
-                    <a href="#venues" class="text-sm font-bold text-slate-600 hover:text-brand-blue transition-colors">Venues</a>
+                    <a href="#about" class="text-sm font-semibold text-slate-600 hover:text-brand-blue transition-colors">About</a>
+                    <a href="#themes" class="text-sm font-semibold text-slate-600 hover:text-brand-blue transition-colors">Tracks</a>
+                    <a href="#schedule" class="text-sm font-semibold text-slate-600 hover:text-brand-blue transition-colors">Schedule</a>
+                    <a href="#venues" class="text-sm font-semibold text-slate-600 hover:text-brand-blue transition-colors">Venues</a>
+                    <a href="#contact" class="text-sm font-semibold text-slate-600 hover:text-brand-blue transition-colors">Contact</a>
+                    <a href="https://testifysecuretestapp.s3.ap-south-1.amazonaws.com/Online+UDGAMA+Brochure+2026.pdf" target="_blank" class="text-sm font-bold text-brand-accent hover:text-brand-blue transition-colors">Brochure</a>
                 </div>
                 
-                <div class="hidden md:flex items-center gap-4">
-                    <a href="/events" class="px-6 py-2.5 rounded-full text-sm font-bold bg-brand-blue text-white hover:bg-brand-dark transition-colors shadow-md hover:shadow-lg">
+                <div class="hidden md:flex items-center">
+                    <a href="/events" class="glossy-btn-accent px-6 py-2.5 rounded-full text-sm font-bold text-white shadow-md">
                         Secure Your Pass
                     </a>
                 </div>
 
                 <!-- Mobile Menu Button -->
                 <div class="md:hidden flex items-center">
-                    <button id="mobile-menu-btn" class="text-slate-600 hover:text-brand-dark focus:outline-none p-2">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <button id="mobile-menu-btn" class="text-slate-600 hover:text-brand-dark bg-slate-100/50 rounded-xl p-2.5 focus:outline-none transition-colors border border-slate-200">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path id="menu-icon-bars" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
                             <path id="menu-icon-close" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                         </svg>
@@ -101,117 +325,131 @@
             </div>
         </div>
         
-        <!-- Mobile Menu Dropdown -->
-        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-slate-100 shadow-lg absolute w-full">
-            <div class="px-4 pt-2 pb-6 space-y-1">
-                <a href="#about" class="block px-3 py-3 rounded-md text-base font-bold text-slate-700 hover:text-brand-blue hover:bg-slate-50">About</a>
-                <a href="#themes" class="block px-3 py-3 rounded-md text-base font-bold text-slate-700 hover:text-brand-blue hover:bg-slate-50">Tracks</a>
-                <a href="#schedule" class="block px-3 py-3 rounded-md text-base font-bold text-slate-700 hover:text-brand-blue hover:bg-slate-50">Schedule</a>
-                <a href="#venues" class="block px-3 py-3 rounded-md text-base font-bold text-slate-700 hover:text-brand-blue hover:bg-slate-50">Venues</a>
-                <a href="#" class="block w-full text-center mt-4 px-6 py-3 rounded-xl text-base font-bold bg-brand-blue text-white shadow-md">Secure Your Pass</a>
+        <!-- Mobile Menu Dropdown (Glossy) -->
+        <div id="mobile-menu" class="hidden md:hidden absolute w-full top-full left-0 mt-2 px-4 pb-4">
+            <div class="bg-white rounded-2xl p-4 space-y-2 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.4)] border border-slate-200">
+                <a href="#about" class="block px-4 py-3 rounded-xl text-sm font-semibold text-slate-700 hover:text-brand-blue hover:bg-slate-50 transition-colors">About</a>
+                <a href="#themes" class="block px-4 py-3 rounded-xl text-sm font-semibold text-slate-700 hover:text-brand-blue hover:bg-slate-50 transition-colors">Tracks</a>
+                <a href="#schedule" class="block px-4 py-3 rounded-xl text-sm font-semibold text-slate-700 hover:text-brand-blue hover:bg-slate-50 transition-colors">Schedule</a>
+                <a href="#venues" class="block px-4 py-3 rounded-xl text-sm font-semibold text-slate-700 hover:text-brand-blue hover:bg-slate-50 transition-colors">Venues</a>
+                <a href="#contact" class="block px-4 py-3 rounded-xl text-sm font-semibold text-slate-700 hover:text-brand-blue hover:bg-slate-50 transition-colors">Contact</a>
+                <a href="https://testifysecuretestapp.s3.ap-south-1.amazonaws.com/Online+UDGAMA+Brochure+2026.pdf" target="_blank" class="block px-4 py-3 rounded-xl text-sm font-bold text-brand-accent hover:bg-slate-50 transition-colors">Download Brochure</a>
+                <div class="pt-2">
+                    <a href="/events" class="glossy-btn-accent block w-full text-center px-6 py-3 rounded-xl text-sm font-bold text-white shadow-md">Secure Your Pass</a>
+                </div>
             </div>
         </div>
     </nav>
 
-    <section class="hero-gradient pt-32 pb-40 lg:pt-48 lg:pb-56 relative clip-diagonal">
-        <div class="absolute inset-0 hero-pattern"></div>
-        
-        <div class="absolute top-20 right-10 w-72 h-72 bg-brand-accent/20 rounded-full blur-3xl animate-float"></div>
-        <div class="absolute bottom-10 left-10 w-96 h-96 bg-brand-blue/30 rounded-full blur-3xl animate-float" style="animation-delay: 2s;"></div>
+    <section class="hero-gradient pt-40 pb-40 lg:pt-48 lg:pb-56 relative clip-diagonal">
+        <!-- Floating Glass Orbs -->
+        <div class="absolute top-10 right-10 w-64 h-64 bg-brand-accent/20 rounded-full blur-[80px] animate-float pointer-events-none mix-blend-screen"></div>
+        <div class="absolute bottom-10 left-10 w-80 h-80 bg-brand-blue/30 rounded-full blur-[100px] animate-float pointer-events-none" style="animation-delay: 2s;"></div>
+        <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCI+PGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMSIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjA1KSIvPjwvc3ZnPg==')] opacity-50 pointer-events-none"></div>
 
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-8 items-center">
+                
                 <div class="text-center lg:text-left">
-                    <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/20 text-brand-accent text-[0.7rem] font-bold tracking-widest uppercase mb-6 backdrop-blur-sm fade-in-up" style="animation-delay: 0.1s;">
+                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-md shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)] text-brand-accent text-xs font-bold tracking-widest uppercase mb-8 opacity-0 animate-fade-in-up" style="animation-delay: 2.1s;">
                         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L1 12h3v9h6v-6h4v6h6v-9h3L12 2zm0 2.84L19.5 11H18v8h-2v-6H8v6H6v-8H4.5L12 4.84z"/></svg>
-                        <span>IEEE Guntur Subsection Student Congress</span>
+                        IEEE Guntur Subsection Student Congress
                     </div>
                     
-                    <h1 class="text-5xl sm:text-6xl lg:text-7xl font-display font-black text-white mb-6 tracking-tight leading-[1.1] fade-in-up" style="animation-delay: 0.2s;">
+                    <h1 class="text-5xl sm:text-6xl lg:text-7xl font-display font-black text-white mb-6 tracking-tight leading-[1.15] opacity-0 animate-fade-in-up" style="animation-delay: 2.2s;">
                         Innovate.<br>
-                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-accent to-blue-200">Inspire.</span><br>
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-accent to-blue-200 drop-shadow-sm">Inspire.</span><br>
                         Impact.
                     </h1>
                     
-                    <p class="text-lg sm:text-xl text-blue-100/90 font-medium leading-relaxed max-w-2xl mx-auto lg:mx-0 mb-8 fade-in-up" style="animation-delay: 0.3s;">
+                    <p class="text-lg sm:text-xl text-blue-50/90 font-medium leading-relaxed max-w-2xl mx-auto lg:mx-0 mb-10 opacity-0 animate-fade-in-up" style="animation-delay: 2.3s;">
                         Empowering Future Engineers Through Innovation, Leadership, and IEEE Excellence. Join the premier gathering across two prestigious campuses.
                     </p>
                     
-                    <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 fade-in-up" style="animation-delay: 0.4s;">
-                        <a href="#themes" class="w-full sm:w-auto px-8 py-4 bg-brand-accent hover:bg-white text-white hover:text-brand-dark rounded-full font-bold text-lg transition-all shadow-glow flex items-center justify-center gap-2 group">
+                    <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 opacity-0 animate-fade-in-up" style="animation-delay: 2.4s;">
+                        <a href="#themes" class="glossy-btn-accent w-full sm:w-auto px-8 py-4 rounded-full font-bold text-base flex items-center justify-center gap-2 group">
                             Explore Tracks
                             <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                        </a>
+                        <a href="https://testifysecuretestapp.s3.ap-south-1.amazonaws.com/Online+UDGAMA+Brochure+2026.pdf" target="_blank" class="w-full sm:w-auto px-8 py-4 bg-white/5 hover:bg-white/10 border border-white/20 backdrop-blur-md shadow-[0_4px_12px_rgba(0,0,0,0.1)] text-white rounded-full font-bold text-base transition-all duration-300 transform hover:-translate-y-1 flex items-center justify-center gap-2 group">
+                            Download Brochure
+                            <svg class="w-5 h-5 group-hover:translate-y-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                         </a>
                     </div>
                 </div>
 
-                <div class="flex justify-center fade-in-up mt-8 lg:mt-0" style="animation-delay: 0.5s;">
-                    <div class="relative group max-w-sm sm:max-w-md w-full">
-                        <div class="absolute -inset-1 bg-gradient-to-r from-brand-accent to-blue-300 rounded-[2rem] blur opacity-30 group-hover:opacity-70 transition duration-500"></div>
-                        <img src="https://res.cloudinary.com/dzuxwvamy/image/upload/v1784550687/Udgama_banner_cleghg.jpg" 
-                             alt="UDGAMA 2026 Official Launch Poster" 
-                             class="relative w-full h-auto rounded-[2rem] shadow-2xl border border-white/20 transform transition-transform duration-500 group-hover:scale-[1.02] object-cover">
+                <!-- Glossy Hero Image Card -->
+                <div class="flex justify-center mt-8 lg:mt-0 opacity-0 animate-fade-in-up" style="animation-delay: 2.5s;">
+                    <div class="relative group max-w-sm sm:max-w-md w-full perspective-1000">
+                        <div class="absolute -inset-1 bg-gradient-to-tr from-brand-accent via-blue-400 to-brand-blue rounded-[2.5rem] blur-xl opacity-40 group-hover:opacity-70 transition duration-700 animate-pulse-glow z-0"></div>
+                        
+                        <div class="relative z-10 rounded-[2rem] p-1.5 bg-gradient-to-b from-white/20 to-white/5 backdrop-blur-md border border-white/20 shadow-2xl transform transition-transform duration-700 group-hover:scale-[1.03] group-hover:-rotate-1">
+                            <img src="https://res.cloudinary.com/dzuxwvamy/image/upload/v1784976083/udgama_broucher_iv7aex.jpg" 
+                                 alt="UDGAMA 2026 Official Launch Poster" 
+                                 class="w-full h-auto rounded-[1.75rem] shadow-inner object-cover">
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <section id="about" class="py-20 -mt-20 relative z-20">
+    <section id="about" class="py-20 -mt-24 relative z-20">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <!-- Connect -->
-                <div class="bg-white p-8 rounded-[2rem] shadow-float border border-slate-100 hover:-translate-y-2 transition-transform duration-300">
-                    <div class="w-14 h-14 bg-blue-50 text-brand-blue rounded-2xl flex items-center justify-center mb-6">
+                <div class="glass-panel p-8 rounded-[2rem] hover:-translate-y-2 hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.1)] transition-all duration-300 group">
+                    <div class="w-14 h-14 bg-gradient-to-br from-blue-50 to-blue-100 text-brand-blue rounded-2xl flex items-center justify-center mb-6 group-hover:from-brand-blue group-hover:to-blue-700 group-hover:text-white transition-all duration-300 shadow-sm border border-white">
                         <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
                     </div>
-                    <h3 class="text-xl font-display font-bold text-slate-900 mb-3">Connect</h3>
-                    <p class="text-slate-500 text-sm leading-relaxed">Meet IEEE leaders, researchers, industry professionals, and students across the section.</p>
+                    <h3 class="text-xl font-display font-bold text-slate-900 mb-3 group-hover:text-brand-blue transition-colors">Connect</h3>
+                    <p class="text-slate-600 text-sm leading-relaxed font-medium">Meet IEEE leaders, researchers, industry professionals, and students across the section.</p>
                 </div>
 
                 <!-- Learn -->
-                <div class="bg-white p-8 rounded-[2rem] shadow-float border border-slate-100 hover:-translate-y-2 transition-transform duration-300">
-                    <div class="w-14 h-14 bg-emerald-50 text-emerald-500 rounded-2xl flex items-center justify-center mb-6">
+                <div class="glass-panel p-8 rounded-[2rem] hover:-translate-y-2 hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.1)] transition-all duration-300 group">
+                    <div class="w-14 h-14 bg-gradient-to-br from-emerald-50 to-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center mb-6 group-hover:from-emerald-500 group-hover:to-emerald-600 group-hover:text-white transition-all duration-300 shadow-sm border border-white">
                         <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>
                     </div>
-                    <h3 class="text-xl font-display font-bold text-slate-900 mb-3">Learn</h3>
-                    <p class="text-slate-500 text-sm leading-relaxed">Gain knowledge from keynotes on AI, 6G, IoT, Data Analytics, and Healthcare Innovations.</p>
+                    <h3 class="text-xl font-display font-bold text-slate-900 mb-3 group-hover:text-emerald-600 transition-colors">Learn</h3>
+                    <p class="text-slate-600 text-sm leading-relaxed font-medium">Gain knowledge from keynotes on AI, 6G, IoT, Data Analytics, and Healthcare Innovations.</p>
                 </div>
 
                 <!-- Innovate -->
-                <div class="bg-white p-8 rounded-[2rem] shadow-float border border-slate-100 hover:-translate-y-2 transition-transform duration-300">
-                    <div class="w-14 h-14 bg-purple-50 text-purple-500 rounded-2xl flex items-center justify-center mb-6">
+                <div class="glass-panel p-8 rounded-[2rem] hover:-translate-y-2 hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.1)] transition-all duration-300 group">
+                    <div class="w-14 h-14 bg-gradient-to-br from-purple-50 to-purple-100 text-purple-600 rounded-2xl flex items-center justify-center mb-6 group-hover:from-purple-500 group-hover:to-purple-600 group-hover:text-white transition-all duration-300 shadow-sm border border-white">
                         <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
                     </div>
-                    <h3 class="text-xl font-display font-bold text-slate-900 mb-3">Innovate</h3>
-                    <p class="text-slate-500 text-sm leading-relaxed">Showcase your ideas through technical competitions, ideation, project expos, and startup pitches.</p>
+                    <h3 class="text-xl font-display font-bold text-slate-900 mb-3 group-hover:text-purple-600 transition-colors">Innovate</h3>
+                    <p class="text-slate-600 text-sm leading-relaxed font-medium">Showcase your ideas through technical competitions, ideation, project expos, and startup pitches.</p>
                 </div>
 
                 <!-- Achieve -->
-                <div class="bg-white p-8 rounded-[2rem] shadow-float border border-slate-100 hover:-translate-y-2 transition-transform duration-300">
-                    <div class="w-14 h-14 bg-amber-50 text-amber-500 rounded-2xl flex items-center justify-center mb-6">
+                <div class="glass-panel p-8 rounded-[2rem] hover:-translate-y-2 hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.1)] transition-all duration-300 group">
+                    <div class="w-14 h-14 bg-gradient-to-br from-amber-50 to-amber-100 text-amber-500 rounded-2xl flex items-center justify-center mb-6 group-hover:from-amber-500 group-hover:to-amber-600 group-hover:text-white transition-all duration-300 shadow-sm border border-white">
                         <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
                     </div>
-                    <h3 class="text-xl font-display font-bold text-slate-900 mb-3">Achieve</h3>
-                    <p class="text-slate-500 text-sm leading-relaxed">Earn certificates, win awards, grab your participant kit, and build a network for a lifetime.</p>
+                    <h3 class="text-xl font-display font-bold text-slate-900 mb-3 group-hover:text-amber-600 transition-colors">Achieve</h3>
+                    <p class="text-slate-600 text-sm leading-relaxed font-medium">Earn certificates, win awards, grab your participant kit, and build a network for a lifetime.</p>
                 </div>
             </div>
         </div>
     </section>
 
     <section id="themes" class="py-20 relative">
-        <div class="absolute inset-0 bg-slate-50 clip-diagonal transform -skew-y-2 z-0"></div>
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div class="text-center mb-10">
-                <span class="text-brand-blue font-bold tracking-widest uppercase text-sm mb-2 block">Technical Competitions</span>
-                <h2 class="text-3xl md:text-4xl font-display font-bold text-brand-dark mb-4">Explore The Tracks</h2>
+            <div class="text-center mb-8">
+                <span class="text-brand-blue font-bold tracking-widest uppercase text-xs mb-2 block bg-brand-blue/10 inline-block px-3 py-1 rounded-full border border-brand-blue/20">Technical Competitions</span>
+                <h2 class="text-3xl md:text-4xl font-display font-bold text-slate-800">Explore The Tracks</h2>
+            </div>
                 
-                <!-- Tracks Toggle -->
-                <div class="bg-white p-1.5 rounded-full inline-flex border border-slate-200 shadow-sm mx-auto relative mt-4">
-                    <button id="tracks-btn-day1" onclick="toggleSection('tracks', 1)" class="relative z-10 px-6 sm:px-8 py-3 rounded-full text-sm font-bold bg-brand-dark text-white shadow-md transition-all duration-300">
+            <!-- Glossy Tracks Toggle (Sticky) -->
+            <div class="sticky top-24 z-40 flex justify-center mb-12 pointer-events-none">
+                <div class="glass-panel p-1.5 rounded-full inline-flex relative shadow-lg border border-slate-200 pointer-events-auto bg-white/70 backdrop-blur-xl">
+                    <button id="tracks-btn-day1" onclick="toggleSection('tracks', 1)" class="relative z-10 px-6 sm:px-8 py-3 rounded-full text-sm font-bold glossy-btn-accent shadow-md transition-all duration-300">
                         Day 1 (Chalapathi)
                     </button>
-                    <button id="tracks-btn-day2" onclick="toggleSection('tracks', 2)" class="relative z-10 px-6 sm:px-8 py-3 rounded-full text-sm font-bold text-slate-500 hover:text-brand-dark transition-all duration-300">
+                    <button id="tracks-btn-day2" onclick="toggleSection('tracks', 2)" class="relative z-10 px-6 sm:px-8 py-3 rounded-full text-sm font-bold text-slate-600 hover:text-brand-dark transition-all duration-300">
                         Day 2 (LBRCE)
                     </button>
                 </div>
@@ -221,106 +459,235 @@
                 <!-- Day 1 Tracks -->
                 <div id="tracks-day1" class="animate-fade-in">
                     <div class="text-center mb-8">
-                        <h3 class="text-2xl font-display font-bold text-brand-dark">Host: Chalapathi Institute of Technology</h3>
+                        <h3 class="text-2xl font-display font-bold text-brand-dark">Host: Chalapathi University</h3>
                         <p class="text-slate-500 font-medium text-sm mt-1">Focus: Foundational Technologies, Core Hardware & Startup Ideation</p>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <!-- Track A -->
-                        <div class="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm hover:shadow-lg transition-all">
-                            <div class="bg-blue-50 text-brand-blue text-xs font-bold px-3 py-1 rounded-full inline-block mb-4">TRACK A</div>
+                        <div class="glass-panel rounded-3xl p-8 hover:-translate-y-2 hover:shadow-xl transition-all duration-300 border border-slate-100">
+                            <div class="bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 text-brand-blue text-xs font-bold px-3 py-1.5 rounded-lg inline-block mb-4 shadow-sm">TRACK A</div>
                             <h4 class="text-xl font-bold text-brand-dark mb-4">Research Poster Competition</h4>
                             <ul class="space-y-3">
-                                <li class="flex items-start gap-2 text-sm text-slate-600"><span class="text-brand-accent mt-0.5">•</span> Artificial Intelligence (AI)</li>
-                                <li class="flex items-start gap-2 text-sm text-slate-600"><span class="text-brand-accent mt-0.5">•</span> Internet of Things (IoT)</li>
-                                <li class="flex items-start gap-2 text-sm text-slate-600"><span class="text-brand-accent mt-0.5">•</span> Electronics & Robotics</li>
-                                <li class="flex items-start gap-2 text-sm text-slate-600"><span class="text-brand-accent mt-0.5">•</span> Communication & Power Systems</li>
-                                <li class="flex items-start gap-2 text-sm text-slate-600"><span class="text-brand-accent mt-0.5">•</span> Biomedical Engineering</li>
+                                <li class="flex items-start gap-2 text-sm font-medium text-slate-600"><span class="text-brand-accent mt-0.5">•</span> Artificial Intelligence (AI)</li>
+                                <li class="flex items-start gap-2 text-sm font-medium text-slate-600"><span class="text-brand-accent mt-0.5">•</span> Internet of Things (IoT)</li>
+                                <li class="flex items-start gap-2 text-sm font-medium text-slate-600"><span class="text-brand-accent mt-0.5">•</span> Electronics & Robotics</li>
+                                <li class="flex items-start gap-2 text-sm font-medium text-slate-600"><span class="text-brand-accent mt-0.5">•</span> Communication & Power Systems</li>
+                                <li class="flex items-start gap-2 text-sm font-medium text-slate-600"><span class="text-brand-accent mt-0.5">•</span> Biomedical Engineering</li>
                             </ul>
                         </div>
                         <!-- Track B -->
-                        <div class="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm hover:shadow-lg transition-all">
-                            <div class="bg-emerald-50 text-emerald-600 text-xs font-bold px-3 py-1 rounded-full inline-block mb-4">TRACK B</div>
+                        <div class="glass-panel rounded-3xl p-8 hover:-translate-y-2 hover:shadow-xl transition-all duration-300 border border-slate-100">
+                            <div class="bg-gradient-to-r from-emerald-50 to-emerald-100 border border-emerald-200 text-emerald-600 text-xs font-bold px-3 py-1.5 rounded-lg inline-block mb-4 shadow-sm">TRACK B</div>
                             <h4 class="text-xl font-bold text-brand-dark mb-4">Innovation Project Expo</h4>
                             <ul class="space-y-3">
-                                <li class="flex items-start gap-2 text-sm text-slate-600"><span class="text-emerald-500 mt-0.5">•</span> Hardware & Software Projects</li>
-                                <li class="flex items-start gap-2 text-sm text-slate-600"><span class="text-emerald-500 mt-0.5">•</span> Embedded Systems & Drones</li>
-                                <li class="flex items-start gap-2 text-sm text-slate-600"><span class="text-emerald-500 mt-0.5">•</span> Smart Agriculture</li>
-                                <li class="flex items-start gap-2 text-sm text-slate-600"><span class="text-emerald-500 mt-0.5">•</span> Smart Cities</li>
-                                <li class="flex items-start gap-2 text-sm text-slate-600"><span class="text-emerald-500 mt-0.5">•</span> Healthcare Technologies</li>
+                                <li class="flex items-start gap-2 text-sm font-medium text-slate-600"><span class="text-emerald-500 mt-0.5">•</span> Hardware & Software Projects</li>
+                                <li class="flex items-start gap-2 text-sm font-medium text-slate-600"><span class="text-emerald-500 mt-0.5">•</span> Embedded Systems & Drones</li>
+                                <li class="flex items-start gap-2 text-sm font-medium text-slate-600"><span class="text-emerald-500 mt-0.5">•</span> Smart Agriculture</li>
+                                <li class="flex items-start gap-2 text-sm font-medium text-slate-600"><span class="text-emerald-500 mt-0.5">•</span> Smart Cities</li>
+                                <li class="flex items-start gap-2 text-sm font-medium text-slate-600"><span class="text-emerald-500 mt-0.5">•</span> Healthcare Technologies</li>
                             </ul>
                         </div>
                         <!-- Track C -->
-                        <div class="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm hover:shadow-lg transition-all">
-                            <div class="bg-purple-50 text-purple-600 text-xs font-bold px-3 py-1 rounded-full inline-block mb-4">TRACK C</div>
+                        <div class="glass-panel rounded-3xl p-8 hover:-translate-y-2 hover:shadow-xl transition-all duration-300 border border-slate-100">
+                            <div class="bg-gradient-to-r from-purple-50 to-purple-100 border border-purple-200 text-purple-600 text-xs font-bold px-3 py-1.5 rounded-lg inline-block mb-4 shadow-sm">TRACK C</div>
                             <h4 class="text-xl font-bold text-brand-dark mb-4">Innovation Challenge & Pitch</h4>
                             <ul class="space-y-3">
-                                <li class="flex items-start gap-2 text-sm text-slate-600"><span class="text-purple-500 mt-0.5">•</span> Student Startups</li>
-                                <li class="flex items-start gap-2 text-sm text-slate-600"><span class="text-purple-500 mt-0.5">•</span> Business Model Canvas</li>
-                                <li class="flex items-start gap-2 text-sm text-slate-600"><span class="text-purple-500 mt-0.5">•</span> Prototype Demonstration</li>
-                                <li class="flex items-start gap-2 text-sm text-slate-600"><span class="text-purple-500 mt-0.5">•</span> Live Pitch before Jury</li>
+                                <li class="flex items-start gap-2 text-sm font-medium text-slate-600"><span class="text-purple-500 mt-0.5">•</span> Student Startups</li>
+                                <li class="flex items-start gap-2 text-sm font-medium text-slate-600"><span class="text-purple-500 mt-0.5">•</span> Business Model Canvas</li>
+                                <li class="flex items-start gap-2 text-sm font-medium text-slate-600"><span class="text-purple-500 mt-0.5">•</span> Prototype Demonstration</li>
+                                <li class="flex items-start gap-2 text-sm font-medium text-slate-600"><span class="text-purple-500 mt-0.5">•</span> Live Pitch before Jury</li>
                             </ul>
                         </div>
                     </div>
                 </div>
 
-                <!-- Day 2 Tracks -->
+                <!-- Day 2 Tracks (Updated Detailed Version) -->
                 <div id="tracks-day2" class="hidden animate-fade-in">
                     <div class="text-center mb-8">
                         <h3 class="text-2xl font-display font-bold text-brand-dark">Host: LBRCE Engineering College</h3>
                         <p class="text-slate-500 font-medium text-sm mt-1">Focus: Advanced 6G, Emerging AI Applications & Coding</p>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <!-- Track A -->
-                        <div class="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm hover:shadow-lg transition-all">
-                            <div class="bg-blue-50 text-brand-blue text-xs font-bold px-3 py-1 rounded-full inline-block mb-4">TRACK A</div>
-                            <h4 class="text-xl font-bold text-brand-dark mb-4">Poster Competition</h4>
-                            <ul class="space-y-3">
-                                <li class="flex items-start gap-2 text-sm text-slate-600"><span class="text-brand-accent mt-0.5">•</span> 6G Air Interface</li>
-                                <li class="flex items-start gap-2 text-sm text-slate-600"><span class="text-brand-accent mt-0.5">•</span> Integrated Sensing & Communication</li>
-                                <li class="flex items-start gap-2 text-sm text-slate-600"><span class="text-brand-accent mt-0.5">•</span> Gen AI & Explainable AI</li>
-                                <li class="flex items-start gap-2 text-sm text-slate-600"><span class="text-brand-accent mt-0.5">•</span> Machine Learning in Cyberspace</li>
-                                <li class="flex items-start gap-2 text-sm text-slate-600"><span class="text-brand-accent mt-0.5">•</span> Reconfigurable Intelligence Surfaces</li>
-                            </ul>
-                        </div>
-                        <!-- Track B -->
-                        <div class="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm hover:shadow-lg transition-all">
-                            <div class="bg-emerald-50 text-emerald-600 text-xs font-bold px-3 py-1 rounded-full inline-block mb-4">TRACK B</div>
-                            <h4 class="text-xl font-bold text-brand-dark mb-4">Ideation & Pitching</h4>
-                            <ul class="space-y-3">
-                                <li class="flex items-start gap-2 text-sm text-slate-600"><span class="text-emerald-500 mt-0.5">•</span> HoloClinic: 6G Telemedicine</li>
-                                <li class="flex items-start gap-2 text-sm text-slate-600"><span class="text-emerald-500 mt-0.5">•</span> AI-Adaptive BCIs for Metaverse</li>
-                                <li class="flex items-start gap-2 text-sm text-slate-600"><span class="text-emerald-500 mt-0.5">•</span> GuardianEdge: Edge-AI Security</li>
-                                <li class="flex items-start gap-2 text-sm text-slate-600"><span class="text-emerald-500 mt-0.5">•</span> AgriPulse & TwinFactory</li>
-                                <li class="flex items-start gap-2 text-sm text-slate-600"><span class="text-emerald-500 mt-0.5">•</span> SafeTraffic: AI Collision Avoidance</li>
-                            </ul>
-                        </div>
-                        <!-- Track C -->
-                        <div class="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm hover:shadow-lg transition-all flex flex-col justify-center text-center">
-                            <div class="bg-purple-50 text-purple-600 text-xs font-bold px-3 py-1 rounded-full inline-block mx-auto mb-4">TRACK C</div>
-                            <h4 class="text-xl font-bold text-brand-dark mb-4">Coding Contest</h4>
-                            <p class="text-sm text-slate-600 mb-6">Open coding contest for all engineering branches. Test your algorithmic thinking and programming prowess.</p>
-                            <div class="w-16 h-16 bg-slate-50 rounded-2xl mx-auto flex items-center justify-center text-slate-400">
-                                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+                    
+                    <div class="flex flex-col gap-8">
+                        
+                        <!-- Track A: Detailed -->
+                        <div class="glass-panel rounded-3xl p-6 sm:p-10 hover:shadow-[0_15px_40px_-10px_rgba(0,0,0,0.1)] transition-all duration-300 border border-slate-100">
+                            <div class="flex flex-col sm:flex-row sm:items-center gap-4 mb-6 pb-6 border-b border-slate-200">
+                                <div class="bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 text-brand-blue text-sm font-black px-4 py-2 rounded-xl shadow-sm inline-flex justify-center shrink-0">TRACK A</div>
+                                <div>
+                                    <h4 class="text-2xl font-display font-bold text-brand-dark">Poster Competition</h4>
+                                    <p class="text-sm font-bold text-brand-blue mt-1">Theme: 6G Technologies for Next-Generation Engineering</p>
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                                <div>
+                                    <h5 class="text-sm font-bold text-slate-800 uppercase tracking-wider mb-4 flex items-center gap-2">
+                                        <svg class="w-4 h-4 text-brand-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                                        Competition Themes
+                                    </h5>
+                                    <ul class="space-y-4">
+                                        <li class="flex items-start gap-3 text-sm font-medium text-slate-600 leading-relaxed">
+                                            <span class="w-6 h-6 rounded-full bg-blue-50 text-brand-blue flex items-center justify-center shrink-0 text-xs font-bold border border-blue-100">1</span>
+                                            <span>6G for Smart Power Systems, Renewable Energy, and Electric Vehicles (EEE)</span>
+                                        </li>
+                                        <li class="flex items-start gap-3 text-sm font-medium text-slate-600 leading-relaxed">
+                                            <span class="w-6 h-6 rounded-full bg-blue-50 text-brand-blue flex items-center justify-center shrink-0 text-xs font-bold border border-blue-100">2</span>
+                                            <span>6G Communications, AI-Native Networks, ISAC, and Intelligent Electronics (ECE)</span>
+                                        </li>
+                                        <li class="flex items-start gap-3 text-sm font-medium text-slate-600 leading-relaxed">
+                                            <span class="w-6 h-6 rounded-full bg-blue-50 text-brand-blue flex items-center justify-center shrink-0 text-xs font-bold border border-blue-100">3</span>
+                                            <span>6G-Enabled Smart Cities, Intelligent Infrastructure, and Disaster Resilience (Civil)</span>
+                                        </li>
+                                        <li class="flex items-start gap-3 text-sm font-medium text-slate-600 leading-relaxed">
+                                            <span class="w-6 h-6 rounded-full bg-blue-50 text-brand-blue flex items-center justify-center shrink-0 text-xs font-bold border border-blue-100">4</span>
+                                            <span>Industry 5.0, Digital Twins, Robotics, and Smart Manufacturing with 6G (Mechanical)</span>
+                                        </li>
+                                        <li class="flex items-start gap-3 text-sm font-medium text-slate-600 leading-relaxed">
+                                            <span class="w-6 h-6 rounded-full bg-blue-50 text-brand-blue flex items-center justify-center shrink-0 text-xs font-bold border border-blue-100">5</span>
+                                            <span>AI, Generative AI, Cybersecurity, Edge Computing, and Intelligent Software Systems for 6G (CSE, IT, AI, DS, ML, Cyber Security)</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                                
+                                <div class="bg-white/60 backdrop-blur-sm p-6 rounded-2xl border border-slate-200/60 shadow-sm h-fit">
+                                    <h5 class="text-sm font-bold text-slate-800 uppercase tracking-wider mb-4 flex items-center gap-2">
+                                        📝 Important Guidelines
+                                    </h5>
+                                    <ul class="space-y-2.5">
+                                        <li class="flex items-start gap-2 text-[0.8rem] font-medium text-slate-600"><span class="text-brand-accent">•</span> Poster Size: A3 | Mode: Printed or Handmade.</li>
+                                        <li class="flex items-start gap-2 text-[0.8rem] font-medium text-slate-600"><span class="text-brand-accent">•</span> Open to students from all departments.</li>
+                                        <li class="flex items-start gap-2 text-[0.8rem] font-medium text-slate-600"><span class="text-brand-accent">•</span> Based on your own innovative idea or the given themes.</li>
+                                        <li class="flex items-start gap-2 text-[0.8rem] font-medium text-slate-600"><span class="text-brand-accent">•</span> No template. Open choice to design creatively.</li>
+                                        <li class="flex items-start gap-2 text-[0.8rem] font-bold text-brand-dark"><span class="text-brand-accent">•</span> Individual participation only (No team entries).</li>
+                                        <li class="flex items-start gap-2 text-[0.8rem] font-medium text-slate-600"><span class="text-brand-accent">•</span> Presentation (Pitch): 5–7 minutes + Q&A.</li>
+                                        <li class="flex items-start gap-2 text-[0.8rem] font-medium text-slate-600"><span class="text-brand-accent">•</span> Explain the concept, innovation, applications, and significance.</li>
+                                        <li class="flex items-start gap-2 text-[0.8rem] font-medium text-slate-600"><span class="text-brand-accent">•</span> Certificate Policy: Only the registered participant receives the certificate.</li>
+                                        <li class="flex items-start gap-2 text-[0.8rem] font-medium text-slate-600"><span class="text-brand-accent">•</span> Evaluated on originality, creativity, technical content, clarity, and presentation.</li>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
+
+                        <!-- Track B: Detailed -->
+                        <div class="glass-panel rounded-3xl p-6 sm:p-10 hover:shadow-[0_15px_40px_-10px_rgba(0,0,0,0.1)] transition-all duration-300 border border-slate-100">
+                            <div class="flex flex-col sm:flex-row sm:items-center gap-4 mb-6 pb-6 border-b border-slate-200">
+                                <div class="bg-gradient-to-r from-emerald-50 to-emerald-100 border border-emerald-200 text-emerald-700 text-sm font-black px-4 py-2 rounded-xl shadow-sm inline-flex justify-center shrink-0">TRACK B</div>
+                                <div>
+                                    <h4 class="text-2xl font-display font-bold text-brand-dark">Ideation / Design Competition</h4>
+                                    <p class="text-sm font-bold text-emerald-600 mt-1">Theme: Design Future 6G Solutions</p>
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                                <div>
+                                    <h5 class="text-sm font-bold text-slate-800 uppercase tracking-wider mb-4 flex items-center gap-2">
+                                        <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                                        Competition Themes
+                                    </h5>
+                                    <ul class="space-y-4">
+                                        <li class="flex items-start gap-3 text-sm font-medium text-slate-600 leading-relaxed">
+                                            <span class="w-6 h-6 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 text-xs font-bold border border-emerald-100">1</span>
+                                            <span>Smart Energy Management and EV Charging Infrastructure using 6G & AI (EEE)</span>
+                                        </li>
+                                        <li class="flex items-start gap-3 text-sm font-medium text-slate-600 leading-relaxed">
+                                            <span class="w-6 h-6 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 text-xs font-bold border border-emerald-100">2</span>
+                                            <span>Bio Medical, Next-Generation Wireless, IoT, FPGA and Autonomous Communication Systems (ECE)</span>
+                                        </li>
+                                        <li class="flex items-start gap-3 text-sm font-medium text-slate-600 leading-relaxed">
+                                            <span class="w-6 h-6 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 text-xs font-bold border border-emerald-100">3</span>
+                                            <span>AI Based Smart City, Intelligent Transportation, and Infrastructure Monitoring (Civil)</span>
+                                        </li>
+                                        <li class="flex items-start gap-3 text-sm font-medium text-slate-600 leading-relaxed">
+                                            <span class="w-6 h-6 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 text-xs font-bold border border-emerald-100">4</span>
+                                            <span>Digital Twin-Based Smart Factory and Intelligent Robotics Solutions (Mechanical)</span>
+                                        </li>
+                                        <li class="flex items-start gap-3 text-sm font-medium text-slate-600 leading-relaxed">
+                                            <span class="w-6 h-6 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 text-xs font-bold border border-emerald-100">5</span>
+                                            <span>Secure AI, Edge Intelligence, and 6G Applications for Smart Society (CSE, IT, AI, Cyber Security)</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                                
+                                <div class="bg-white/60 backdrop-blur-sm p-6 rounded-2xl border border-slate-200/60 shadow-sm h-fit">
+                                    <h5 class="text-sm font-bold text-slate-800 uppercase tracking-wider mb-4 flex items-center gap-2">
+                                        🔻 Note
+                                    </h5>
+                                    <ul class="space-y-3">
+                                        <li class="flex items-start gap-2 text-sm font-medium text-slate-600"><span class="text-emerald-500 mt-0.5">1.</span> Present an innovative idea using a PowerPoint presentation OR a working prototype along with a PowerPoint presentation.</li>
+                                        <li class="flex items-start gap-2 text-sm font-medium text-slate-600"><span class="text-emerald-500 mt-0.5">2.</span> PowerPoint presentation is mandatory for all teams, including those presenting a prototype.</li>
+                                        <li class="flex items-start gap-2 text-sm font-medium text-slate-600"><span class="text-emerald-500 mt-0.5">3.</span> The presentation should contain 10–15 slides only.</li>
+                                        <li class="flex items-start gap-2 text-sm font-medium text-slate-600"><span class="text-emerald-500 mt-0.5">4.</span> Presentation Duration: 5 to 7 minutes (followed by a Q&A session).</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Track C: Detailed -->
+                        <div class="glass-panel rounded-3xl p-6 sm:p-10 hover:shadow-[0_15px_40px_-10px_rgba(0,0,0,0.1)] transition-all duration-300 border border-slate-100">
+                            <div class="flex flex-col sm:flex-row sm:items-center gap-4 mb-6 pb-6 border-b border-slate-200">
+                                <div class="bg-gradient-to-r from-purple-50 to-purple-100 border border-purple-200 text-purple-700 text-sm font-black px-4 py-2 rounded-xl shadow-sm inline-flex justify-center shrink-0">TRACK C</div>
+                                <div>
+                                    <h4 class="text-2xl font-display font-bold text-brand-dark">Coding Competition</h4>
+                                    <p class="text-sm font-bold text-purple-600 mt-1">Multi-stage Logic & Algorithmic Challenge</p>
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                                <div class="space-y-6">
+                                    <div class="bg-purple-50/50 p-5 rounded-2xl border border-purple-100">
+                                        <h5 class="font-bold text-brand-dark mb-2 text-sm">Round 1: Prompt Engineering Challenge</h5>
+                                        <p class="text-[0.8rem] text-slate-600 leading-relaxed font-medium">Participants will be provided with AI-generated outputs such as images, videos, websites or other digital content. Their task is to analyze the given output and write the most accurate and detailed prompt that could recreate the given output. Only the written prompt will be evaluated; participants are not required to generate the output using any AI tool.</p>
+                                    </div>
+                                    <div class="bg-purple-50/50 p-5 rounded-2xl border border-purple-100">
+                                        <h5 class="font-bold text-brand-dark mb-2 text-sm">Round 2: Coding Challenge</h5>
+                                        <p class="text-[0.8rem] text-slate-600 leading-relaxed font-medium">Participants shortlisted from Round 1 will advance to the Coding Challenge. Four coding problems (Easy to Medium level) will be provided, and participants may solve them using any programming language (C, C++, Java, Python, etc.).</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="bg-white/60 backdrop-blur-sm p-6 rounded-2xl border border-slate-200/60 shadow-sm h-fit">
+                                    <h5 class="text-sm font-bold text-slate-800 uppercase tracking-wider mb-4 flex items-center gap-2">
+                                        📝 Important Guidelines
+                                    </h5>
+                                    <ul class="space-y-2.5">
+                                        <li class="flex items-start gap-2 text-[0.8rem] font-bold text-brand-dark"><span class="text-purple-500">•</span> Individual participation only (No team entries).</li>
+                                        <li class="flex items-start gap-2 text-[0.8rem] font-medium text-slate-600"><span class="text-purple-500">•</span> Round 1 will be evaluated based on prompt quality, clarity, structure, and attention to detail; not on Output.</li>
+                                        <li class="flex items-start gap-2 text-[0.8rem] font-medium text-slate-600"><span class="text-purple-500">•</span> Only shortlisted participants will qualify for Round 2.</li>
+                                        <li class="flex items-start gap-2 text-[0.8rem] font-medium text-slate-600"><span class="text-purple-500">•</span> Round 2 consists of four Easy to Medium coding problems.</li>
+                                        <li class="flex items-start gap-2 text-[0.8rem] font-medium text-slate-600"><span class="text-purple-500">•</span> Participants are free to use any programming language.</li>
+                                        <li class="flex items-start gap-2 text-[0.8rem] font-medium text-slate-600"><span class="text-purple-500">•</span> Evaluation will be based on correctness, logic, efficiency, and completion within the allotted time.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
+                </div>
+
+                <div class="mt-12 text-center">
+                    <a href="/events" class="glossy-btn-accent inline-flex items-center gap-2 px-8 py-4 rounded-full text-base font-bold shadow-lg">
+                        Register for Tracks
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                    </a>
                 </div>
             </div>
         </div>
     </section>
 
-    <section id="schedule" class="py-20 bg-white relative">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-10">
-                <span class="text-brand-blue font-bold tracking-widest uppercase text-sm mb-2 block">Event Itinerary</span>
-                <h2 class="text-3xl md:text-4xl font-display font-bold text-brand-dark mb-4">Congress Schedule</h2>
+    <section id="schedule" class="py-20 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center mb-8">
+                <span class="text-brand-blue font-bold tracking-widest uppercase text-xs mb-2 block bg-brand-blue/10 inline-block px-3 py-1 rounded-full border border-brand-blue/20">Event Itinerary</span>
+                <h2 class="text-3xl md:text-4xl font-display font-bold text-brand-dark">Congress Schedule</h2>
+            </div>
                 
-                <!-- Schedule Toggle -->
-                <div class="bg-slate-50 p-1.5 rounded-full inline-flex border border-slate-200 shadow-sm mx-auto relative mt-4">
-                    <button id="schedule-btn-day1" onclick="toggleSection('schedule', 1)" class="relative z-10 px-6 sm:px-8 py-3 rounded-full text-sm font-bold bg-brand-dark text-white shadow-md transition-all duration-300">
+            <!-- Glossy Schedule Toggle (Sticky) -->
+            <div class="sticky top-24 z-40 flex justify-center mb-10 pointer-events-none">
+                <div class="glass-panel p-1.5 rounded-full inline-flex relative shadow-lg border border-slate-200 pointer-events-auto bg-white/70 backdrop-blur-xl">
+                    <button id="schedule-btn-day1" onclick="toggleSection('schedule', 1)" class="relative z-10 px-6 sm:px-8 py-3 rounded-full text-sm font-bold glossy-btn-accent shadow-md transition-all duration-300">
                         Day 1 (Chalapathi)
                     </button>
-                    <button id="schedule-btn-day2" onclick="toggleSection('schedule', 2)" class="relative z-10 px-6 sm:px-8 py-3 rounded-full text-sm font-bold text-slate-500 hover:text-brand-dark transition-all duration-300">
+                    <button id="schedule-btn-day2" onclick="toggleSection('schedule', 2)" class="relative z-10 px-6 sm:px-8 py-3 rounded-full text-sm font-bold text-slate-600 hover:text-brand-dark transition-all duration-300">
                         Day 2 (LBRCE)
                     </button>
                 </div>
@@ -330,319 +697,311 @@
                 <!-- Day 1 Schedule -->
                 <div id="schedule-day1" class="animate-fade-in">
                     
-                    <!-- Day 1 Header Card -->
-                    <div class="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 flex justify-between items-center shadow-sm mb-10">
+                    <div class="glass-panel rounded-[2rem] p-5 sm:p-6 flex justify-between items-center mb-10 border border-slate-200">
                         <div>
-                            <span class="text-[0.65rem] font-bold text-slate-400 uppercase tracking-widest block mb-1">August 7, 2026</span>
+                            <span class="text-[0.65rem] font-bold text-brand-blue uppercase tracking-widest block mb-1">August 7, 2026</span>
                             <h3 class="text-xl sm:text-2xl font-display font-bold text-slate-900">Day 1: Chalapathi Institute of Technology</h3>
                         </div>
-                        <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-blue-50 text-brand-blue flex items-center justify-center font-bold text-lg border border-blue-100 shrink-0">
+                        <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-blue-50 to-blue-100 text-brand-blue flex items-center justify-center font-bold text-xl border border-blue-200 shadow-sm shrink-0">
                             1
                         </div>
                     </div>
 
-                    <!-- Day 1 Timeline -->
-                    <div class="relative border-l-2 border-slate-200 ml-4 sm:ml-8 space-y-8 pb-4">
+                    <div class="relative timeline-item border-l-2 border-brand-blue/20 ml-4 sm:ml-8 space-y-8 pb-4">
                         
                         <!-- Item -->
-                        <div class="relative pl-6 sm:pl-10">
-                            <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-white border-2 border-slate-300"></div>
-                            <span class="text-xs font-bold text-slate-500 block mb-2">08:30 – 09:30 AM</span>
-                            <div class="bg-slate-50/80 border border-slate-100 rounded-xl p-5 hover:bg-slate-50 transition-colors">
+                        <div class="relative pl-6 sm:pl-10 group">
+                            <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-white border-2 border-slate-300 group-hover:border-brand-blue transition-colors shadow-sm"></div>
+                            <span class="text-xs font-bold text-slate-500 block mb-2 group-hover:text-brand-blue transition-colors">08:30 – 09:30 AM</span>
+                            <div class="glass-panel rounded-[1.5rem] p-5 hover:bg-white transition-all duration-300 border border-white">
                                 <h4 class="font-bold text-slate-800 text-lg mb-1">Registration & Networking Breakfast</h4>
-                                <p class="text-sm text-slate-500">Registration, Kit Distribution, Informal Networking, IEEE Exhibition at Mothadaka Campus.</p>
+                                <p class="text-sm font-medium text-slate-600">Registration, Kit Distribution, Informal Networking, IEEE Exhibition at Mothadaka Campus.</p>
                             </div>
                         </div>
 
                         <!-- Item -->
-                        <div class="relative pl-6 sm:pl-10">
-                            <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-white border-2 border-brand-blue"></div>
-                            <span class="text-xs font-bold text-slate-500 block mb-2">09:30 – 10:15 AM</span>
-                            <div class="bg-slate-50/80 border border-slate-100 rounded-xl p-5 hover:bg-slate-50 transition-colors">
+                        <div class="relative pl-6 sm:pl-10 group">
+                            <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-white border-2 border-brand-blue shadow-[0_0_10px_rgba(0,163,224,0.5)]"></div>
+                            <span class="text-xs font-bold text-brand-blue block mb-2">09:30 – 10:15 AM</span>
+                            <div class="glass-panel rounded-[1.5rem] p-5 hover:bg-white transition-all duration-300 border border-white">
                                 <h4 class="font-bold text-slate-800 text-lg mb-1">Inaugural Ceremony</h4>
-                                <p class="text-sm text-slate-500">Welcome Address by Host Principal, Lamp Lighting, Presidential & Chief Guest Addresses, Group Photograph.</p>
+                                <p class="text-sm font-medium text-slate-600">Welcome Address by Host Principal, Lamp Lighting, Presidential & Chief Guest Addresses, Group Photograph.</p>
                             </div>
                         </div>
 
                         <!-- Item -->
-                        <div class="relative pl-6 sm:pl-10">
-                            <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-white border-2 border-slate-300"></div>
-                            <span class="text-xs font-bold text-slate-500 block mb-2">10:15 – 10:30 AM</span>
-                            <div class="bg-slate-50/80 border border-slate-100 rounded-xl p-5 hover:bg-slate-50 transition-colors">
+                        <div class="relative pl-6 sm:pl-10 group">
+                            <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-white border-2 border-slate-300 group-hover:border-brand-blue transition-colors shadow-sm"></div>
+                            <span class="text-xs font-bold text-slate-500 block mb-2 group-hover:text-brand-blue transition-colors">10:15 – 10:30 AM</span>
+                            <div class="glass-panel rounded-[1.5rem] p-5 hover:bg-white transition-all duration-300 border border-white">
                                 <h4 class="font-bold text-slate-800 text-lg mb-1">IEEE Student Opportunities</h4>
-                                <p class="text-sm text-slate-500">IEEE Membership Benefits, Scholarships, Awards, Student Branch Success Stories.</p>
+                                <p class="text-sm font-medium text-slate-600">IEEE Membership Benefits, Scholarships, Awards, Student Branch Success Stories.</p>
                             </div>
                         </div>
 
                         <!-- Item -->
-                        <div class="relative pl-6 sm:pl-10">
-                            <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-white border-2 border-brand-accent"></div>
-                            <span class="text-xs font-bold text-slate-500 block mb-2">10:30 – 11:15 AM</span>
-                            <div class="bg-slate-50/80 border border-slate-100 rounded-xl p-5 hover:bg-slate-50 transition-colors">
+                        <div class="relative pl-6 sm:pl-10 group">
+                            <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-white border-2 border-brand-accent group-hover:scale-110 transition-transform shadow-sm"></div>
+                            <span class="text-xs font-bold text-slate-500 block mb-2 group-hover:text-brand-accent transition-colors">10:30 – 11:15 AM</span>
+                            <div class="glass-panel rounded-[1.5rem] p-5 hover:bg-white transition-all duration-300 border border-white">
                                 <h4 class="font-bold text-slate-800 text-lg mb-1">Keynote Address I</h4>
-                                <p class="text-sm text-slate-500">Engineering the Future with Artificial Intelligence</p>
+                                <p class="text-sm font-medium text-slate-600">Engineering the Future with Artificial Intelligence</p>
                             </div>
                         </div>
 
                         <!-- Item -->
-                        <div class="relative pl-6 sm:pl-10">
-                            <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-white border-2 border-brand-accent"></div>
-                            <span class="text-xs font-bold text-slate-500 block mb-2">11:15 – 12:00 Noon</span>
-                            <div class="bg-slate-50/80 border border-slate-100 rounded-xl p-5 hover:bg-slate-50 transition-colors">
+                        <div class="relative pl-6 sm:pl-10 group">
+                            <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-white border-2 border-brand-accent group-hover:scale-110 transition-transform shadow-sm"></div>
+                            <span class="text-xs font-bold text-slate-500 block mb-2 group-hover:text-brand-accent transition-colors">11:15 – 12:00 Noon</span>
+                            <div class="glass-panel rounded-[1.5rem] p-5 hover:bg-white transition-all duration-300 border border-white">
                                 <h4 class="font-bold text-slate-800 text-lg mb-1">Keynote Address II</h4>
-                                <p class="text-sm text-slate-500">AI for Healthcare: Innovations, Diagnostics and Future Opportunities</p>
+                                <p class="text-sm font-medium text-slate-600">AI for Healthcare: Innovations, Diagnostics and Future Opportunities</p>
                             </div>
                         </div>
 
                         <!-- Item -->
-                        <div class="relative pl-6 sm:pl-10">
-                            <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-white border-2 border-slate-300"></div>
-                            <span class="text-xs font-bold text-slate-500 block mb-2">12:00 – 01:00 PM</span>
-                            <div class="bg-slate-50/80 border border-slate-100 rounded-xl p-5 hover:bg-slate-50 transition-colors">
+                        <div class="relative pl-6 sm:pl-10 group">
+                            <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-white border-2 border-slate-300 group-hover:border-brand-blue transition-colors shadow-sm"></div>
+                            <span class="text-xs font-bold text-slate-500 block mb-2 group-hover:text-brand-blue transition-colors">12:00 – 01:00 PM</span>
+                            <div class="glass-panel rounded-[1.5rem] p-5 hover:bg-white transition-all duration-300 border border-white">
                                 <h4 class="font-bold text-slate-800 text-lg mb-1">Leadership Panel Discussion</h4>
-                                <p class="text-sm text-slate-500">Future-Ready Engineers: Careers, Higher Studies, Entrepreneurship and Leadership.</p>
+                                <p class="text-sm font-medium text-slate-600">Future-Ready Engineers: Careers, Higher Studies, Entrepreneurship and Leadership.</p>
                             </div>
                         </div>
 
                         <!-- Highlight Item: Lunch -->
-                        <div class="relative pl-6 sm:pl-10">
-                            <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-white border-2 border-emerald-400"></div>
-                            <span class="text-xs font-bold text-slate-500 block mb-2">01:00 – 02:00 PM</span>
-                            <div class="bg-emerald-50 border border-emerald-100 rounded-xl p-5">
+                        <div class="relative pl-6 sm:pl-10 group">
+                            <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-white border-2 border-emerald-400 group-hover:scale-110 transition-transform shadow-sm"></div>
+                            <span class="text-xs font-bold text-emerald-600 block mb-2">01:00 – 02:00 PM</span>
+                            <div class="bg-gradient-to-r from-emerald-50/90 to-white/90 backdrop-blur-md border border-emerald-100 rounded-[1.5rem] p-5 shadow-sm">
                                 <h4 class="font-bold text-emerald-800 text-lg mb-1">Networking Lunch</h4>
-                                <p class="text-sm text-emerald-600/80">Interaction with IEEE Leaders, Speakers and Students</p>
+                                <p class="text-sm font-medium text-emerald-700/80">Interaction with IEEE Leaders, Speakers and Students</p>
                             </div>
                         </div>
 
                         <!-- Highlight Item: Competitions -->
-                        <div class="relative pl-6 sm:pl-10">
-                            <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-white border-2 border-brand-dark"></div>
-                            <span class="text-xs font-bold text-slate-500 block mb-2">02:00 – 03:30 PM</span>
-                            <div class="bg-[#0b1a30] rounded-xl p-6 shadow-md border border-[#162a4a]">
+                        <div class="relative pl-6 sm:pl-10 group">
+                            <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-white border-2 border-brand-dark group-hover:scale-110 transition-transform shadow-[0_0_10px_rgba(0,27,58,0.5)]"></div>
+                            <span class="text-xs font-bold text-brand-dark block mb-2">02:00 – 03:30 PM</span>
+                            <div class="bg-gradient-to-br from-brand-dark to-[#001f42] rounded-[1.5rem] p-6 shadow-lg border border-slate-700">
                                 <h4 class="font-bold text-white text-lg mb-4">Parallel Student Competitions</h4>
                                 <ul class="space-y-2">
-                                    <li class="text-sm text-blue-200 flex items-center gap-3">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-brand-accent"></span> 
-                                        Track A: Research Poster Competition
+                                    <li class="text-sm font-medium text-blue-100 flex items-center gap-3">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-brand-accent"></span> Track A: Research Poster Competition
                                     </li>
-                                    <li class="text-sm text-blue-200 flex items-center gap-3">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-brand-accent"></span> 
-                                        Track B: Innovation Project Expo
+                                    <li class="text-sm font-medium text-blue-100 flex items-center gap-3">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-brand-accent"></span> Track B: Innovation Project Expo
                                     </li>
-                                    <li class="text-sm text-blue-200 flex items-center gap-3">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-brand-accent"></span> 
-                                        Track C: Innovation Challenge & Startup Pitch
+                                    <li class="text-sm font-medium text-blue-100 flex items-center gap-3">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-brand-accent"></span> Track C: Innovation Challenge & Startup Pitch
                                     </li>
                                 </ul>
                             </div>
                         </div>
-
+                        
                         <!-- Item -->
-                        <div class="relative pl-6 sm:pl-10">
-                            <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-white border-2 border-slate-300"></div>
-                            <span class="text-xs font-bold text-slate-500 block mb-2">03:30 – 03:45 PM</span>
-                            <div class="bg-slate-50/80 border border-slate-100 rounded-xl p-5 hover:bg-slate-50 transition-colors">
+                        <div class="relative pl-6 sm:pl-10 group">
+                            <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-white border-2 border-slate-300 group-hover:border-brand-blue transition-colors shadow-sm"></div>
+                            <span class="text-xs font-bold text-slate-500 block mb-2 group-hover:text-brand-blue transition-colors">03:30 – 03:45 PM</span>
+                            <div class="glass-panel rounded-[1.5rem] p-5 hover:bg-white transition-all duration-300 border border-white">
                                 <h4 class="font-bold text-slate-800 text-lg">Tea Break & Networking</h4>
                             </div>
                         </div>
 
                         <!-- Item -->
-                        <div class="relative pl-6 sm:pl-10">
-                            <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-white border-2 border-slate-300"></div>
-                            <span class="text-xs font-bold text-slate-500 block mb-2">03:45 – 04:15 PM</span>
-                            <div class="bg-slate-50/80 border border-slate-100 rounded-xl p-5 hover:bg-slate-50 transition-colors">
+                        <div class="relative pl-6 sm:pl-10 group">
+                            <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-white border-2 border-slate-300 group-hover:border-brand-blue transition-colors shadow-sm"></div>
+                            <span class="text-xs font-bold text-slate-500 block mb-2 group-hover:text-brand-blue transition-colors">03:45 – 04:15 PM</span>
+                            <div class="glass-panel rounded-[1.5rem] p-5 hover:bg-white transition-all duration-300 border border-white">
                                 <h4 class="font-bold text-slate-800 text-lg mb-1">Valedictory</h4>
-                                <p class="text-sm text-slate-500">Awards & Recognition, Valedictory, National Anthem.</p>
+                                <p class="text-sm font-medium text-slate-600">Awards & Recognition, Valedictory, National Anthem.</p>
                             </div>
                         </div>
-
+                        
                         <!-- Item -->
-                        <div class="relative pl-6 sm:pl-10">
-                            <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-white border-2 border-slate-300"></div>
-                            <span class="text-xs font-bold text-slate-500 block mb-2">04:15 – 04:30 PM</span>
-                            <div class="bg-slate-50/80 border border-slate-100 rounded-xl p-5 hover:bg-slate-50 transition-colors">
+                        <div class="relative pl-6 sm:pl-10 group">
+                            <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-white border-2 border-slate-300 group-hover:border-brand-blue transition-colors shadow-sm"></div>
+                            <span class="text-xs font-bold text-slate-500 block mb-2 group-hover:text-brand-blue transition-colors">04:15 – 04:30 PM</span>
+                            <div class="glass-panel rounded-[1.5rem] p-5 hover:bg-white transition-all duration-300 border border-white">
                                 <h4 class="font-bold text-slate-800 text-lg">Departure</h4>
                             </div>
                         </div>
-
                     </div>
                 </div>
 
                 <!-- Day 2 Schedule -->
                 <div id="schedule-day2" class="hidden animate-fade-in">
-                    
                     <!-- Day 2 Header Card -->
-                    <div class="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 flex justify-between items-center shadow-sm mb-10">
+                    <div class="glass-panel rounded-[2rem] p-5 sm:p-6 flex justify-between items-center mb-10 border border-slate-200">
                         <div>
-                            <span class="text-[0.65rem] font-bold text-slate-400 uppercase tracking-widest block mb-1">August 8, 2026</span>
+                            <span class="text-[0.65rem] font-bold text-brand-blue uppercase tracking-widest block mb-1">August 8, 2026</span>
                             <h3 class="text-xl sm:text-2xl font-display font-bold text-slate-900">Day 2: Lakireddy Bali Reddy College</h3>
                         </div>
-                        <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center font-bold text-lg border border-slate-200 shrink-0">
+                        <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-slate-100 to-slate-200 text-slate-700 flex items-center justify-center font-bold text-xl border border-slate-300 shadow-sm shrink-0">
                             2
                         </div>
                     </div>
 
                     <!-- Day 2 Timeline -->
-                    <div class="relative border-l-2 border-slate-200 ml-4 sm:ml-8 space-y-8 pb-4">
-                        
-                        <!-- Item -->
-                        <div class="relative pl-6 sm:pl-10">
-                            <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-white border-2 border-slate-300"></div>
-                            <span class="text-xs font-bold text-slate-500 block mb-2">09:00 – 09:30 AM</span>
-                            <div class="bg-slate-50/80 border border-slate-100 rounded-xl p-5 hover:bg-slate-50 transition-colors">
+                    <div class="relative timeline-item border-l-2 border-brand-blue/20 ml-4 sm:ml-8 space-y-8 pb-4">
+                        <div class="relative pl-6 sm:pl-10 group">
+                            <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-white border-2 border-slate-300 group-hover:border-brand-blue transition-colors shadow-sm"></div>
+                            <span class="text-xs font-bold text-slate-500 block mb-2 group-hover:text-brand-blue transition-colors">09:00 – 09:30 AM</span>
+                            <div class="glass-panel rounded-[1.5rem] p-5 hover:bg-white transition-all duration-300 border border-white">
                                 <h4 class="font-bold text-slate-800 text-lg mb-1">Registration & Networking Breakfast</h4>
-                                <p class="text-sm text-slate-500">Registration, Kit Distribution, Informal Networking, IEEE Exhibition.</p>
+                                <p class="text-sm font-medium text-slate-600">Registration, Kit Distribution, Informal Networking, IEEE Exhibition.</p>
                             </div>
                         </div>
 
-                        <!-- Item -->
-                        <div class="relative pl-6 sm:pl-10">
-                            <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-white border-2 border-brand-blue"></div>
-                            <span class="text-xs font-bold text-slate-500 block mb-2">09:30 – 10:15 AM</span>
-                            <div class="bg-slate-50/80 border border-slate-100 rounded-xl p-5 hover:bg-slate-50 transition-colors">
+                        <div class="relative pl-6 sm:pl-10 group">
+                            <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-white border-2 border-brand-blue shadow-[0_0_10px_rgba(0,163,224,0.5)]"></div>
+                            <span class="text-xs font-bold text-brand-blue block mb-2">09:30 – 10:15 AM</span>
+                            <div class="glass-panel rounded-[1.5rem] p-5 hover:bg-white transition-all duration-300 border border-white">
                                 <h4 class="font-bold text-slate-800 text-lg mb-1">Inaugural Ceremony</h4>
-                                <p class="text-sm text-slate-500">Welcome Address, Lamp Lighting, Presidential & Chief Guest Addresses, Group Photograph.</p>
+                                <p class="text-sm font-medium text-slate-600">Welcome Address, Lamp Lighting, Presidential & Chief Guest Addresses, Group Photograph.</p>
                             </div>
                         </div>
 
                         <!-- Item -->
-                        <div class="relative pl-6 sm:pl-10">
-                            <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-white border-2 border-slate-300"></div>
-                            <span class="text-xs font-bold text-slate-500 block mb-2">10:15 – 10:30 AM</span>
-                            <div class="bg-slate-50/80 border border-slate-100 rounded-xl p-5 hover:bg-slate-50 transition-colors">
+                        <div class="relative pl-6 sm:pl-10 group">
+                            <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-white border-2 border-slate-300 group-hover:border-brand-blue transition-colors shadow-sm"></div>
+                            <span class="text-xs font-bold text-slate-500 block mb-2 group-hover:text-brand-blue transition-colors">10:15 – 10:30 AM</span>
+                            <div class="glass-panel rounded-[1.5rem] p-5 hover:bg-white transition-all duration-300 border border-white">
                                 <h4 class="font-bold text-slate-800 text-lg mb-1">IEEE Student Opportunities</h4>
-                                <p class="text-sm text-slate-500">IEEE Membership Benefits, Scholarships, Awards, Student Activities.</p>
+                                <p class="text-sm font-medium text-slate-600">IEEE Membership Benefits, Scholarships, Awards, Student Activities.</p>
                             </div>
                         </div>
 
                         <!-- Item -->
-                        <div class="relative pl-6 sm:pl-10">
-                            <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-white border-2 border-brand-accent"></div>
-                            <span class="text-xs font-bold text-slate-500 block mb-2">10:30 – 11:15 AM</span>
-                            <div class="bg-slate-50/80 border border-slate-100 rounded-xl p-5 hover:bg-slate-50 transition-colors">
+                        <div class="relative pl-6 sm:pl-10 group">
+                            <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-white border-2 border-brand-accent group-hover:scale-110 transition-transform shadow-sm"></div>
+                            <span class="text-xs font-bold text-slate-500 block mb-2 group-hover:text-brand-accent transition-colors">10:30 – 11:15 AM</span>
+                            <div class="glass-panel rounded-[1.5rem] p-5 hover:bg-white transition-all duration-300 border border-white">
                                 <h4 class="font-bold text-slate-800 text-lg mb-1">Keynote Address I</h4>
-                                <p class="text-sm text-slate-500">6G Technologies & Beyond</p>
+                                <p class="text-sm font-medium text-slate-600">6G Technologies & Beyond</p>
                             </div>
                         </div>
 
                         <!-- Item -->
-                        <div class="relative pl-6 sm:pl-10">
-                            <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-white border-2 border-brand-accent"></div>
-                            <span class="text-xs font-bold text-slate-500 block mb-2">11:15 – 12:00 Noon</span>
-                            <div class="bg-slate-50/80 border border-slate-100 rounded-xl p-5 hover:bg-slate-50 transition-colors">
+                        <div class="relative pl-6 sm:pl-10 group">
+                            <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-white border-2 border-brand-accent group-hover:scale-110 transition-transform shadow-sm"></div>
+                            <span class="text-xs font-bold text-slate-500 block mb-2 group-hover:text-brand-accent transition-colors">11:15 – 12:00 Noon</span>
+                            <div class="glass-panel rounded-[1.5rem] p-5 hover:bg-white transition-all duration-300 border border-white">
                                 <h4 class="font-bold text-slate-800 text-lg mb-1">Keynote Address II</h4>
-                                <p class="text-sm text-slate-500">Data Analytics</p>
+                                <p class="text-sm font-medium text-slate-600">Data Analytics</p>
                             </div>
                         </div>
 
                         <!-- Item -->
-                        <div class="relative pl-6 sm:pl-10">
-                            <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-white border-2 border-slate-300"></div>
-                            <span class="text-xs font-bold text-slate-500 block mb-2">12:00 – 01:00 PM</span>
-                            <div class="bg-slate-50/80 border border-slate-100 rounded-xl p-5 hover:bg-slate-50 transition-colors">
+                        <div class="relative pl-6 sm:pl-10 group">
+                            <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-white border-2 border-slate-300 group-hover:border-brand-blue transition-colors shadow-sm"></div>
+                            <span class="text-xs font-bold text-slate-500 block mb-2 group-hover:text-brand-blue transition-colors">12:00 – 01:00 PM</span>
+                            <div class="glass-panel rounded-[1.5rem] p-5 hover:bg-white transition-all duration-300 border border-white">
                                 <h4 class="font-bold text-slate-800 text-lg mb-1">Panel Discussion</h4>
-                                <p class="text-sm text-slate-500">Industry Advancements, Placements, Higher Education.</p>
+                                <p class="text-sm font-medium text-slate-600">Industry Advancements, Placements, Higher Education.</p>
                             </div>
                         </div>
 
                         <!-- Highlight Item: Lunch -->
-                        <div class="relative pl-6 sm:pl-10">
-                            <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-white border-2 border-emerald-400"></div>
-                            <span class="text-xs font-bold text-slate-500 block mb-2">01:00 – 02:00 PM</span>
-                            <div class="bg-emerald-50 border border-emerald-100 rounded-xl p-5">
+                        <div class="relative pl-6 sm:pl-10 group">
+                            <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-white border-2 border-emerald-400 group-hover:scale-110 transition-transform shadow-sm"></div>
+                            <span class="text-xs font-bold text-emerald-600 block mb-2">01:00 – 02:00 PM</span>
+                            <div class="bg-gradient-to-r from-emerald-50/90 to-white/90 backdrop-blur-md border border-emerald-100 rounded-[1.5rem] p-5 shadow-sm">
                                 <h4 class="font-bold text-emerald-800 text-lg mb-1">Networking Lunch</h4>
-                                <p class="text-sm text-emerald-600/80">Interaction with IEEE Leaders, Speakers and Students</p>
+                                <p class="text-sm font-medium text-emerald-700/80">Interaction with IEEE Leaders, Speakers and Students</p>
                             </div>
                         </div>
 
                         <!-- Highlight Item: Competitions -->
-                        <div class="relative pl-6 sm:pl-10">
-                            <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-white border-2 border-brand-dark"></div>
-                            <span class="text-xs font-bold text-slate-500 block mb-2">02:00 – 03:30 PM</span>
-                            <div class="bg-[#0b1a30] rounded-xl p-6 shadow-md border border-[#162a4a]">
+                        <div class="relative pl-6 sm:pl-10 group">
+                            <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-white border-2 border-brand-dark group-hover:scale-110 transition-transform shadow-[0_0_10px_rgba(0,27,58,0.5)]"></div>
+                            <span class="text-xs font-bold text-brand-dark block mb-2">02:00 – 03:30 PM</span>
+                            <div class="bg-gradient-to-br from-brand-dark to-[#001f42] rounded-[1.5rem] p-6 shadow-lg border border-slate-700">
                                 <h4 class="font-bold text-white text-lg mb-4">Parallel Student Competitions</h4>
                                 <ul class="space-y-2">
-                                    <li class="text-sm text-blue-200 flex items-center gap-3">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-brand-accent"></span> 
-                                        Track A: Poster Competition
+                                    <li class="text-sm font-medium text-blue-100 flex items-center gap-3">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-brand-accent"></span> Track A: Poster Competition
                                     </li>
-                                    <li class="text-sm text-blue-200 flex items-center gap-3">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-brand-accent"></span> 
-                                        Track B: Ideation / Pitching Competition
+                                    <li class="text-sm font-medium text-blue-100 flex items-center gap-3">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-brand-accent"></span> Track B: Ideation / Pitching Competition
                                     </li>
-                                    <li class="text-sm text-blue-200 flex items-center gap-3">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-brand-accent"></span> 
-                                        Track C: Coding Contest
+                                    <li class="text-sm font-medium text-blue-100 flex items-center gap-3">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-brand-accent"></span> Track C: Coding Contest
                                     </li>
                                 </ul>
                             </div>
                         </div>
-
+                        
                         <!-- Item -->
-                        <div class="relative pl-6 sm:pl-10">
-                            <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-white border-2 border-slate-300"></div>
-                            <span class="text-xs font-bold text-slate-500 block mb-2">03:30 – 03:45 PM</span>
-                            <div class="bg-slate-50/80 border border-slate-100 rounded-xl p-5 hover:bg-slate-50 transition-colors">
+                        <div class="relative pl-6 sm:pl-10 group">
+                            <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-white border-2 border-slate-300 group-hover:border-brand-blue transition-colors shadow-sm"></div>
+                            <span class="text-xs font-bold text-slate-500 block mb-2 group-hover:text-brand-blue transition-colors">03:30 – 03:45 PM</span>
+                            <div class="glass-panel rounded-[1.5rem] p-5 hover:bg-white transition-all duration-300 border border-white">
                                 <h4 class="font-bold text-slate-800 text-lg">Tea Break & Networking</h4>
                             </div>
                         </div>
 
                         <!-- Item -->
-                        <div class="relative pl-6 sm:pl-10">
-                            <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-white border-2 border-slate-300"></div>
-                            <span class="text-xs font-bold text-slate-500 block mb-2">03:45 – 04:15 PM</span>
-                            <div class="bg-slate-50/80 border border-slate-100 rounded-xl p-5 hover:bg-slate-50 transition-colors">
+                        <div class="relative pl-6 sm:pl-10 group">
+                            <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-white border-2 border-slate-300 group-hover:border-brand-blue transition-colors shadow-sm"></div>
+                            <span class="text-xs font-bold text-slate-500 block mb-2 group-hover:text-brand-blue transition-colors">03:45 – 04:15 PM</span>
+                            <div class="glass-panel rounded-[1.5rem] p-5 hover:bg-white transition-all duration-300 border border-white">
                                 <h4 class="font-bold text-slate-800 text-lg mb-1">Valedictory</h4>
-                                <p class="text-sm text-slate-500">Awards & Recognition, Valedictory, National Anthem.</p>
+                                <p class="text-sm font-medium text-slate-600">Awards & Recognition, Valedictory, National Anthem.</p>
                             </div>
                         </div>
-
+                        
                         <!-- Item -->
-                        <div class="relative pl-6 sm:pl-10">
-                            <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-white border-2 border-slate-300"></div>
-                            <span class="text-xs font-bold text-slate-500 block mb-2">04:15 – 04:30 PM</span>
-                            <div class="bg-slate-50/80 border border-slate-100 rounded-xl p-5 hover:bg-slate-50 transition-colors">
+                        <div class="relative pl-6 sm:pl-10 group">
+                            <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-white border-2 border-slate-300 group-hover:border-brand-blue transition-colors shadow-sm"></div>
+                            <span class="text-xs font-bold text-slate-500 block mb-2 group-hover:text-brand-blue transition-colors">04:15 – 04:30 PM</span>
+                            <div class="glass-panel rounded-[1.5rem] p-5 hover:bg-white transition-all duration-300 border border-white">
                                 <h4 class="font-bold text-slate-800 text-lg">Departure</h4>
                             </div>
                         </div>
-
                     </div>
+                </div>
+
+                <div class="mt-12 text-center relative z-10">
+                    <a href="/events" class="glossy-btn-accent inline-flex items-center gap-2 px-8 py-4 rounded-full text-base font-bold shadow-lg">
+                        Secure Your Spot Now
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                    </a>
                 </div>
             </div>
         </div>
     </section>
 
-    <section id="venues" class="py-20 bg-slate-50 relative border-t border-slate-200">
+    <section id="venues" class="py-20 relative border-t border-slate-200/50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div class="text-center mb-16">
-                <span class="text-brand-blue font-bold tracking-widest uppercase text-sm mb-2 block">Locations</span>
-                <h2 class="text-3xl md:text-4xl font-display font-bold text-brand-dark mb-4">Host Institutions</h2>
-                <div class="w-24 h-1.5 bg-brand-accent mx-auto rounded-full"></div>
+                <span class="text-brand-blue font-bold tracking-widest uppercase text-xs mb-2 block bg-brand-blue/10 inline-block px-3 py-1 rounded-full border border-brand-blue/20">Locations</span>
+                <h2 class="text-3xl md:text-4xl font-display font-bold text-slate-800">Host Institutions</h2>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
                 <!-- Day 1 Venue -->
-                <div class="bg-white rounded-[2rem] overflow-hidden shadow-float border border-slate-200 flex flex-col group hover:-translate-y-1 transition-all">
-                    <div class="h-56 w-full overflow-hidden relative">
+                <div class="glass-panel rounded-[2rem] overflow-hidden flex flex-col group hover:-translate-y-2 hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.1)] transition-all duration-300 p-2 border border-slate-200">
+                    <div class="h-56 w-full overflow-hidden relative rounded-[1.5rem]">
                         <div class="absolute inset-0 bg-brand-dark/20 group-hover:bg-transparent transition-colors z-10"></div>
                         <img src="https://city.ac.in/img/breadcromes/AboutUslowercollegephoto.webp" alt="Chalapathi Institute" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700">
-                        <div class="absolute top-4 left-4 z-20 bg-brand-blue text-white px-3 py-1 rounded-full text-xs font-bold shadow-md">
+                        <div class="absolute top-4 left-4 z-20 glass-nav text-brand-dark px-4 py-1.5 rounded-full text-[0.65rem] font-bold shadow-md tracking-wide">
                             DAY 1 HOST (7 Aug)
                         </div>
                     </div>
-                    <div class="p-8 flex flex-col flex-1 relative">
-                        <h3 class="text-2xl font-display font-bold text-slate-900 mb-2">Chalapathi Institute of Technology (CITY)</h3>
-                        <p class="text-slate-500 text-sm mb-6">Mothadaka, Guntur, Andhra Pradesh</p>
+                    <div class="p-6 sm:p-8 flex flex-col flex-1 relative bg-white/50 rounded-[1.5rem] mt-2 border border-slate-100">
+                        <h3 class="text-2xl font-display font-bold text-slate-900 mb-2 group-hover:text-brand-blue transition-colors">Chalapathi University</h3>
+                        <p class="text-slate-600 font-medium text-sm mb-6">Mothadaka, Guntur, Andhra Pradesh</p>
                         
-                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 mb-6">
-                            <p class="text-xs font-bold text-slate-400 uppercase mb-2">Co-Host</p>
+                        <div class="bg-white border border-slate-100 p-4 rounded-xl mb-6 shadow-sm">
+                            <p class="text-xs font-bold text-slate-400 uppercase mb-1">Co-Host</p>
                             <p class="font-bold text-slate-700 text-sm">Chalapathi Institute of Engineering & Technology, Lam</p>
                         </div>
 
-                        <div class="mt-auto pt-6 border-t border-slate-100">
+                        <div class="mt-auto pt-6 border-t border-slate-200">
                             <p class="text-xs font-bold text-slate-400 uppercase mb-2">Primary Contact</p>
                             <p class="font-bold text-slate-900">Dr. P. Bala Murali Krishna</p>
-                            <a href="tel:+919440322685" class="text-brand-blue font-medium text-sm flex items-center gap-1 mt-1 hover:underline">
+                            <a href="tel:+919440322685" class="text-brand-blue font-medium text-sm flex items-center gap-1.5 mt-1.5 hover:underline">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
                                 +91 94403 22685
                             </a>
@@ -651,22 +1010,22 @@
                 </div>
 
                 <!-- Day 2 Venue -->
-                <div class="bg-white rounded-[2rem] overflow-hidden shadow-float border border-slate-200 flex flex-col group hover:-translate-y-1 transition-all">
-                    <div class="h-56 w-full overflow-hidden relative">
+                <div class="glass-panel rounded-[2rem] overflow-hidden flex flex-col group hover:-translate-y-2 hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.1)] transition-all duration-300 p-2 border border-slate-200">
+                    <div class="h-56 w-full overflow-hidden relative rounded-[1.5rem]">
                         <div class="absolute inset-0 bg-brand-dark/20 group-hover:bg-transparent transition-colors z-10"></div>
                         <img src="https://res.cloudinary.com/djdwpjm7x/image/upload/v1769924817/admin-block_kgxvrc.jpg" alt="LBRCE Engineering College" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700">
-                        <div class="absolute top-4 left-4 z-20 bg-slate-800 text-white px-3 py-1 rounded-full text-xs font-bold shadow-md">
+                        <div class="absolute top-4 left-4 z-20 glass-nav text-slate-800 px-4 py-1.5 rounded-full text-[0.65rem] font-bold shadow-md tracking-wide">
                             DAY 2 HOST (8 Aug)
                         </div>
                     </div>
-                    <div class="p-8 flex flex-col flex-1">
-                        <h3 class="text-2xl font-display font-bold text-slate-900 mb-2">Lakireddy Bali Reddy College of Engineering</h3>
-                        <p class="text-slate-500 text-sm mb-6">Mylavaram, NTR District, Andhra Pradesh</p>
+                    <div class="p-6 sm:p-8 flex flex-col flex-1 bg-white/50 rounded-[1.5rem] mt-2 border border-slate-100">
+                        <h3 class="text-2xl font-display font-bold text-slate-900 mb-2 group-hover:text-brand-blue transition-colors">Lakireddy Bali Reddy College of Engineering</h3>
+                        <p class="text-slate-600 font-medium text-sm mb-6">Mylavaram, NTR District, Andhra Pradesh</p>
 
-                        <div class="mt-auto pt-6 border-t border-slate-100">
+                        <div class="mt-auto pt-6 border-t border-slate-200">
                             <p class="text-xs font-bold text-slate-400 uppercase mb-2">Primary Contact</p>
                             <p class="font-bold text-slate-900">Mr. Kattupalli Sudhakar</p>
-                            <a href="tel:+919010503595" class="text-brand-blue font-medium text-sm flex items-center gap-1 mt-1 hover:underline">
+                            <a href="tel:+919010503595" class="text-brand-blue font-medium text-sm flex items-center gap-1.5 mt-1.5 hover:underline">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
                                 +91 90105 03595
                             </a>
@@ -677,33 +1036,145 @@
         </div>
     </section>
 
-    
-     <footer class="bg-[#0f172a] text-slate-300 py-16 border-t border-slate-800">
+    <section id="contact" class="py-20 relative border-t border-slate-200/50">
+        <div class="absolute top-0 right-0 w-64 h-64 bg-brand-accent/5 rounded-full blur-3xl pointer-events-none"></div>
+        
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center mb-16">
+                <span class="text-brand-blue font-bold tracking-widest uppercase text-xs mb-2 block bg-brand-blue/10 inline-block px-3 py-1 rounded-full border border-brand-blue/20">Need Help?</span>
+                <h2 class="text-3xl md:text-4xl font-display font-bold text-slate-800 mb-4">Contact Coordinators</h2>
+                <p class="text-slate-500 max-w-2xl mx-auto mt-4 font-medium text-sm">Have queries about events, venues, or payments? Reach out to our dedicated student coordinators and support team.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 max-w-6xl mx-auto">
+                <!-- CITY Coordinators -->
+                <div class="glass-panel p-8 rounded-[2rem] hover:-translate-y-1 transition-transform group border border-slate-200 relative overflow-hidden">
+                    <div class="absolute -right-6 -top-6 w-24 h-24 bg-blue-100 rounded-full opacity-50 group-hover:scale-[2] transition-transform duration-700 ease-in-out pointer-events-none"></div>
+                    <div class="relative z-10">
+                        <div class="w-12 h-12 bg-white text-brand-blue rounded-xl flex items-center justify-center shadow-sm mb-6 border border-slate-100">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                        </div>
+                        <h3 class="text-xl font-display font-bold text-slate-900 mb-1">Chalapathi University</h3>
+                        <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-6 border-b border-slate-200 pb-3">Student Co-ordinators</p>
+                        
+                        <div class="space-y-5">
+                            <div>
+                                <p class="font-bold text-slate-800 text-sm">Gangisetti Srinadh</p>
+                                <a href="tel:+918897450063" class="text-brand-blue text-sm font-medium flex items-center gap-2 hover:underline mt-1">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
+                                    +91 88974 50063
+                                </a>
+                            </div>
+                            <div>
+                                <p class="font-bold text-slate-800 text-sm">Itha Ushasri</p>
+                                <a href="tel:+916301383945" class="text-brand-blue text-sm font-medium flex items-center gap-2 hover:underline mt-1">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
+                                    +91 63013 83945
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- LBRCE Coordinators -->
+                <div class="glass-panel p-8 rounded-[2rem] hover:-translate-y-1 transition-transform group border border-slate-200 relative overflow-hidden">
+                    <div class="absolute -right-6 -top-6 w-24 h-24 bg-emerald-100 rounded-full opacity-50 group-hover:scale-[2] transition-transform duration-700 ease-in-out pointer-events-none"></div>
+                    <div class="relative z-10">
+                        <div class="w-12 h-12 bg-white text-emerald-500 rounded-xl flex items-center justify-center shadow-sm mb-6 border border-slate-100">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                        </div>
+                        <h3 class="text-xl font-display font-bold text-slate-900 mb-1">Lakireddy Bali Reddy College of Engineering</h3>
+                        <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-6 border-b border-slate-200 pb-3">Student Co-ordinators</p>
+                        
+                        <div class="space-y-5">
+                            <div>
+                                <p class="font-bold text-slate-800 text-sm">Yalamanchili Dinesh</p>
+                                <a href="tel:+918919167490" class="text-brand-blue text-sm font-medium flex items-center gap-2 hover:underline mt-1">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
+                                    +91 89191 67490
+                                </a>
+                            </div>
+                            <div>
+                                <p class="font-bold text-slate-800 text-sm">Satvik</p>
+                                <a href="tel:+918367071520" class="text-brand-blue text-sm font-medium flex items-center gap-2 hover:underline mt-1">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
+                                    +91 83670 71520
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tech Support (Glossy Dark Glass) -->
+                <div class="bg-gradient-to-br from-brand-dark to-[#00142b] p-8 rounded-[2rem] hover:-translate-y-1 transition-transform group md:col-span-2 lg:col-span-1 border border-slate-700 shadow-[0_8px_32px_rgba(0,0,0,0.15)] relative overflow-hidden">
+                    <div class="absolute -right-6 -top-6 w-24 h-24 bg-brand-accent/20 rounded-full opacity-50 group-hover:scale-[2] transition-transform duration-700 ease-in-out pointer-events-none"></div>
+                    <div class="relative z-10">
+                        <div class="w-12 h-12 bg-white/10 text-white rounded-xl flex items-center justify-center shadow-sm mb-6 border border-white/20 backdrop-blur-sm group-hover:bg-brand-accent transition-colors duration-300">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                        </div>
+                        <h3 class="text-xl font-display font-bold text-white mb-1">Payment Support</h3>
+                        <p class="text-xs font-bold text-brand-accent uppercase tracking-widest mb-6 border-b border-white/10 pb-3">Technical Assistance</p>
+                        
+                        <div class="space-y-6">
+                            <div>
+                                <p class="font-bold text-white text-sm">Xeta Tech Solutions</p>
+                                <a href="tel:+919542297568" class="text-blue-200 text-sm font-medium flex items-center gap-2 hover:text-white transition-colors mt-1">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
+                                    +91 95422 97568
+                                </a>
+                            </div>
+                            <div class="pt-2">
+                                <a href="https://xetatech.in/payments" target="_blank" class="inline-flex items-center justify-center w-full px-4 py-3 bg-brand-accent hover:bg-white text-white hover:text-brand-dark rounded-xl font-bold transition-all duration-300 text-sm shadow-sm gap-2">
+                                    Support Portal
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-[#0f172a] text-slate-300 py-16 border-t border-slate-800">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <!-- Added Organization Banner Section (Glossy Style) -->
+            <div class="mb-16 bg-white/5 border border-white/10 rounded-[2rem] p-6 sm:p-8 backdrop-blur-md flex flex-col md:flex-row items-center justify-between gap-8 shadow-[0_8px_32px_rgba(0,0,0,0.2)]">
+                <div class="text-center md:text-left flex-1">
+                    <p class="text-brand-accent text-sm font-bold tracking-widest uppercase mb-2">Organized By</p>
+                    <h3 class="text-xl md:text-2xl font-display font-bold text-white mb-1">Hyderabad Student Activities Committee</h3>
+                    <p class="text-slate-400 text-sm font-medium">In Association with Guntur Sub Section</p>
+                </div>
+                
+                <div class="flex items-center justify-center gap-6 sm:gap-10 shrink-0">
+                    <!-- Guntur Sub Section Logo -->
+                    <div class="bg-white p-2 rounded-xl shadow-lg transform hover:scale-105 transition-transform">
+                        <img src="https://sac.ieeehyd.org/images/ieee-hyderabad-sac-logo.png" alt="IEEE Guntur Sub Section Logo" class="h-12 sm:h-16 w-auto object-contain mix-blend-multiply">
+                    </div>
+                    
+                    <div class="h-12 w-px bg-slate-700"></div> <!-- Divider -->
+                    
+                    <!-- SAC Hyderabad Logo -->
+                    <div class="bg-white p-2 rounded-xl shadow-lg transform hover:scale-105 transition-transform">
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTFlaHxatQkNn2Eoh4HWZ0h8xBO_IM4Fkh1nedAPaKttA&s=10" alt="IEEE SAC Hyderabad Logo" class="h-12 sm:h-16 w-auto object-contain">
+                    </div>
+                </div>
+            </div>
+
             <div class="grid grid-cols-1 md:grid-cols-12 gap-12 lg:gap-8">
                 
                 <!-- Brand & About -->
                 <div class="md:col-span-5 lg:col-span-5">
-                    <div class="inline-flex items-center gap-3 bg-white/5 border border-white/10 p-2 pr-6 rounded-xl mb-6">
-                        <div class="w-10 h-10 bg-white rounded-lg flex items-center justify-center p-1">
-                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQRQUOVTVuLAWuWWCkcSow3IBBsUkVKziDB3e5VpyN02Q&s=10" alt="IEEE Logo" class="w-full h-full object-contain">
+                    <div class="inline-flex items-center gap-3 bg-white/5 border border-white/10 p-2 pr-6 rounded-xl mb-6 shadow-sm">
+                        <div class="w-10 h-10 bg-white rounded-lg flex items-center justify-center p-1 overflow-hidden">
+                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQRQUOVTVuLAWuWWCkcSow3IBBsUkVKziDB3e5VpyN02Q&s=10" alt="IEEE Logo" class="w-full h-full object-cover">
                         </div>
                         <h4 class="font-display font-bold text-white tracking-wide">UDGAMA 2026</h4>
                     </div>
-                    <p class="text-sm leading-relaxed mb-6 pr-4 text-slate-400">
+                    <p class="text-sm leading-relaxed mb-6 pr-4 font-medium text-slate-400">
                         Empowering Future Engineers Through Innovation, Leadership and IEEE Excellence. Hosted by Guntur Subsection.
                     </p>
-                    <div class="flex gap-3">
-                        <a href="mailto:sac@ieeehyd.org" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 transition-colors">
-                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
-                        </a>
-                        <a href="https://linkedin.com/company/ieee-sac-hyd-section" target="_blank" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 transition-colors">
-                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
-                        </a>
-                        <a href="https://instagram.com/ieeehydsac" target="_blank" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 transition-colors">
-                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
-                        </a>
-                    </div>
                 </div>
 
                 <!-- Quick Links -->
@@ -711,33 +1182,45 @@
                     <h5 class="text-white font-bold tracking-wider mb-6 text-sm">QUICK LINKS</h5>
                     <ul class="space-y-4">
                         <li>
-                            <a href="#about" class="hover:text-white transition-colors flex items-center gap-2 text-sm">
-                                <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                            <a href="/events" class="hover:text-brand-accent transition-colors flex items-center gap-2 text-sm text-brand-accent font-bold group">
+                                <svg class="w-3.5 h-3.5 text-brand-accent group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                                Register Now
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://testifysecuretestapp.s3.ap-south-1.amazonaws.com/Online+UDGAMA+Brochure+2026.pdf" target="_blank" class="hover:text-white transition-colors flex items-center gap-2 text-sm font-medium group">
+                                <svg class="w-3.5 h-3.5 text-slate-500 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                                Download Brochure
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#about" class="hover:text-white transition-colors flex items-center gap-2 text-sm font-medium group">
+                                <svg class="w-3.5 h-3.5 text-slate-500 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
                                 About Congress
                             </a>
                         </li>
                         <li>
-                            <a href="#themes" class="hover:text-white transition-colors flex items-center gap-2 text-sm">
-                                <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                            <a href="#themes" class="hover:text-white transition-colors flex items-center gap-2 text-sm font-medium group">
+                                <svg class="w-3.5 h-3.5 text-slate-500 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
                                 Technical Tracks
                             </a>
                         </li>
                         <li>
-                            <a href="#schedule" class="hover:text-white transition-colors flex items-center gap-2 text-sm">
-                                <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                            <a href="#schedule" class="hover:text-white transition-colors flex items-center gap-2 text-sm font-medium group">
+                                <svg class="w-3.5 h-3.5 text-slate-500 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
                                 Schedule
                             </a>
                         </li>
                         <li>
-                            <a href="#venues" class="hover:text-white transition-colors flex items-center gap-2 text-sm">
-                                <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                            <a href="#venues" class="hover:text-white transition-colors flex items-center gap-2 text-sm font-medium group">
+                                <svg class="w-3.5 h-3.5 text-slate-500 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
                                 Venues
                             </a>
                         </li>
                     </ul>
                 </div>
 
-                <!-- Contact -->
+                <!-- Contact Info -->
                 <div class="md:col-span-4 lg:col-span-4">
                     <h5 class="text-white font-bold tracking-wider mb-6 text-sm">CONTACT</h5>
                     <ul class="space-y-5">
@@ -745,19 +1228,19 @@
                             <div class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center shrink-0 mt-0.5">
                                 <svg class="w-4 h-4 text-brand-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                             </div>
-                            <span class="text-sm leading-relaxed">Guntur Subsection,<br>Andhra Pradesh, India</span>
+                            <span class="text-sm leading-relaxed font-medium">Guntur Subsection,<br>Andhra Pradesh, India</span>
                         </li>
                         <li class="flex items-center gap-3">
                             <div class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center shrink-0">
                                 <svg class="w-4 h-4 text-brand-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
                             </div>
-                            <a href="mailto:sac@ieeehyd.org" class="hover:text-white transition-colors text-sm">sac@ieeehyd.org</a>
+                            <a href="mailto:sac@ieeehyd.org" class="hover:text-white transition-colors text-sm font-medium">sac@ieeehyd.org</a>
                         </li>
                         <li class="flex items-center gap-3">
                             <div class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center shrink-0">
                                 <svg class="w-4 h-4 text-brand-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path></svg>
                             </div>
-                            <a href="https://ieeehydsac.in" target="_blank" class="hover:text-white transition-colors text-sm">ieeehydsac.in</a>
+                            <a href="https://ieeehyd.org" target="_blank" class="hover:text-white transition-colors text-sm font-medium">ieeehyd.org</a>
                         </li>
                     </ul>
                 </div>
@@ -765,18 +1248,166 @@
             </div>
             
             <!-- Bottom Footer bar -->
-            <div class="pt-8 mt-12 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-slate-500">
+            <div class="pt-8 mt-12 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center gap-6 text-sm text-slate-500 font-medium">
                 <p>&copy; 2026 IEEE Hyderabad Section SAC. All rights reserved.</p>
-                <p>
-                    Designed & Developed by 
-                    <a href="https://xetasolutions.in" target="_blank" rel="noopener noreferrer" class="font-bold text-[#b490ff] hover:text-white transition-colors ml-1">
-                        Xeta Tech Solutions
+                <div class="flex items-center gap-3 bg-slate-800/50 px-5 py-2.5 rounded-full border border-slate-700/50 hover:border-brand-accent/50 transition-colors shadow-lg">
+                    <span class="text-[0.65rem] uppercase tracking-widest text-slate-400 font-bold">Designed & Developed by</span>
+                    <a href="https://xetatech.in" target="_blank" rel="noopener noreferrer" class="relative group flex items-center">
+                        <span class="font-black text-transparent bg-clip-text bg-gradient-to-r from-brand-accent to-purple-400 group-hover:from-white group-hover:to-blue-200 transition-all duration-300">
+                            Xeta Tech Solutions
+                        </span>
+                        <div class="absolute -bottom-1 left-0 w-0 h-px bg-gradient-to-r from-brand-accent to-purple-400 group-hover:w-full transition-all duration-300"></div>
                     </a>
-                </p>
+                </div>
             </div>
         </div>
     </footer>
+
     <script>
+        // 3D Splash Screen using Three.js
+        function init3DSplash() {
+            const canvas = document.getElementById('splash-canvas');
+            if (!canvas) return;
+
+            const scene = new THREE.Scene();
+            scene.fog = new THREE.FogExp2(0x020617, 0.002);
+
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.z = 160; 
+
+            const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+            // 1. Outer Tech Particle Sphere (The Nodes)
+            const particlesGeometry = new THREE.BufferGeometry();
+            const particlesCount = 2500;
+            const posArray = new Float32Array(particlesCount * 3);
+            const colorsArray = new Float32Array(particlesCount * 3);
+
+            const colorBrand = new THREE.Color(0x00A3E0); 
+            const colorWhite = new THREE.Color(0xffffff); 
+
+            for(let i = 0; i < particlesCount; i++) {
+                // Distribute points in a spherical shell
+                const radius = 70 + (Math.random() * 25); 
+                const theta = 2 * Math.PI * Math.random();
+                const phi = Math.acos(2 * Math.random() - 1);
+                
+                posArray[i*3] = radius * Math.sin(phi) * Math.cos(theta);
+                posArray[i*3+1] = radius * Math.sin(phi) * Math.sin(theta);
+                posArray[i*3+2] = radius * Math.cos(phi);
+
+                // Mix colors between brand blue and white for depth
+                const mixedColor = colorBrand.clone().lerp(colorWhite, Math.random() * 0.5);
+                colorsArray[i*3] = mixedColor.r;
+                colorsArray[i*3+1] = mixedColor.g;
+                colorsArray[i*3+2] = mixedColor.b;
+            }
+
+            particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+            particlesGeometry.setAttribute('color', new THREE.BufferAttribute(colorsArray, 3));
+            
+            const particlesMaterial = new THREE.PointsMaterial({
+                size: 1.2,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.8,
+                blending: THREE.AdditiveBlending
+            });
+
+            const particleGlobe = new THREE.Points(particlesGeometry, particlesMaterial);
+            scene.add(particleGlobe);
+
+            // 2. Inner Glowing Core (Geometric structure)
+            const coreGeom = new THREE.IcosahedronGeometry(45, 1);
+            const coreMat = new THREE.MeshBasicMaterial({
+                color: 0x00A3E0,
+                wireframe: true,
+                transparent: true,
+                opacity: 0.15
+            });
+            const coreMesh = new THREE.Mesh(coreGeom, coreMat);
+            scene.add(coreMesh);
+
+            // 3. Subtle ambient dust in the background
+            const dustGeom = new THREE.BufferGeometry();
+            const dustPos = new Float32Array(1000 * 3);
+            for(let i=0; i<1000*3; i++) dustPos[i] = (Math.random() - 0.5) * 800;
+            dustGeom.setAttribute('position', new THREE.BufferAttribute(dustPos, 3));
+            const dustMat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.8, transparent: true, opacity: 0.2 });
+            const ambientDust = new THREE.Points(dustGeom, dustMat);
+            scene.add(ambientDust);
+
+            // Animation Loop variables
+            let animationId;
+            let isExiting = false;
+
+            function animate() {
+                animationId = requestAnimationFrame(animate);
+                
+                if (!isExiting) {
+                    // Elegant, slow rotation representing global network
+                    particleGlobe.rotation.y += 0.001;
+                    particleGlobe.rotation.x += 0.0005;
+                    
+                    // Core rotates in opposite direction
+                    coreMesh.rotation.y -= 0.002;
+                    coreMesh.rotation.z += 0.001;
+                    
+                    ambientDust.rotation.y -= 0.0005;
+                } else {
+                    // Cinematic Exit: Warp speed fly-through
+                    camera.position.z -= 6; // Zoom camera extremely fast
+                    
+                    particleGlobe.rotation.y += 0.02; // Spin up
+                    coreMesh.rotation.x -= 0.03;
+                    
+                    // Fade out materials to transition to website
+                    if (particlesMaterial.opacity > 0) particlesMaterial.opacity -= 0.02;
+                    if (coreMat.opacity > 0) coreMat.opacity -= 0.02;
+                    if (dustMat.opacity > 0) dustMat.opacity -= 0.02;
+                }
+                
+                renderer.render(scene, camera);
+            }
+            animate();
+
+            // Handle Resize
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+
+            return { renderer, animationId, triggerExit: () => { isExiting = true; } };
+        }
+
+        window.addEventListener('load', () => {
+            const { renderer, animationId, triggerExit } = init3DSplash();
+            
+            // Wait for 3 seconds of showing the splash
+            setTimeout(() => {
+                // Trigger the 3D fly-through animation
+                triggerExit();
+                
+                const splash = document.getElementById('splash-screen');
+                document.body.classList.remove('splash-active');
+                
+                // Start fading the DOM overlay slightly after fly-through starts
+                setTimeout(() => {
+                    splash.style.opacity = '0';
+                    
+                    // Completely hide and clean up after CSS transition
+                    setTimeout(() => {
+                        splash.style.display = 'none';
+                        cancelAnimationFrame(animationId); 
+                    }, 1000); 
+                }, 400); 
+                
+            }, 3000); 
+        });
+
         // Toggle Logic for Tracks and Schedule using Pill Buttons
         function toggleSection(section, day) {
             const day1Btn = document.getElementById(`${section}-btn-day1`);
@@ -784,8 +1415,8 @@
             const day1Content = document.getElementById(`${section}-day1`);
             const day2Content = document.getElementById(`${section}-day2`);
 
-            const activeClasses = ['bg-brand-dark', 'text-white', 'shadow-md'];
-            const inactiveClasses = ['text-slate-500', 'hover:text-brand-dark'];
+            const activeClasses = ['glossy-btn-accent', 'shadow-md'];
+            const inactiveClasses = ['text-slate-600', 'hover:text-brand-dark'];
 
             if (day === 1) {
                 day1Btn.classList.add(...activeClasses);

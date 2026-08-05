@@ -105,9 +105,7 @@
                     throw new Error(data.error || 'Login failed. Please check your credentials.');
                 }
 
-                // ==========================================
-                // THE FIX: Saving the exact required tokens and forcing lowercase on roles
-                // ==========================================
+                // Format the role to ensure it matches strictly
                 const safeRole = (data.role || '').toLowerCase();
                 
                 localStorage.setItem('token', data.token);
@@ -119,10 +117,12 @@
                 btn.classList.add('bg-emerald-500', 'hover:bg-emerald-600');
                 btn.innerHTML = 'Success! Redirecting...';
 
-                // Redirect based on the safely formatted role
+                // Setup logical redirects for Master Admin, Coordinating Admin, and standard Coordinator
                 setTimeout(() => {
                     if (safeRole === 'admin') {
                         window.location.href = '/admin/dashboard';
+                    } else if (safeRole === 'coordinating_admin') {
+                        window.location.href = '/coordinating-admin/coordinating-admin';
                     } else {
                         window.location.href = '/coordinator/dashboard';
                     }

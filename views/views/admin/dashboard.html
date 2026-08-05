@@ -51,6 +51,10 @@
         input[type=number]::-webkit-inner-spin-button, 
         input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         input[type=number] { -moz-appearance: textfield; }
+
+        /* Custom Checkbox */
+        .custom-checkbox input:checked + div { background-color: #00A3E0; border-color: #00A3E0; }
+        .custom-checkbox input:checked + div svg { display: block; }
     </style>
 </head>
 <body class="font-sans antialiased h-screen flex overflow-hidden selection:bg-brand-accent selection:text-white">
@@ -75,6 +79,11 @@
             <button onclick="switchTab('coordinators')" id="nav-coordinators" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-sm font-semibold rounded-xl text-slate-400 hover:bg-slate-800/50 hover:text-white transition-colors">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
                 Coordinators
+            </button>
+            <!-- New Coordinating Admins Nav Button -->
+            <button onclick="switchTab('coord-admins')" id="nav-coord-admins" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-sm font-semibold rounded-xl text-slate-400 hover:bg-slate-800/50 hover:text-white transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                Coordinating Admins
             </button>
             <button onclick="switchTab('events')" id="nav-events" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-sm font-semibold rounded-xl text-slate-400 hover:bg-slate-800/50 hover:text-white transition-colors">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
@@ -108,6 +117,7 @@
 
         <div class="flex-1 overflow-y-auto p-8 z-10 relative">
             
+            <!-- Dashboard Tab -->
             <div id="tab-dashboard" class="tab-content active max-w-7xl mx-auto space-y-6">
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                     <div class="glass-panel p-6 rounded-2xl">
@@ -155,7 +165,6 @@
             </div>
 
             <div id="tab-organizations" class="tab-content max-w-7xl mx-auto space-y-6">
-                
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <div class="lg:col-span-1 glass-panel rounded-2xl p-6 h-fit border-slate-800">
                         <h3 class="text-lg font-display font-bold text-white mb-4">Create Organization</h3>
@@ -197,7 +206,6 @@
             </div>
 
             <div id="tab-coordinators" class="tab-content max-w-7xl mx-auto space-y-6">
-                
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <div class="lg:col-span-1 glass-panel rounded-2xl p-6 h-fit border-slate-800">
                         <h3 class="text-lg font-display font-bold text-white mb-1">Assign Coordinator</h3>
@@ -240,6 +248,65 @@
                 </div>
             </div>
 
+            <div id="tab-coord-admins" class="tab-content max-w-7xl mx-auto space-y-6">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="lg:col-span-1 glass-panel rounded-2xl p-6 h-fit border-slate-800">
+                        <h3 class="text-lg font-display font-bold text-white mb-1">Create Coordinating Admin</h3>
+                        <p class="text-xs text-slate-400 mb-4">Assign a manager to oversee multiple organizations.</p>
+                        
+                        <form id="createCoAdminForm" class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Full Name</label>
+                                <input type="text" id="coAdminName" required class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-white placeholder-slate-500 focus:border-brand-accent transition-all">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Email (Login ID)</label>
+                                <input type="email" id="coAdminEmail" required class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-white placeholder-slate-500 focus:border-brand-accent transition-all">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Temporary Password</label>
+                                <input type="password" id="coAdminPass" required class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-white placeholder-slate-500 focus:border-brand-accent transition-all">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Assign Organizations</label>
+                                <div id="multiOrgCheckboxes" class="space-y-2 max-h-48 overflow-y-auto p-2 bg-slate-900 rounded-xl border border-slate-700">
+                                    <div class="text-center text-slate-500 text-sm py-4">Loading organizations...</div>
+                                </div>
+                            </div>
+
+                            <button type="submit" id="btnCreateCoAdmin" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl transition-colors shadow-lg flex justify-center items-center">
+                                Create Coordinating Admin
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="lg:col-span-2 glass-panel rounded-2xl p-6 border-slate-800 flex flex-col h-[600px]">
+                        <h3 class="text-lg font-display font-bold text-white mb-4">About Coordinating Admins</h3>
+                        <div class="flex-1 border border-slate-700 rounded-xl bg-slate-900/50 p-6">
+                           <div class="flex items-start gap-4 mb-6">
+                               <div class="w-12 h-12 bg-emerald-500/20 rounded-full flex items-center justify-center text-emerald-400 shrink-0">
+                                   <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                               </div>
+                               <div>
+                                   <h4 class="text-white font-bold text-md">Multi-Organization Oversight</h4>
+                                   <p class="text-slate-400 text-sm mt-1 leading-relaxed">A Coordinating Admin acts as a regional or group manager. Unlike standard Organization Coordinators who manage a single entity, Coordinating Admins can view analytics and registrations across multiple selected organizations.</p>
+                               </div>
+                           </div>
+                           
+                           <h5 class="text-slate-300 font-semibold mb-2">Capabilities:</h5>
+                           <ul class="space-y-2 text-sm text-slate-400 list-disc pl-5">
+                               <li>View aggregated revenue across all assigned organizations.</li>
+                               <li>Monitor total IEEE vs Non-IEEE registration numbers.</li>
+                               <li>Compare performance (registrations/revenue) between their assigned orgs.</li>
+                               <li>Access registration details for events under their jurisdiction.</li>
+                               <li class="text-rose-400">Cannot create new events or organizations (Read-only analytics view).</li>
+                           </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div id="tab-events" class="tab-content max-w-7xl mx-auto space-y-6">
                 <div class="glass-panel rounded-2xl p-6 border-slate-800 min-h-[600px] flex flex-col">
                     <div class="flex items-center justify-between mb-6">
@@ -263,7 +330,6 @@
                                 </tr>
                             </thead>
                             <tbody id="globalEventsTableBody" class="divide-y divide-slate-800">
-                                <!-- Populated dynamically -->
                                 <tr><td colspan="6" class="px-6 py-10 text-center"><div class="w-6 h-6 border-2 border-slate-600 border-t-brand-accent rounded-full animate-spin mx-auto"></div></td></tr>
                             </tbody>
                         </table>
@@ -325,6 +391,7 @@
             'dashboard': 'Platform Overview',
             'organizations': 'Organization Management',
             'coordinators': 'Coordinator Management',
+            'coord-admins': 'Coordinating Admins Management',
             'events': 'Global Events Master View'
         };
 
@@ -344,8 +411,9 @@
             document.getElementById('pageTitle').textContent = pageTitles[tabId];
 
             if (tabId === 'dashboard') loadDashboardStats();
-            if (tabId === 'organizations') loadGlobalData(); 
-            if (tabId === 'events') loadGlobalData(); 
+            if (['organizations', 'events', 'coordinators', 'coord-admins'].includes(tabId)) {
+                loadGlobalData(); 
+            }
         }
 
         async function init() {
@@ -394,11 +462,32 @@
 
                 renderOrganizationsList(globalOrganizations);
                 updateCoordinatorOrgDropdown(globalOrganizations);
+                updateCoAdminOrgCheckboxes(globalOrganizations);
                 renderGlobalEvents(events, globalOrganizations);
 
             } catch (error) {
                 showToast('Failed to load platform data', 'error');
             }
+        }
+
+        function updateCoAdminOrgCheckboxes(orgs) {
+            const container = document.getElementById('multiOrgCheckboxes');
+            if (orgs.length === 0) {
+                container.innerHTML = '<div class="text-center text-slate-500 text-sm py-2">No organizations available.</div>';
+                return;
+            }
+
+            container.innerHTML = orgs.map(org => `
+                <label class="custom-checkbox flex items-center gap-3 p-2 hover:bg-slate-800 rounded-lg cursor-pointer transition-colors border border-transparent hover:border-slate-700">
+                    <div class="relative flex items-center justify-center">
+                        <input type="checkbox" name="assignedOrgs" value="${org.orgId}" class="peer sr-only">
+                        <div class="w-5 h-5 border-2 border-slate-600 rounded bg-slate-900 transition-colors peer-checked:bg-brand-accent peer-checked:border-brand-accent flex items-center justify-center">
+                            <svg class="w-3.5 h-3.5 text-white hidden peer-checked:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                        </div>
+                    </div>
+                    <span class="text-sm font-medium text-slate-300 peer-checked:text-white">${org.name}</span>
+                </label>
+            `).join('');
         }
 
         function renderOrganizationsList(orgs) {
@@ -589,6 +678,43 @@
                     await apiCall('/admin/coordinators', 'POST', payload);
                     showToast('Coordinator account created.');
                     document.getElementById('createCoordForm').reset();
+                } catch (error) {
+                    showToast(error.message, 'error');
+                } finally {
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                }
+            });
+
+            // New Coordinating Admin Form Submit Handler
+            document.getElementById('createCoAdminForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const btn = document.getElementById('btnCreateCoAdmin');
+                const originalText = btn.innerHTML;
+                
+                // Collect checked organizations
+                const checkedBoxes = document.querySelectorAll('input[name="assignedOrgs"]:checked');
+                const assignedOrgs = Array.from(checkedBoxes).map(cb => cb.value);
+
+                if (assignedOrgs.length === 0) {
+                    showToast('Please select at least one organization.', 'error');
+                    return;
+                }
+
+                btn.innerHTML = `<div class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>`;
+                btn.disabled = true;
+
+                try {
+                    const payload = {
+                        name: document.getElementById('coAdminName').value,
+                        email: document.getElementById('coAdminEmail').value,
+                        password: document.getElementById('coAdminPass').value,
+                        assignedOrgs: assignedOrgs
+                    };
+                    
+                    await apiCall('/admin/coordinating-admins', 'POST', payload);
+                    showToast('Coordinating Admin account created successfully!');
+                    document.getElementById('createCoAdminForm').reset();
                 } catch (error) {
                     showToast(error.message, 'error');
                 } finally {
