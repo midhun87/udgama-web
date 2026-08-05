@@ -1170,17 +1170,47 @@ app.post('/api/coordinator/ticket/scan', requireCoordinator, async (req, res) =>
         const eventRes = await docClient.send(new GetCommand({ TableName: EVENTS_TABLE, Key: { eventId: reg.eventId } }));
         const eventName = eventRes.Item ? eventRes.Item.title : 'UDGAMA 2026 Event';
         
-        const emailHtml = `
-            <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto; background-color: #f8fafc; border-radius: 10px;">
-                <h2 style="color: #00629B;">Thank you for attending!</h2>
-                <p style="color: #334155; font-size: 16px;">Dear ${reg.participants[participantIndex].fullName},</p>
-                <p style="color: #334155; font-size: 16px;">Thank you for participating in <strong>${eventName}</strong> at UDGAMA 2026. We hope you had a valuable and enriching experience.</p>
-                <p style="color: #334155; font-size: 16px;">Certificates will be distributed soon.</p>
-                <br>
-                <p style="color: #64748b; font-size: 14px;">Best Regards,<br>UDGAMA 2026 Organizing Committee</p>
-            </div>
-        `;
-        
+      const emailHtml = ` <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto; background-color: #f8fafc; border-radius: 10px;">
+
+
+    <h2 style="color: #00629B;">Welcome to UDGAMA 2026!</h2>
+
+    <p style="color: #334155; font-size: 16px;">
+        Dear ${reg.participants[participantIndex].fullName},
+    </p>
+
+    <p style="color: #334155; font-size: 16px;">
+        Your attendance has been successfully confirmed for 
+        <strong>${eventName}</strong> at <strong>UDGAMA 2026</strong>.
+    </p>
+
+    <p style="color: #334155; font-size: 16px;">
+        Thank you for being a part of UDGAMA 2026. We are delighted to have you with us and hope you have an engaging, inspiring, and enriching experience throughout the event.
+    </p>
+
+    <p style="color: #334155; font-size: 16px;">
+        We wish you all the very best for your participation!
+    </p>
+
+    <br>
+
+    <p style="color: #64748b; font-size: 14px;">
+        Best Regards,<br>
+        <strong>UDGAMA 2026 Organizing Committee</strong>
+    </p>
+
+    <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 24px 0 16px;">
+
+    <p style="color: #94a3b8; font-size: 12px; text-align: center; margin: 0;">
+        Event Management System<br>
+        Designed & Developed by <strong>Xeta Tech Solutions</strong>
+    </p>
+
+</div>
+
+
+`;
+
         const emailParams = {
             Destination: { ToAddresses: [email] },
             Message: {
