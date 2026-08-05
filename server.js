@@ -1127,6 +1127,7 @@ app.get('/api/public/ticket/:regId', async (req, res) => {
 });
 
 // --- API: Coordinator QR Scan & Attendance ---
+// --- API: Coordinator QR Scan & Attendance ---
 app.post('/api/coordinator/ticket/scan', requireCoordinator, async (req, res) => {
     try {
         const { qrData } = req.body; // Expected format: "TKT-XYZ123:::user@email.com"
@@ -1153,10 +1154,10 @@ app.post('/api/coordinator/ticket/scan', requireCoordinator, async (req, res) =>
         }
         
         if (reg.participants[participantIndex].attended) {
-            return res.json({ message: 'Already marked as attended', participant: reg.participants[participantIndex] });
+            return res.status(400).json({ error: 'Participant already marked as attended.', participant: reg.participants[participantIndex] });
         }
 
-        // 2. Mark as attended
+        // 2. Mark as attended individually
         reg.participants[participantIndex].attended = true;
         await docClient.send(new UpdateCommand({
             TableName: REGISTRATIONS_TABLE,
@@ -1165,7 +1166,7 @@ app.post('/api/coordinator/ticket/scan', requireCoordinator, async (req, res) =>
             ExpressionAttributeValues: { ':p': reg.participants }
         }));
 
-        // 3. Send Thank You Email
+        // 3. Send Thank You Email asynchronously
         const eventRes = await docClient.send(new GetCommand({ TableName: EVENTS_TABLE, Key: { eventId: reg.eventId } }));
         const eventName = eventRes.Item ? eventRes.Item.title : 'UDGAMA 2026 Event';
         
@@ -1189,15 +1190,14 @@ app.post('/api/coordinator/ticket/scan', requireCoordinator, async (req, res) =>
             Source: process.env.SES_SENDER_EMAIL || 'noreply@udgama.in'
         };
         
-        await sesClient.send(new SendEmailCommand(emailParams)).catch(err => console.error("Thank You Email failed:", err));
+        sesClient.send(new SendEmailCommand(emailParams)).catch(err => console.error("Thank You Email failed:", err));
 
-        res.json({ message: 'Attendance marked and email sent successfully', participant: reg.participants[participantIndex] });
+        res.json({ message: 'Attendance marked successfully! Thank you email sent.', participant: reg.participants[participantIndex] });
     } catch (error) {
         console.error('Scan Ticket Error:', error);
         res.status(500).json({ error: 'Failed to process ticket scan' });
     }
 });
-
 // Catch-all for unresolved routes
 app.use((req, res) => {
     res.status(404).json({ error: 'Endpoint not found' });
