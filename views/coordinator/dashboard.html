@@ -50,7 +50,6 @@
 </head>
 <body class="text-slate-800 font-sans antialiased min-h-screen flex flex-col">
 
-    <!-- Navigation -->
     <nav class="glass-nav sticky top-0 z-40 w-full">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
@@ -72,24 +71,80 @@
         </div>
     </nav>
 
-    <!-- Main Content -->
     <main class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 flex flex-col">
         
         <!-- Tabs & Actions -->
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-            <div class="flex bg-slate-200/50 p-1 rounded-xl w-full sm:w-auto">
-                <button onclick="switchTab('events')" id="tab-events" class="flex-1 sm:flex-none px-6 py-2.5 rounded-lg text-sm font-bold bg-white text-brand-blue shadow-sm transition-all">My Events</button>
+            <div class="flex flex-wrap bg-slate-200/50 p-1 rounded-xl w-full sm:w-auto">
+                <button onclick="switchTab('analytics')" id="tab-analytics" class="flex-1 sm:flex-none px-6 py-2.5 rounded-lg text-sm font-bold bg-white text-brand-blue shadow-sm transition-all">Overview</button>
+                <button onclick="switchTab('events')" id="tab-events" class="flex-1 sm:flex-none px-6 py-2.5 rounded-lg text-sm font-bold text-slate-600 hover:text-slate-900 transition-all">My Events</button>
                 <button onclick="switchTab('registrations')" id="tab-registrations" class="flex-1 sm:flex-none px-6 py-2.5 rounded-lg text-sm font-bold text-slate-600 hover:text-slate-900 transition-all">Registrations</button>
             </div>
             
-            <button id="createEventBtn" onclick="openEventModal()" class="bg-brand-blue hover:bg-brand-dark text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-md transition-all flex items-center justify-center gap-2">
+            <button id="createEventBtn" onclick="openEventModal()" class="hidden bg-brand-blue hover:bg-brand-dark text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-md transition-all flex items-center justify-center gap-2">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                 Create New Event
             </button>
         </div>
 
-        <!-- Views -->
-        <div id="view-events" class="fade-in block">
+        <div id="view-analytics" class="fade-in block space-y-6">
+            <h3 class="text-lg font-display font-bold text-slate-800">Dashboard Analytics</h3>
+            
+            <!-- Key Statistics Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Total Registrations Card -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between">
+                    <p class="text-sm font-bold text-slate-500 mb-2">Total Registrations</p>
+                    <div class="flex items-center justify-between mt-2">
+                        <h4 class="text-4xl font-display font-bold text-brand-blue" id="stat-total-regs">0</h4>
+                        <div class="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-brand-blue">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Participants Breakdown Card -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between">
+                    <p class="text-sm font-bold text-slate-500 mb-2">Total Participants</p>
+                    <div class="flex items-center justify-between mt-2">
+                        <h4 class="text-4xl font-display font-bold text-slate-800" id="stat-total-parts">0</h4>
+                        <div class="flex flex-col gap-1 text-right">
+                            <span class="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded uppercase">IEEE: <span id="stat-ieee-parts">0</span></span>
+                            <span class="text-[11px] font-bold text-slate-600 bg-slate-100 px-2.5 py-0.5 rounded uppercase">NON: <span id="stat-non-ieee-parts">0</span></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Total Revenue Collected Card -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between md:col-span-2 lg:col-span-2">
+                    <div class="flex justify-between items-start">
+                        <p class="text-sm font-bold text-slate-500">Amount Collected <span class="text-[10px] font-medium text-slate-400 block sm:inline">(Excluding Taxes)</span></p>
+                        <div class="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-600">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </div>
+                    </div>
+                    <h4 class="text-4xl font-display font-bold text-emerald-600 mt-2" id="stat-total-amount">₹0</h4>
+                </div>
+            </div>
+
+            <!-- Sub-Event Wise Registrations Section -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="px-6 py-5 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
+                    <h4 class="font-bold text-slate-800 text-sm">Sub-Event Wise Registrations</h4>
+                    <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                </div>
+                <div class="p-6">
+                    <div id="analytics-sub-events" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div class="col-span-full py-4 text-center text-slate-500 text-sm">
+                            <svg class="w-8 h-8 mx-auto mb-2 text-slate-300 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                            Analyzing data...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-events" class="fade-in hidden">
             <div id="eventsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <!-- Events populated here -->
                 <div class="col-span-full text-center py-12 text-slate-500">
@@ -129,6 +184,8 @@
                         <tbody id="registrationsContainer" class="divide-y divide-slate-100">
                             <tr><td colspan="5" class="py-8 text-center text-slate-500">Loading registrations...</td></tr>
                         </tbody>
+                        <tfoot id="registrationsFooter" class="hidden bg-slate-50 border-t-2 border-slate-200 font-bold text-slate-800">
+                        </tfoot>
                     </table>
                 </div>
             </div>
@@ -140,7 +197,6 @@
         <p class="text-slate-400 text-xs mt-1">Designed & Developed by <a href="https://xetasolutions.in" target="_blank" class="font-bold text-brand-blue hover:underline transition-colors">Xeta Tech Solutions</a></p>
     </footer>
 
-    <!-- Create/Edit Event Modal -->
     <div id="eventModal" class="fixed inset-0 z-50 hidden items-center justify-center modal-overlay p-4 opacity-0 transition-opacity duration-300">
         <div class="bg-white rounded-[2rem] w-full max-w-3xl shadow-2xl transform scale-95 transition-transform duration-300 flex flex-col max-h-[90vh]">
             <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-white rounded-t-[2rem]">
@@ -159,7 +215,7 @@
                         <input type="text" id="title" required class="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-blue focus:border-brand-blue outline-none transition-all">
                     </div>
 
-                    <!-- NEW: Add Sub-Events block -->
+                    <!-- Sub-Events Block -->
                     <div class="border border-blue-100 rounded-xl p-4 bg-white/70">
                         <label class="block text-sm font-bold text-brand-blue mb-1">Sub-Events (Optional)</label>
                         <p class="text-xs text-slate-500 mb-3">Users will be asked to select exactly one of these during registration. Leave empty for standard registration.</p>
@@ -169,7 +225,6 @@
                         </div>
                         <div id="subEventsList" class="flex flex-wrap gap-2 min-h-[1.5rem]"></div>
                     </div>
-                    <!-- End Sub-Events -->
 
                     <div class="bg-blue-50/50 border border-blue-100 p-4 rounded-xl">
                         <label for="bannerUrl" class="block text-sm font-bold text-slate-700 mb-1">
@@ -237,7 +292,6 @@
         </div>
     </div>
 
-    <!-- Team Details Modal -->
     <div id="teamModal" class="fixed inset-0 z-50 hidden items-center justify-center modal-overlay p-4 opacity-0 transition-opacity duration-300">
         <div class="bg-white rounded-[2rem] w-full max-w-4xl shadow-2xl transform scale-95 transition-transform duration-300 flex flex-col max-h-[90vh]">
             <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-white rounded-t-[2rem]">
@@ -279,11 +333,11 @@
 
     <script>
         const API_BASE = '/api';
-        let currentTab = 'events';
+        let currentTab = 'analytics'; // Analytics set as default view
         let orgId = '';
         let events = [];
         let registrations = [];
-        let currentSubEvents = []; // Manage Sub-events locally during creation
+        let currentSubEvents = []; 
 
         // Auth Check
         document.addEventListener('DOMContentLoaded', () => {
@@ -308,23 +362,30 @@
             window.location.href = '/staff-login';
         }
 
+        // Updated switchTab to handle the 3 views correctly
         function switchTab(tab) {
             currentTab = tab;
+            const tabs = ['analytics', 'events', 'registrations'];
             
-            document.getElementById('tab-events').className = tab === 'events' 
-                ? 'flex-1 sm:flex-none px-6 py-2.5 rounded-lg text-sm font-bold bg-white text-brand-blue shadow-sm transition-all' 
-                : 'flex-1 sm:flex-none px-6 py-2.5 rounded-lg text-sm font-bold text-slate-600 hover:text-slate-900 transition-all';
-            
-            document.getElementById('tab-registrations').className = tab === 'registrations' 
-                ? 'flex-1 sm:flex-none px-6 py-2.5 rounded-lg text-sm font-bold bg-white text-brand-blue shadow-sm transition-all' 
-                : 'flex-1 sm:flex-none px-6 py-2.5 rounded-lg text-sm font-bold text-slate-600 hover:text-slate-900 transition-all';
+            tabs.forEach(t => {
+                const btn = document.getElementById(`tab-${t}`);
+                const view = document.getElementById(`view-${t}`);
+                
+                if (t === tab) {
+                    btn.className = 'flex-1 sm:flex-none px-6 py-2.5 rounded-lg text-sm font-bold bg-white text-brand-blue shadow-sm transition-all';
+                    view.classList.remove('hidden');
+                    if (t === 'registrations') {
+                        view.classList.add('flex');
+                    } else {
+                        view.classList.add('block');
+                    }
+                } else {
+                    btn.className = 'flex-1 sm:flex-none px-6 py-2.5 rounded-lg text-sm font-bold text-slate-600 hover:text-slate-900 transition-all';
+                    view.classList.add('hidden');
+                    view.classList.remove('block', 'flex');
+                }
+            });
 
-            document.getElementById('view-events').classList.toggle('hidden', tab !== 'events');
-            document.getElementById('view-events').classList.toggle('block', tab === 'events');
-            
-            document.getElementById('view-registrations').classList.toggle('hidden', tab !== 'registrations');
-            document.getElementById('view-registrations').classList.toggle('flex', tab === 'registrations');
-            
             document.getElementById('createEventBtn').classList.toggle('hidden', tab !== 'events');
         }
 
@@ -356,11 +417,82 @@
                 });
                 const regData = await regRes.json();
                 registrations = regData.registrations || [];
+                
                 renderRegistrations();
+                calculateAnalytics(); // Call Analytics computation after fetching
 
             } catch (error) {
                 console.error(error);
                 showToast('Failed to load data.', 'error');
+            }
+        }
+
+        function calculateAnalytics() {
+            let totalRegistrations = 0;
+            let totalParticipants = 0;
+            let ieeeCount = 0;
+            let nonIeeeCount = 0;
+            let totalBaseAmount = 0;
+            let subEventCounts = {}; // Key format: "EventName - SubEvent"
+
+            registrations.forEach(reg => {
+                // Ensure we only count completed transactions/Free success
+                if (reg.paymentStatus !== 'Paid') return;
+
+                totalRegistrations++;
+
+                let regBaseAmount = 0;
+                const eventObj = events.find(e => e.eventId === reg.eventId);
+                
+                // Track sub-events
+                const eventName = eventObj ? eventObj.title : 'Unknown Event';
+                const subEventName = reg.selectedSubEvent ? reg.selectedSubEvent : 'Standard';
+                const trackingKey = `${eventName} - ${subEventName}`;
+
+                if (!subEventCounts[trackingKey]) {
+                    subEventCounts[trackingKey] = 0;
+                }
+                subEventCounts[trackingKey]++;
+
+                // Calculate participant breakdown and base amounts strictly
+                if (reg.participants && eventObj) {
+                    reg.participants.forEach(p => {
+                        totalParticipants++;
+                        const isIeee = (p.isIeee === 'Yes' || p.isIeee === true);
+                        if (isIeee) {
+                            ieeeCount++;
+                            regBaseAmount += Number(eventObj.ieeeAmount || 0); // Excluding Tax
+                        } else {
+                            nonIeeeCount++;
+                            regBaseAmount += Number(eventObj.nonIeeeAmount || 0); // Excluding Tax
+                        }
+                    });
+                }
+                totalBaseAmount += regBaseAmount;
+            });
+
+            // Bind values to UI
+            document.getElementById('stat-total-regs').textContent = totalRegistrations;
+            document.getElementById('stat-total-parts').textContent = totalParticipants;
+            document.getElementById('stat-ieee-parts').textContent = ieeeCount;
+            document.getElementById('stat-non-ieee-parts').textContent = nonIeeeCount;
+            document.getElementById('stat-total-amount').textContent = `₹${totalBaseAmount}`;
+
+            // Render Sub-Event Statistics
+            const subEventContainer = document.getElementById('analytics-sub-events');
+            
+            if (Object.keys(subEventCounts).length === 0) {
+                subEventContainer.innerHTML = '<div class="col-span-full py-4 text-center text-slate-500 text-sm">No registrations yet.</div>';
+            } else {
+                subEventContainer.innerHTML = Object.entries(subEventCounts).map(([name, count]) => `
+                    <div class="flex flex-col p-4 bg-slate-50 rounded-xl border border-slate-200 shadow-sm transition-all hover:border-brand-blue hover:shadow-md">
+                        <span class="text-sm font-bold text-slate-700 mb-3">${name}</span>
+                        <div class="mt-auto flex justify-between items-center">
+                            <span class="text-xs text-slate-500 font-medium">Registrations</span>
+                            <span class="px-3 py-1 bg-brand-blue/10 text-brand-blue rounded-lg text-sm font-bold">${count}</span>
+                        </div>
+                    </div>
+                `).join('');
             }
         }
 
@@ -412,10 +544,15 @@
 
         function renderRegistrations() {
             const container = document.getElementById('registrationsContainer');
+            const footer = document.getElementById('registrationsFooter');
+            
             if (registrations.length === 0) {
                 container.innerHTML = `<tr><td colspan="5" class="py-12 text-center text-slate-500 font-medium">No registrations received yet.</td></tr>`;
+                if(footer) footer.classList.add('hidden');
                 return;
             }
+
+            let overallTotalAmount = 0;
 
             container.innerHTML = registrations.map(reg => {
                 const lead = reg.participants && reg.participants[0] ? reg.participants[0] : { fullName: 'Unknown', email: 'N/A', mobile: 'N/A' };
@@ -429,6 +566,10 @@
                         else calcBase += Number(eventObj.nonIeeeAmount || 0);
                     });
                     baseAmountDisplay = calcBase;
+                }
+
+                if (reg.paymentStatus === 'Paid') {
+                    overallTotalAmount += baseAmountDisplay;
                 }
 
                 return `
@@ -461,6 +602,17 @@
                     </td>
                 </tr>
             `}).join('');
+
+            if(footer) {
+                footer.innerHTML = `
+                    <tr>
+                        <td colspan="2" class="py-4 px-6 text-right uppercase tracking-wider text-sm text-slate-600">Total Collected (Paid Status):</td>
+                        <td class="py-4 px-6 text-emerald-600 text-base">₹${overallTotalAmount}</td>
+                        <td colspan="2"></td>
+                    </tr>
+                `;
+                footer.classList.remove('hidden');
+            }
         }
 
         function getExportData() {
@@ -482,8 +634,7 @@
                         'Registration ID': reg.registrationId,
                         'Event Name': reg.selectedSubEvent ? `${reg.eventName} - ${reg.selectedSubEvent}` : reg.eventName,
                         'Payment Status': reg.paymentStatus,
-                        'Base Paid (Excl. Tax)': `Rs. ${baseAmountDisplay}`,
-                        'Total Paid (Inc. Tax)': `Rs. ${reg.totalAmountPaid}`,
+                        'Amount Paid': `Rs. ${baseAmountDisplay}`,
                         'Role': index === 0 ? 'Lead' : 'Member',
                         'Name': p.fullName || 'N/A',
                         'Email': p.email || 'N/A',
@@ -515,11 +666,11 @@
             doc.text("UDGAMA 2026 - Registrations", 14, 15);
             
             const data = getExportData();
-            const headers = [['Reg ID', 'Event (Sub-Event)', 'Role', 'Name', 'Email', 'Mobile', 'Institution', 'IEEE', 'Base Paid', 'Status']];
+            const headers = [['Reg ID', 'Event (Sub-Event)', 'Role', 'Name', 'Email', 'Mobile', 'Institution', 'IEEE', 'Amount Paid', 'Status']];
             const rows = data.map(d => [
                 d['Registration ID'], d['Event Name'], d['Role'], d['Name'], d['Email'], 
                 d['Mobile'], d['Institution'], d['IEEE Member'],
-                d['Base Paid (Excl. Tax)'], d['Payment Status']
+                d['Amount Paid'], d['Payment Status']
             ]);
             
             doc.autoTable({
@@ -581,7 +732,7 @@
             }, 300);
         }
 
-        // --- SUB EVENTS LOGIC ---
+        // Sub-Events Handling
         function renderSubEvents() {
             const container = document.getElementById('subEventsList');
             container.innerHTML = currentSubEvents.map((se, idx) => `
@@ -691,7 +842,7 @@
                 shortDescription: document.getElementById('shortDesc').value,
                 detailedDescription: document.getElementById('longDesc').value,
                 bannerUrl: document.getElementById('bannerUrl').value,
-                subEvents: currentSubEvents, // Send Sub Events Array
+                subEvents: currentSubEvents, 
                 isTeam: document.getElementById('isTeam').checked,
                 teamSize: Number(document.getElementById('teamSize').value),
                 ieeeAmount: Number(document.getElementById('ieeeBase').value),
