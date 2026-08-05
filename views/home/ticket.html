@@ -18,7 +18,7 @@
     <!-- html2canvas for PDF/PNG rendering -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     
-    <!-- QRCode.js for generating QR codes locally to avoid CORS issues in html2canvas -->
+    <!-- QRCode.js for generating QR codes locally -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
     <script>
@@ -102,10 +102,6 @@
         .toast { padding: 1rem 1.25rem; border-radius: 12px; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(12px); color: white; transform: translateX(120%); transition: transform 0.4s ease; display: flex; align-items: center; gap: 0.75rem; font-size: 0.875rem; font-weight: 600; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);}
         .toast.show { transform: translateX(0); }
         .toast.error { border-left: 4px solid #ef4444; }
-        
-        .custom-scrollbar::-webkit-scrollbar { height: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); border-radius: 8px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0, 98, 155, 0.3); border-radius: 8px; }
     </style>
 </head>
 <body class="text-slate-800 font-sans antialiased selection:bg-brand-accent selection:text-white">
@@ -141,7 +137,7 @@
                     <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"></path></svg>
                 </div>
                 <h2 class="text-2xl font-display font-black text-slate-900 mb-2">Retrieve Your Ticket</h2>
-                <p class="text-slate-500 text-sm font-medium">Enter your Registration ID to download your event pass and entry QR code. (Try <b>TKT-TEST</b> for preview)</p>
+                <p class="text-slate-500 text-sm font-medium">Enter your Registration ID to download your digital event pass.</p>
             </div>
 
             <form id="searchForm" onsubmit="fetchTicket(event)">
@@ -169,19 +165,15 @@
             </div>
         </div>
 
-        <!-- Tickets Display Container -->
-        <div id="ticketsContainer" class="w-full max-w-5xl relative z-10 hidden flex-col items-center animate-fade-in">
-            <div class="w-full flex justify-between items-end mb-6">
-                <div>
-                    <h2 class="text-2xl font-display font-black text-slate-900">Your Entry Passes</h2>
-                    <p class="text-slate-500 text-sm font-medium mt-1">Download each pass individually and present them at the check-in desk.</p>
-                </div>
+        <div id="ticketsContainer" class="w-full max-w-lg relative z-10 hidden flex-col items-center animate-fade-in mx-auto">
+            <div class="w-full text-center mb-8">
+                <h2 class="text-2xl font-display font-black text-slate-900">Your Digital Passes</h2>
+                <p class="text-slate-500 text-sm font-medium mt-2">Ready to download. Present the QR code at the check-in desk.</p>
             </div>
             
-            <div class="w-full overflow-x-auto pb-6 -mx-4 px-4 sm:mx-0 sm:px-0 custom-scrollbar">
-                <div id="pdfPrintArea" class="flex flex-col gap-10 min-w-max mx-auto items-center pb-4">
-                    <!-- Tickets will be injected here via JS -->
-                </div>
+            <div class="w-full">
+                <!-- Mobile-first Portrait Tickets will be injected here -->
+                <div id="pdfPrintArea" class="flex flex-col gap-10 items-center pb-4 w-full"></div>
             </div>
             
             <button onclick="resetSearch()" class="mt-8 text-slate-500 hover:text-brand-blue font-medium text-sm transition-colors flex items-center gap-2 bg-white px-6 py-3 rounded-full shadow-sm border border-slate-200">
@@ -209,7 +201,7 @@
 
     <script>
         const API_BASE = '/api';
-        let globalLogoBase64 = ''; // Pre-loaded logo to bypass html2canvas CORS issues
+        let globalLogoBase64 = ''; 
 
         function showToast(message, type = 'success') {
             const container = document.getElementById('toast-container');
@@ -238,12 +230,9 @@
                     canvas.height = img.height;
                     var ctx = canvas.getContext("2d");
                     ctx.drawImage(img, 0, 0);
-                    var dataURL = canvas.toDataURL("image/png");
-                    resolve(dataURL);
+                    resolve(canvas.toDataURL("image/png"));
                 };
-                img.onerror = function() {
-                    resolve(url); // Fallback to normal URL if CORS blocks it
-                };
+                img.onerror = () => resolve(url); 
                 img.src = url;
             });
         }
@@ -262,16 +251,14 @@
             errorNote.classList.add('hidden');
 
             try {
-                // Preload the logo so it appears correctly in downloads
                 if (!globalLogoBase64) {
                     globalLogoBase64 = await getBase64Image('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQRQUOVTVuLAWuWWCkcSow3IBBsUkVKziDB3e5VpyN02Q&s=10');
                 }
 
                 let data;
 
-                // Mock Data for testing the layout using 'TKT-TEST'
+                // Mock Data for testing layout using 'TKT-TEST'
                 if (regId === 'TKT-TEST') {
-                    // Simulate network delay
                     await new Promise(r => setTimeout(r, 600));
                     data = {
                         registration: {
@@ -279,7 +266,8 @@
                             paymentStatus: 'Paid',
                             selectedSubEvent: 'Coding Competition',
                             participants: [
-                                { fullName: 'G. Pravallika', email: 'pravallikasrinuo68@gmail.com', organization: 'LAKKIREDDY BALI REDDY COLLEGE OF ENGINEERING' }
+                                { fullName: 'G. Pravallika', email: 'pravallikasrinuo68@gmail.com', organization: 'LAKKIREDDY BALI REDDY COLLEGE OF ENGINEERING' },
+                                { fullName: 'A. Kumar', email: 'kumar.test@gmail.com', organization: 'LBRCE' }
                             ]
                         },
                         eventName: 'UDGAMA 2026 - Day 2 | LBRCE, Mylavaram'
@@ -316,137 +304,109 @@
             const container = document.getElementById('pdfPrintArea');
             container.innerHTML = ''; 
             
-            // Build the HTML structurally first
             let htmlContent = '';
 
             reg.participants.forEach((participant, index) => {
                 const isLead = index === 0;
-                const roleBadgeText = isLead ? 'TEAM LEAD' : 'TEAM MEMBER';
-                const roleBg = isLead ? '#04142d' : '#f1f5f9';
-                const roleColor = isLead ? 'white' : '#475569';
+                const roleBadgeText = isLead ? 'TEAM LEAD' : 'GENERAL ADMISSION';
+                const roleBg = isLead ? '#00A3E0' : '#475569';
+                const roleColor = 'white';
 
-                // Adjust font size dynamically to fit
-                let nameFontSize = "28px";
-                if (participant.fullName.length > 15) nameFontSize = "22px";
-                if (participant.fullName.length > 25) nameFontSize = "18px";
-
+                // Adjusted portrait ticket format (wallet pass style)
+                // Width is 380px which perfectly fits into standard mobile screens without side scroll
                 htmlContent += `
-                    <div class="flex flex-col items-center w-full">
-                        <!-- Ticket Wrapper -->
-                        <div id="ticket-node-${index}" style="width: 800px; height: 350px; font-family: 'Inter', sans-serif; display: flex; flex-direction: column; background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 15px 35px rgba(0,0,0,0.1); position: relative; border: 1px solid #e2e8f0; -webkit-print-color-adjust: exact; print-color-adjust: exact; margin: 0;">
+                    <div class="flex flex-col items-center w-full max-w-[380px] mx-auto mb-4">
+                        
+                        <!-- Portrait Ticket Wrapper -->
+                        <div id="ticket-node-${index}" style="width: 380px; background: #ffffff; border-radius: 24px; overflow: hidden; box-shadow: 0 20px 40px -10px rgba(0,0,0,0.15); border: 1px solid #e2e8f0; font-family: 'Inter', sans-serif; position: relative; box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact;">
                             
-                            <!-- Top Main Row -->
-                            <div style="display: flex; flex-direction: row; flex: 1; width: 100%;">
+                            <!-- Header (Dark Section) -->
+                            <div style="background: linear-gradient(135deg, #04142d 0%, #00629B 100%); padding: 36px 24px 44px 24px; text-align: center; position: relative; box-sizing: border-box;">
+                                <!-- Subtle BG Circles -->
+                                <div style="position: absolute; top: -30px; left: -30px; width: 120px; height: 120px; border-radius: 50%; background: rgba(255,255,255,0.04);"></div>
+                                <div style="position: absolute; bottom: -20px; right: -20px; width: 100px; height: 100px; border-radius: 50%; background: rgba(255,255,255,0.04);"></div>
                                 
-                                <!-- Left Dark Section -->
-                                <div style="width: 260px; min-width: 260px; background: #04142d; padding: 28px; display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box;">
-                                    <div style="width: 65px; height: 65px; background: white; border-radius: 12px; display: flex; align-items: center; justify-content: center; overflow: hidden;">
-                                        <img src="${globalLogoBase64}" style="width: 75%; height: 75%; object-fit: contain;" alt="Logo">
-                                    </div>
-                                    <div style="margin-top: -10px;">
-                                        <p style="color: #00A3E0; font-weight: 800; letter-spacing: 1.5px; font-size: 11px; margin: 0 0 8px 0; text-transform: uppercase;">UDGAMA 2026</p>
-                                        <h2 style="font-family: 'Outfit', sans-serif; color: white; font-size: 28px; font-weight: 900; line-height: 1.1; margin: 0;">UDGAMA 2026<br>ENTRY PASS</h2>
-                                    </div>
-                                    <div style="border-top: 1px solid rgba(255,255,255,0.15); padding-top: 14px;">
-                                        <p style="color: #94a3b8; font-size: 10px; font-weight: 800; letter-spacing: 1.5px; margin: 0 0 4px 0; text-transform: uppercase;">ADMIT</p>
-                                        <p style="color: white; font-size: 16px; font-weight: 900; margin: 0; letter-spacing: 0.5px;">ONE PERSON</p>
-                                    </div>
+                                <div style="width: 64px; height: 64px; background: white; border-radius: 16px; margin: 0 auto 16px auto; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2); position: relative; z-index: 2;">
+                                    <img src="${globalLogoBase64}" style="width: 70%; height: 70%; object-fit: contain;" alt="Logo">
+                                </div>
+                                <h2 style="font-family: 'Outfit', sans-serif; color: white; font-size: 28px; font-weight: 900; margin: 0; letter-spacing: 1px; position: relative; z-index: 2;">UDGAMA 2026</h2>
+                                <p style="color: #60a5fa; font-size: 11px; font-weight: 800; letter-spacing: 2px; margin: 6px 0 0 0; text-transform: uppercase; position: relative; z-index: 2;">Official Entry Pass</p>
+                            </div>
+
+                            <!-- Floating Role Badge -->
+                            <div style="position: absolute; top: 185px; right: 24px; background: ${roleBg}; color: ${roleColor}; padding: 8px 16px; border-radius: 99px; font-size: 10px; font-weight: 900; letter-spacing: 1.5px; text-transform: uppercase; z-index: 10; border: 3px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                                ${roleBadgeText}
+                            </div>
+
+                            <!-- QR Scan Section -->
+                            <div style="padding: 40px 24px 24px 24px; display: flex; flex-direction: column; align-items: center; background: white; position: relative; z-index: 1; box-sizing: border-box;">
+                                <div style="padding: 12px; background: white; border-radius: 16px; border: 2px solid #f1f5f9; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05);">
+                                    <div id="qr-target-${index}"></div>
+                                </div>
+                                <div style="margin-top: 16px; text-align: center;">
+                                    <p style="color: #94a3b8; font-size: 10px; font-weight: 800; letter-spacing: 1.5px; margin: 0 0 4px 0; text-transform: uppercase;">Registration ID</p>
+                                    <p style="color: #0f172a; font-family: monospace; font-size: 18px; font-weight: 900; letter-spacing: 2.5px; margin: 0;">${reg.registrationId}</p>
+                                </div>
+                            </div>
+
+                            <!-- Ticket Divider / Tear Line -->
+                            <div style="position: relative; height: 30px; display: flex; align-items: center; justify-content: center; background: white; box-sizing: border-box;">
+                                <!-- Left Cutout -->
+                                <div style="position: absolute; left: -16px; width: 32px; height: 32px; background: #f1f5f9; border-radius: 50%; box-shadow: inset -4px 0 6px rgba(0,0,0,0.06); z-index: 5;"></div>
+                                <!-- Right Cutout -->
+                                <div style="position: absolute; right: -16px; width: 32px; height: 32px; background: #f1f5f9; border-radius: 50%; box-shadow: inset 4px 0 6px rgba(0,0,0,0.06); z-index: 5;"></div>
+                                <!-- Dashed Line -->
+                                <div style="width: 100%; border-top: 2px dashed #cbd5e1; margin: 0 24px; position: relative; z-index: 1;"></div>
+                            </div>
+
+                            <!-- Bottom Details Section -->
+                            <div style="padding: 24px 32px 32px 32px; background: white; box-sizing: border-box;">
+                                
+                                <!-- Participant Name -->
+                                <div style="margin-bottom: 24px;">
+                                    <p style="color: #94a3b8; font-size: 10px; font-weight: 800; letter-spacing: 1px; margin: 0 0 6px 0; text-transform: uppercase;">Participant</p>
+                                    <h3 style="font-family: 'Outfit', sans-serif; color: #0f172a; font-size: 22px; font-weight: 800; margin: 0; line-height: 1.2; word-wrap: break-word;">${participant.fullName}</h3>
                                 </div>
 
-                                <!-- Middle Content Section -->
-                                <div style="flex: 1; padding: 28px 24px; position: relative; display: flex; flex-direction: column; box-sizing: border-box; background: white;">
-                                    <!-- Background Watermark -->
-                                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); opacity: 0.03; pointer-events: none;">
-                                        <img src="${globalLogoBase64}" style="width: 250px; height: 250px; filter: grayscale(100%); object-fit: contain;">
+                                <!-- Grid Details -->
+                                <div style="display: flex; flex-direction: column; gap: 18px;">
+                                    <div>
+                                        <p style="color: #94a3b8; font-size: 10px; font-weight: 800; letter-spacing: 1px; margin: 0 0 6px 0; text-transform: uppercase;">Event Name</p>
+                                        <p style="color: #1e293b; font-size: 14px; font-weight: 700; margin: 0; line-height: 1.4;">${eventName}</p>
+                                        ${reg.selectedSubEvent ? `<p style="color: #00629B; font-size: 13px; font-weight: 700; margin: 4px 0 0 0;">${reg.selectedSubEvent}</p>` : ''}
                                     </div>
 
-                                    <div style="position: relative; z-index: 1; height: 100%; display: flex; flex-direction: column;">
-                                        <!-- Header Row -->
-                                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
-                                            <div style="max-width: 75%;">
-                                                <p style="color: #94a3b8; font-size: 10px; font-weight: 800; letter-spacing: 1px; margin: 0 0 6px 0; text-transform: uppercase;">Participant Name</p>
-                                                <h1 style="font-family: 'Outfit', sans-serif; color: #0f172a; font-size: ${nameFontSize}; font-weight: 900; margin: 0; text-transform: uppercase; line-height: 1.1; word-wrap: break-word;">${participant.fullName}</h1>
-                                            </div>
-                                            <div style="background: ${roleBg}; color: ${roleColor}; padding: 6px 14px; border-radius: 99px; font-size: 10px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; white-space: nowrap;">
-                                                ${roleBadgeText}
-                                            </div>
-                                        </div>
-
-                                        <!-- Event Info -->
-                                        <div style="margin-bottom: 12px;">
-                                            <p style="color: #94a3b8; font-size: 9px; font-weight: 800; letter-spacing: 1px; margin: 0 0 4px 0; text-transform: uppercase;">Registered For</p>
-                                            <p style="color: #00629B; font-size: 15px; font-weight: 800; margin: 0;">${eventName}</p>
-                                        </div>
-                                        ${reg.selectedSubEvent ? `
-                                        <div style="margin-bottom: 12px;">
-                                            <p style="color: #94a3b8; font-size: 9px; font-weight: 800; letter-spacing: 1px; margin: 0 0 4px 0; text-transform: uppercase;">Sub-Event</p>
-                                            <p style="color: #00629B; font-size: 15px; font-weight: 800; margin: 0;">${reg.selectedSubEvent}</p>
-                                        </div>` : ''}
-
-                                        <!-- Bottom Info Boxes -->
-                                        <div style="display: flex; gap: 12px; margin-top: auto;">
-                                            <div style="flex: 1; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px; background: #f8fafc; box-sizing: border-box;">
-                                                <p style="color: #64748b; font-size: 9px; font-weight: 800; letter-spacing: 0.5px; margin: 0 0 6px 0; text-transform: uppercase;">Institution / College</p>
-                                                <p style="color: #1e293b; font-size: 12px; font-weight: 700; margin: 0; word-wrap: break-word;">${participant.organization}</p>
-                                            </div>
-                                            <div style="flex: 1; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px; background: #f8fafc; box-sizing: border-box;">
-                                                <p style="color: #64748b; font-size: 9px; font-weight: 800; letter-spacing: 0.5px; margin: 0 0 6px 0; text-transform: uppercase;">Contact Details</p>
-                                                <p style="color: #1e293b; font-size: 12px; font-weight: 700; margin: 0; word-wrap: break-word;">${participant.email}</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Right Scan Section -->
-                                <div style="width: 200px; min-width: 200px; padding: 28px 20px; display: flex; flex-direction: column; align-items: center; border-left: 2px dashed #cbd5e1; position: relative; box-sizing: border-box; background: white;">
-                                    
-                                    <!-- Semi-circle Cutouts for the Dashed Line -->
-                                    <div style="position: absolute; top: -15px; left: -15px; width: 30px; height: 30px; background: #f1f5f9; border-radius: 50%; box-shadow: inset 0 -2px 4px rgba(0,0,0,0.05); z-index: 10;"></div>
-                                    <div style="position: absolute; bottom: -15px; left: -15px; width: 30px; height: 30px; background: #f1f5f9; border-radius: 50%; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); z-index: 10;"></div>
-                                    
-                                    <p style="color: #475569; font-size: 12px; font-weight: 900; letter-spacing: 2px; margin: 0 0 16px 0; text-transform: uppercase;">Entry Scan</p>
-                                    
-                                    <!-- QR Code Target Div -->
-                                    <div style="width: 130px; height: 130px; border: 1px solid #e2e8f0; border-radius: 12px; padding: 8px; background: white; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.02);">
-                                        <div id="qr-target-${index}"></div>
-                                    </div>
-
-                                    <div style="margin-top: auto; width: 100%; text-align: center;">
-                                        <p style="color: #94a3b8; font-size: 9px; font-weight: 800; letter-spacing: 1px; margin: 0 0 6px 0; text-transform: uppercase;">Registration ID</p>
-                                        <div style="background: #e2e8f0; color: #0f172a; padding: 8px; border-radius: 8px; font-family: monospace; font-size: 13px; font-weight: 900; letter-spacing: 2px; display: inline-block;">
-                                            ${reg.registrationId}
-                                        </div>
+                                    <div>
+                                        <p style="color: #94a3b8; font-size: 10px; font-weight: 800; letter-spacing: 1px; margin: 0 0 6px 0; text-transform: uppercase;">Institution</p>
+                                        <p style="color: #1e293b; font-size: 13px; font-weight: 600; margin: 0; line-height: 1.4; word-wrap: break-word;">${participant.organization}</p>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Bottom Footer Bar -->
-                            <div style="height: 35px; min-height: 35px; width: 100%; background: #0b1120; border-top: 4px solid #00A3E0; display: flex; align-items: center; justify-content: center; box-sizing: border-box;">
-                                <p style="color: white; font-size: 10px; font-weight: 700; letter-spacing: 1px; margin: 0; text-transform: uppercase;">
-                                    System Designed & Developed by <span style="color: #00A3E0;">Xeta Tech Solutions</span>
-                                </p>
+                            <!-- Bottom Footer -->
+                            <div style="background: #f8fafc; padding: 14px; text-align: center; border-top: 1px solid #f1f5f9; box-sizing: border-box;">
+                                <p style="color: #64748b; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin: 0;">System Developed by Xeta Tech Solutions</p>
                             </div>
+                            
                         </div>
                         
                         <!-- Individual Download Button -->
-                        <button id="download-btn-${index}" onclick="downloadTicketPNG('ticket-node-${index}', '${reg.registrationId}', '${participant.fullName.replace(/['"]/g, '')}', 'download-btn-${index}')" class="mt-6 mb-4 px-8 py-3 glossy-btn text-white rounded-xl font-bold flex items-center gap-2 shadow-md hover:scale-105 transition-transform w-[800px] max-w-full justify-center text-lg">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                        <button id="download-btn-${index}" onclick="downloadTicketPNG('ticket-node-${index}', '${reg.registrationId}', '${participant.fullName.replace(/['"]/g, '')}', 'download-btn-${index}')" class="mt-6 mb-4 px-8 py-4 glossy-btn text-white rounded-xl font-bold flex items-center gap-2 shadow-lg hover:shadow-xl transition-all w-full justify-center text-[15px]">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                             Download ${participant.fullName.split(' ')[0]}'s Pass
                         </button>
                     </div>
                 `;
             });
 
-            // Insert HTML into the DOM
             container.innerHTML = htmlContent;
 
-            // Generate Local QR Codes natively (This fixes missing QR code upon download)
             reg.participants.forEach((participant, index) => {
                 const qrDataString = `${reg.registrationId}:::${participant.email}`;
                 new QRCode(document.getElementById(`qr-target-${index}`), {
                     text: qrDataString,
-                    width: 112,
-                    height: 112,
+                    width: 150,  // Increased size for portrait design
+                    height: 150,
                     colorDark : "#0f172a",
                     colorLight : "#ffffff",
                     correctLevel : QRCode.CorrectLevel.H
@@ -458,32 +418,26 @@
             const btn = document.getElementById(btnId);
             const originalText = btn.innerHTML;
             
-            btn.innerHTML = '<div class="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>';
+            btn.innerHTML = '<div class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>';
             btn.disabled = true;
             
-            showToast('Preparing your high-quality ticket...', 'success');
+            showToast('Preparing high-quality ticket...', 'success');
 
             const printArea = document.getElementById(nodeId);
-            const scrollWrapper = printArea.closest('.custom-scrollbar');
-            let originalOverflowX = '';
-            
-            if (scrollWrapper) {
-                originalOverflowX = scrollWrapper.style.overflowX;
-                scrollWrapper.style.overflowX = 'visible'; 
-            }
 
             try {
+                // Short delay to ensure DOM and fonts are ready
                 await new Promise(r => setTimeout(r, 150));
 
                 const canvas = await html2canvas(printArea, {
-                    scale: 2, 
+                    scale: 2.5, // High resolution for mobile screen sharing
                     useCORS: true, 
                     allowTaint: false,
                     backgroundColor: null, 
                 });
 
                 const link = document.createElement('a');
-                link.download = `UDGAMA_Ticket_${regId}_${name.replace(/\s+/g, '_')}.png`;
+                link.download = `UDGAMA_Pass_${regId}_${name.replace(/\s+/g, '_')}.png`;
                 link.href = canvas.toDataURL('image/png');
                 link.click();
                 
@@ -492,9 +446,6 @@
                 console.error(err);
                 showToast('Failed to generate image.', 'error');
             } finally {
-                if (scrollWrapper) {
-                    scrollWrapper.style.overflowX = originalOverflowX;
-                }
                 btn.innerHTML = originalText;
                 btn.disabled = false;
             }
