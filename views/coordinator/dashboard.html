@@ -125,7 +125,7 @@
                     </div>
                 </div>
 
-                <!-- Total Attended Card (NEW) -->
+                <!-- Total Attended Card -->
                 <div class="bg-gradient-to-br from-emerald-50 to-white p-6 rounded-2xl shadow-sm border border-emerald-100 flex flex-col justify-between relative overflow-hidden">
                     <div class="absolute -right-4 -bottom-4 opacity-10">
                         <svg class="w-32 h-32 text-emerald-500" fill="currentColor" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"></path></svg>
@@ -274,6 +274,7 @@
         <p class="text-slate-400 text-xs mt-1">Designed & Developed by <a href="https://xetasolutions.in" target="_blank" class="font-bold text-brand-blue hover:underline transition-colors">Xeta Tech Solutions</a></p>
     </footer>
 
+    <!-- EVENT MODAL -->
     <div id="eventModal" class="fixed inset-0 z-50 hidden items-center justify-center modal-overlay p-4 opacity-0 transition-opacity duration-300">
         <div class="bg-white rounded-[2rem] w-full max-w-3xl shadow-2xl transform scale-95 transition-transform duration-300 flex flex-col max-h-[90vh]">
             <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-white rounded-t-[2rem]">
@@ -611,6 +612,29 @@
             }
         }
 
+        window.toggleEventStatus = async function(eventId, isAccepting) {
+            const newStatus = isAccepting ? 'opened' : 'closed';
+            const token = localStorage.getItem('token');
+            try {
+                const res = await fetch(`${API_BASE}/coordinator/events/${eventId}/toggle-status`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ status: newStatus })
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Failed to update status');
+                
+                showToast(`Registrations ${isAccepting ? 'Opened' : 'Closed'} successfully.`);
+                fetchDashboardData(); 
+            } catch (error) {
+                showToast(error.message, 'error');
+                fetchDashboardData(); 
+            }
+        }
+
         function renderEvents() {
             const container = document.getElementById('eventsContainer');
             if (events.length === 0) {
@@ -644,10 +668,17 @@
                             ? `<div class="mb-4 flex flex-wrap gap-1">${event.subEvents.slice(0,3).map(se => `<span class="bg-slate-100 text-slate-600 text-[10px] font-bold px-2 py-0.5 rounded">${se}</span>`).join('')}${event.subEvents.length > 3 ? `<span class="bg-slate-100 text-slate-600 text-[10px] font-bold px-2 py-0.5 rounded">+${event.subEvents.length - 3}</span>` : ''}</div>`
                             : ''
                         }
+                        
                         <div class="mt-auto pt-4 border-t border-slate-100 flex justify-between items-center">
-                            <span class="text-xs font-bold ${event.status === 'opened' ? 'text-emerald-500 bg-emerald-50' : 'text-red-500 bg-red-50'} px-2.5 py-1 rounded-md uppercase">
-                                ${event.status}
-                            </span>
+                            <!-- Toggle switch for Accept/Close Registration -->
+                            <label class="relative inline-flex items-center cursor-pointer group" title="Toggle Registrations">
+                                <input type="checkbox" class="sr-only peer" ${event.status === 'opened' ? 'checked' : ''} onchange="toggleEventStatus('${event.eventId}', this.checked)">
+                                <div class="w-9 h-5 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-500"></div>
+                                <span class="ml-2 text-[10px] font-bold ${event.status === 'opened' ? 'text-emerald-600' : 'text-slate-400'} uppercase tracking-wide transition-colors">
+                                    ${event.status === 'opened' ? 'Accepting' : 'Closed'}
+                                </span>
+                            </label>
+                            
                             <button onclick="editEvent('${event.eventId}')" class="text-brand-blue hover:text-brand-dark font-bold text-sm flex items-center gap-1">
                                 Edit <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                             </button>
