@@ -10,11 +10,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Export & Scanning Libraries -->
+    <!-- Export, Scanning & Payments Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     
     <script>
         tailwind.config = {
@@ -52,6 +53,16 @@
         #reader { border: none !important; border-radius: 1rem; overflow: hidden; width: 100%; }
         #reader video { border-radius: 1rem; object-fit: cover; width: 100% !important; }
         #qr-shaded-region { border: 4px solid rgba(255,255,255,0.4) !important; border-radius: 1rem; }
+        
+        /* POS Inputs */
+        .premium-input {
+            width: 100%; padding: 0.75rem 1rem 0.75rem 2.5rem;
+            border: 1px solid #cbd5e1; border-radius: 0.75rem;
+            font-size: 0.875rem; color: #1e293b; font-weight: 500; transition: all 0.2s;
+        }
+        .premium-input:focus { outline: none; border-color: #00A3E0; box-shadow: 0 0 0 3px rgba(0,163,224,0.15); }
+        .toggle-checkbox:checked + .toggle-label { background-color: #10b981; }
+        .toggle-checkbox:checked ~ .dot { transform: translateX(1.25rem); }
     </style>
 </head>
 <body class="text-slate-800 font-sans antialiased min-h-screen flex flex-col">
@@ -61,7 +72,7 @@
             <div class="flex justify-between items-center h-16">
                 <div class="flex items-center gap-3">
                     <div class="w-8 h-8 bg-brand-dark text-white rounded-lg flex items-center justify-center font-display font-bold">U</div>
-                    <span class="font-display font-bold text-lg text-brand-dark">Coordinator Panel</span>
+                    <span class="font-display font-bold text-lg text-brand-dark hidden sm:block">Coordinator Panel</span>
                 </div>
                 <div class="flex items-center gap-4">
                     <div class="text-right hidden sm:block">
@@ -80,29 +91,117 @@
     <main class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 flex flex-col">
         
         <!-- Tabs & Actions -->
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-            <div class="flex flex-wrap bg-slate-200/50 p-1 rounded-xl w-full sm:w-auto">
-                <button onclick="switchTab('analytics')" id="tab-analytics" class="flex-1 sm:flex-none px-6 py-2.5 rounded-lg text-sm font-bold bg-white text-brand-blue shadow-sm transition-all">Overview</button>
-                <button onclick="switchTab('events')" id="tab-events" class="flex-1 sm:flex-none px-6 py-2.5 rounded-lg text-sm font-bold text-slate-600 hover:text-slate-900 transition-all">My Events</button>
-                <button onclick="switchTab('registrations')" id="tab-registrations" class="flex-1 sm:flex-none px-6 py-2.5 rounded-lg text-sm font-bold text-slate-600 hover:text-slate-900 transition-all">Registrations</button>
-                <button onclick="switchTab('scanner')" id="tab-scanner" class="flex-1 sm:flex-none px-6 py-2.5 rounded-lg text-sm font-bold text-emerald-600 hover:text-emerald-700 bg-emerald-50/50 hover:bg-emerald-100 transition-all flex items-center justify-center gap-1.5">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 overflow-x-auto pb-2">
+            <div class="flex bg-slate-200/50 p-1 rounded-xl w-max sm:w-auto shrink-0">
+                <button onclick="switchTab('analytics')" id="tab-analytics" class="px-5 py-2.5 rounded-lg text-sm font-bold bg-white text-brand-blue shadow-sm transition-all whitespace-nowrap">Overview</button>
+                <button onclick="switchTab('events')" id="tab-events" class="px-5 py-2.5 rounded-lg text-sm font-bold text-slate-600 hover:text-slate-900 transition-all whitespace-nowrap">My Events</button>
+                <button onclick="switchTab('registrations')" id="tab-registrations" class="px-5 py-2.5 rounded-lg text-sm font-bold text-slate-600 hover:text-slate-900 transition-all whitespace-nowrap">Registrations</button>
+                <button onclick="switchTab('pos')" id="tab-pos" class="px-5 py-2.5 rounded-lg text-sm font-bold text-slate-600 hover:text-slate-900 transition-all whitespace-nowrap flex items-center gap-1.5">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                    POS Walk-in
+                </button>
+                <button onclick="switchTab('scanner')" id="tab-scanner" class="px-5 py-2.5 rounded-lg text-sm font-bold text-emerald-600 hover:text-emerald-700 bg-emerald-50/50 hover:bg-emerald-100 transition-all flex items-center justify-center gap-1.5 whitespace-nowrap">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg>
                     Scan Pass
                 </button>
             </div>
             
-            <button id="createEventBtn" onclick="openEventModal()" class="hidden bg-brand-blue hover:bg-brand-dark text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-md transition-all flex items-center justify-center gap-2">
+            <button id="createEventBtn" onclick="openEventModal()" class="hidden bg-brand-blue hover:bg-brand-dark text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-md transition-all shrink-0 flex items-center justify-center gap-2">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                Create New Event
+                Create Event
             </button>
         </div>
 
+        <!-- POS View -->
+        <div id="view-pos" class="fade-in hidden flex-col max-w-4xl mx-auto w-full">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden p-6 sm:p-8">
+                <div class="mb-6">
+                    <h3 class="text-2xl font-display font-black text-slate-900">Point of Sale (Walk-in)</h3>
+                    <p class="text-slate-500 text-sm mt-1">Register walk-in participants manually and collect payments.</p>
+                </div>
+
+                <div class="mb-6">
+                    <label class="block text-sm font-bold text-slate-700 mb-2">Select Active Event <span class="text-red-500">*</span></label>
+                    <select id="posEventSelect" onchange="handlePosEventChange()" class="w-full px-4 py-3 border border-slate-300 rounded-xl bg-slate-50 font-medium text-slate-700 outline-none focus:ring-2 focus:ring-brand-blue">
+                        <option value="" disabled selected>-- Choose an Event --</option>
+                    </select>
+                </div>
+
+                <!-- Hidden container for POS Details -->
+                <div id="posEventDetails" class="hidden">
+                    
+                    <!-- Sub-event Selection -->
+                    <div id="posSubEventContainer" class="hidden mb-6 p-4 bg-blue-50/50 border border-blue-100 rounded-xl">
+                        <label class="block text-xs font-bold text-brand-blue uppercase mb-2">Select Sub-Event <span class="text-red-500">*</span></label>
+                        <select id="posSubEventSelect" class="w-full px-4 py-2 border border-slate-300 rounded-lg text-sm outline-none">
+                        </select>
+                    </div>
+
+                    <!-- Pricing Info -->
+                    <div class="mb-6 bg-slate-50 border border-slate-200 p-4 rounded-xl flex flex-row items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <span class="px-2 py-1 bg-slate-800 text-white text-xs font-bold rounded" id="posTeamBadge">Individual</span>
+                            <span class="text-sm font-bold text-slate-700">Ticket Rates</span>
+                        </div>
+                        <div class="flex gap-4 text-right">
+                            <div>
+                                <p class="text-[10px] text-slate-500 font-bold uppercase">IEEE</p>
+                                <p class="font-bold text-brand-blue">₹<span id="posPriceIeee">0</span></p>
+                            </div>
+                            <div class="w-px bg-slate-300"></div>
+                            <div>
+                                <p class="text-[10px] text-slate-500 font-bold uppercase">Non-IEEE</p>
+                                <p class="font-bold text-slate-700">₹<span id="posPriceNonIeee">0</span></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form id="posForm" onsubmit="return false;" class="space-y-6">
+                        <!-- Dynamic Participants Wrapper -->
+                        <div id="posDynamicParticipants" class="space-y-5"></div>
+                        
+                        <button type="button" id="posAddMemberBtn" onclick="addPosParticipant()" class="hidden w-full py-3 border-2 border-dashed border-slate-300 rounded-xl text-slate-500 font-bold text-sm hover:border-brand-blue hover:text-brand-blue transition-all flex items-center justify-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                            Add Team Member
+                        </button>
+                    </form>
+
+                    <!-- Checkout Footer -->
+                    <div class="mt-8 pt-6 border-t border-slate-200">
+                        <div class="flex justify-between items-center mb-6">
+                            <div>
+                                <p class="text-xs font-bold text-slate-500 uppercase">Total Participants</p>
+                                <p class="text-xl font-bold text-slate-800" id="posModalCount">0</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-xs font-bold text-slate-500 uppercase">Total Amount</p>
+                                <p class="text-3xl font-display font-black text-brand-dark">₹<span id="posTotalDue">0</span></p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <button type="button" id="btnPosOnline" onclick="processPosOnline()" class="w-full py-3.5 bg-white border border-slate-200 text-slate-700 rounded-xl font-bold hover:shadow-md transition-all flex items-center justify-center gap-2 group">
+                                <svg class="w-5 h-5 text-brand-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+                                Pay Now (Online)
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics View -->
         <div id="view-analytics" class="fade-in block space-y-6">
-            <h3 class="text-lg font-display font-bold text-slate-800">Dashboard Analytics</h3>
+            <div class="flex flex-wrap justify-between items-center gap-4">
+                <h3 class="text-lg font-display font-bold text-slate-800">Dashboard Analytics</h3>
+                <button onclick="promptDownloadAnalyticsPDF()" class="px-4 py-2 bg-brand-blue text-white rounded-lg text-sm font-bold shadow-md hover:bg-brand-dark transition-colors flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                    Download Overview
+                </button>
+            </div>
             
             <!-- Key Statistics Grid -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <!-- Total Registrations Card -->
                 <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between">
                     <p class="text-sm font-bold text-slate-500 mb-2">Total Registrations</p>
                     <div class="flex items-center justify-between mt-2">
@@ -112,8 +211,6 @@
                         </div>
                     </div>
                 </div>
-                
-                <!-- Participants Breakdown Card -->
                 <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between">
                     <p class="text-sm font-bold text-slate-500 mb-2">Total Participants</p>
                     <div class="flex items-center justify-between mt-2">
@@ -124,8 +221,6 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Total Attended Card -->
                 <div class="bg-gradient-to-br from-emerald-50 to-white p-6 rounded-2xl shadow-sm border border-emerald-100 flex flex-col justify-between relative overflow-hidden">
                     <div class="absolute -right-4 -bottom-4 opacity-10">
                         <svg class="w-32 h-32 text-emerald-500" fill="currentColor" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"></path></svg>
@@ -138,8 +233,6 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Total Revenue Collected Card -->
                 <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between">
                     <div class="flex justify-between items-start">
                         <p class="text-sm font-bold text-slate-500">Amount Collected <span class="text-[10px] font-medium text-slate-400 block sm:inline">(Excluding Taxes)</span></p>
@@ -150,19 +243,14 @@
                     <h4 class="text-3xl font-display font-bold text-emerald-600 mt-2" id="stat-total-amount">₹0</h4>
                 </div>
             </div>
-
             <!-- Sub-Event Wise Registrations Section -->
             <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
                 <div class="px-6 py-5 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
                     <h4 class="font-bold text-slate-800 text-sm">Sub-Event Wise Registrations & Attendance</h4>
-                    <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
                 </div>
                 <div class="p-6">
                     <div id="analytics-sub-events" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        <div class="col-span-full py-4 text-center text-slate-500 text-sm">
-                            <svg class="w-8 h-8 mx-auto mb-2 text-slate-300 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                            Analyzing data...
-                        </div>
+                        <div class="col-span-full py-4 text-center text-slate-500 text-sm">Loading...</div>
                     </div>
                 </div>
             </div>
@@ -174,21 +262,14 @@
                 <h3 class="text-2xl font-display font-black text-slate-900">QR Code Scanner</h3>
                 <p class="text-slate-500 text-sm font-medium mt-1">Scan participant passes to mark attendance automatically.</p>
             </div>
-
             <div class="w-full bg-white p-3 rounded-3xl shadow-float border border-slate-200 mb-6 relative overflow-hidden flex flex-col items-center" id="scanner-container">
-                
-                <!-- Scanner UI Controls -->
                 <div id="scanner-ui-controls" class="w-full flex justify-center py-8">
                     <button onclick="initScanner()" class="px-6 py-3 bg-brand-blue hover:bg-brand-dark text-white rounded-xl font-bold shadow-md transition-colors flex items-center gap-2">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                         Start Camera Scanner
                     </button>
                 </div>
-
-                <!-- Scanner element -->
                 <div id="reader" class="w-full min-h-[300px] bg-slate-900 rounded-2xl hidden"></div>
-                
-                <!-- Overlay for success state -->
                 <div id="scan-success-overlay" class="absolute inset-0 bg-white/95 backdrop-blur-md z-20 hidden flex-col items-center justify-center p-6 text-center transition-all">
                     <div class="w-20 h-20 bg-emerald-100 text-emerald-500 rounded-full flex items-center justify-center mb-5 shadow-sm border-4 border-emerald-50">
                         <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
@@ -198,20 +279,13 @@
                         <p class="text-slate-700 text-sm mb-1" id="scanned-participant-name">Loading...</p>
                         <p class="text-emerald-600 text-xs font-bold uppercase tracking-wide">Attendance Marked</p>
                     </div>
-                    <button onclick="resumeScanner()" class="px-8 py-3.5 bg-brand-blue hover:bg-brand-dark text-white rounded-xl font-bold shadow-lg transition-transform hover:scale-105 active:scale-95">
-                        Scan Next Pass
-                    </button>
+                    <button onclick="resumeScanner()" class="px-8 py-3.5 bg-brand-blue hover:bg-brand-dark text-white rounded-xl font-bold shadow-lg transition-transform hover:scale-105 active:scale-95">Scan Next Pass</button>
                 </div>
-
-                <!-- Overlay for loading state -->
                 <div id="scan-loading-overlay" class="absolute inset-0 bg-white/90 backdrop-blur-sm z-20 hidden flex-col items-center justify-center p-6 text-center">
                     <div class="w-14 h-14 border-4 border-slate-200 border-t-brand-blue rounded-full animate-spin mb-4"></div>
                     <p class="font-bold text-slate-700 text-lg">Verifying pass...</p>
-                    <p class="text-sm text-slate-500 mt-1">Please hold the QR steady</p>
                 </div>
             </div>
-            
-            <!-- Manual Entry Fallback -->
             <div class="w-full bg-slate-50 border border-slate-200 rounded-xl p-5 text-center">
                 <p class="text-sm font-bold text-slate-600 mb-3">Camera not working? Fallback to manual entry:</p>
                 <form id="manualScanForm" class="flex gap-2 justify-center" onsubmit="handleManualScan(event)">
@@ -221,31 +295,24 @@
             </div>
         </div>
 
+        <!-- My Events View -->
         <div id="view-events" class="fade-in hidden">
-            <div id="eventsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- Events populated here -->
-                <div class="col-span-full text-center py-12 text-slate-500">
-                    <svg class="w-12 h-12 mx-auto mb-3 text-slate-300 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                    Loading events...
-                </div>
-            </div>
+            <div id="eventsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
         </div>
 
+        <!-- Registrations View -->
         <div id="view-registrations" class="fade-in hidden flex-col flex-1">
             <div class="flex flex-wrap justify-between items-center mb-4 gap-4">
                 <h3 class="text-lg font-display font-bold text-slate-800">Registration List</h3>
                 <div class="flex gap-2">
                     <button onclick="exportExcel()" class="px-4 py-2 bg-emerald-50 text-emerald-600 rounded-lg text-sm font-bold border border-emerald-200 hover:bg-emerald-100 flex items-center gap-2 transition-colors">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                         Export Excel
                     </button>
                     <button onclick="exportPDF()" class="px-4 py-2 bg-red-50 text-red-600 rounded-lg text-sm font-bold border border-red-200 hover:bg-red-100 flex items-center gap-2 transition-colors">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
                         Export PDF
                     </button>
                 </div>
             </div>
-            
             <div class="bg-white rounded-2xl shadow-float border border-slate-200 overflow-hidden">
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse">
@@ -258,20 +325,17 @@
                                 <th class="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Action</th>
                             </tr>
                         </thead>
-                        <tbody id="registrationsContainer" class="divide-y divide-slate-100">
-                            <tr><td colspan="5" class="py-8 text-center text-slate-500">Loading registrations...</td></tr>
-                        </tbody>
-                        <tfoot id="registrationsFooter" class="hidden bg-slate-50 border-t-2 border-slate-200 font-bold text-slate-800">
-                        </tfoot>
+                        <tbody id="registrationsContainer" class="divide-y divide-slate-100"></tbody>
+                        <tfoot id="registrationsFooter" class="hidden bg-slate-50 border-t-2 border-slate-200 font-bold text-slate-800"></tfoot>
                     </table>
                 </div>
             </div>
         </div>
     </main>
 
-    <footer class="mt-auto py-6 border-t border-slate-200 bg-white text-center z-10">
-        <p class="text-slate-500 text-sm font-medium">© 2026 UDGAMA. All rights reserved.</p>
-        <p class="text-slate-400 text-xs mt-1">Designed & Developed by <a href="https://xetasolutions.in" target="_blank" class="font-bold text-brand-blue hover:underline transition-colors">Xeta Tech Solutions</a></p>
+    <!-- Brand Footer -->
+    <footer class="w-full py-4 mt-auto text-center text-xs font-medium text-slate-500 border-t border-slate-200 bg-white">
+        Designed & Developed by <a href="#" class="font-bold text-brand-blue hover:underline">Xeta Tech Solutions</a>
     </footer>
 
     <!-- EVENT MODAL -->
@@ -283,51 +347,30 @@
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             </div>
-            
             <div class="p-6 overflow-y-auto flex-1 bg-slate-50/50">
                 <form id="eventForm" onsubmit="saveEvent(event)" class="space-y-6">
                     <input type="hidden" id="editEventId">
-                    
                     <div>
                         <label class="block text-sm font-bold text-slate-700 mb-1">Event Title *</label>
                         <input type="text" id="title" required class="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-blue focus:border-brand-blue outline-none transition-all">
                     </div>
-
-                    <!-- Sub-Events Block -->
                     <div class="border border-blue-100 rounded-xl p-4 bg-white/70">
                         <label class="block text-sm font-bold text-brand-blue mb-1">Sub-Events (Optional)</label>
-                        <p class="text-xs text-slate-500 mb-3">Users will be asked to select exactly one of these during registration. Leave empty for standard registration.</p>
+                        <p class="text-xs text-slate-500 mb-3">Users will be asked to select exactly one of these during registration.</p>
                         <div class="flex gap-2 mb-3">
                             <input type="text" id="subEventInput" placeholder="e.g. Ideathon Phase 1" class="flex-1 px-4 py-2 border border-slate-300 rounded-lg outline-none focus:ring-2 focus:ring-brand-blue">
                             <button type="button" onclick="addSubEvent()" class="px-5 py-2 bg-slate-800 text-white rounded-lg font-bold hover:bg-slate-900 transition-colors shadow-sm">Add</button>
                         </div>
                         <div id="subEventsList" class="flex flex-wrap gap-2 min-h-[1.5rem]"></div>
                     </div>
-
                     <div class="bg-blue-50/50 border border-blue-100 p-4 rounded-xl">
-                        <label for="bannerUrl" class="block text-sm font-bold text-slate-700 mb-1">
-                            Event Cover Image Link
-                        </label>
-                        <input type="url" id="bannerUrl" name="bannerUrl" placeholder="https://example.com/poster.jpg" 
-                               class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue focus:border-brand-blue bg-white">
-                        
-                        <p class="text-xs text-slate-500 mt-2 flex items-start gap-1.5">
-                            <svg class="w-4 h-4 text-brand-blue shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                            <span>Recommended image size: <strong class="text-slate-700">800 x 400 pixels</strong> (2:1 aspect ratio) for best quality. Ensure the link ends in .jpg or .png.</span>
-                        </p>
+                        <label for="bannerUrl" class="block text-sm font-bold text-slate-700 mb-1">Event Cover Image Link</label>
+                        <input type="url" id="bannerUrl" name="bannerUrl" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue bg-white">
                     </div>
-
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label class="block text-sm font-bold text-slate-700 mb-1">Short Description *</label>
-                            <textarea id="shortDesc" required rows="3" class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-blue focus:border-brand-blue outline-none resize-none" placeholder="Brief overview for the card..."></textarea>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-bold text-slate-700 mb-1">Detailed Description</label>
-                            <textarea id="longDesc" rows="3" class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-blue focus:border-brand-blue outline-none resize-none" placeholder="Full rules, timings, etc."></textarea>
-                        </div>
+                        <div><label class="block text-sm font-bold text-slate-700 mb-1">Short Description *</label><textarea id="shortDesc" required rows="3" class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-blue outline-none resize-none"></textarea></div>
+                        <div><label class="block text-sm font-bold text-slate-700 mb-1">Detailed Description</label><textarea id="longDesc" rows="3" class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-blue outline-none resize-none"></textarea></div>
                     </div>
-
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-4 bg-white border border-slate-200 rounded-xl">
                         <div class="flex items-center justify-between">
                             <label class="text-sm font-bold text-slate-700">Is this a Team Event?</label>
@@ -338,39 +381,35 @@
                         </div>
                         <div id="teamSizeContainer" class="opacity-50 pointer-events-none transition-opacity">
                             <label class="block text-sm font-bold text-slate-700 mb-1">Max Team Size</label>
-                            <input type="number" id="teamSize" min="1" value="1" class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-blue outline-none">
+                            <input type="number" id="teamSize" min="1" value="1" class="w-full px-4 py-2 border border-slate-300 rounded-xl outline-none">
                         </div>
                     </div>
-
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="p-4 border border-slate-200 rounded-xl bg-white">
                             <h4 class="font-bold text-brand-blue text-sm mb-3">IEEE Member Pricing</h4>
                             <div class="space-y-3">
-                                <div><label class="text-xs font-bold text-slate-500 mb-1 block">Base Amount (₹)</label><input type="number" id="ieeeBase" required min="0" class="w-full px-3 py-2 border border-slate-300 rounded-lg outline-none focus:ring-2 focus:ring-brand-blue"></div>
-                                <div><label class="text-xs font-bold text-slate-500 mb-1 block">Tax Amount (₹)</label><input type="number" id="ieeeTax" required min="0" class="w-full px-3 py-2 border border-slate-300 rounded-lg outline-none focus:ring-2 focus:ring-brand-blue"></div>
+                                <div><label class="text-xs font-bold text-slate-500 mb-1 block">Base Amount (₹)</label><input type="number" id="ieeeBase" required min="0" class="w-full px-3 py-2 border border-slate-300 rounded-lg outline-none"></div>
+                                <div><label class="text-xs font-bold text-slate-500 mb-1 block">Tax Amount (₹)</label><input type="number" id="ieeeTax" required min="0" class="w-full px-3 py-2 border border-slate-300 rounded-lg outline-none"></div>
                             </div>
                         </div>
                         <div class="p-4 border border-slate-200 rounded-xl bg-white">
                             <h4 class="font-bold text-slate-700 text-sm mb-3">Non-IEEE Pricing</h4>
                             <div class="space-y-3">
-                                <div><label class="text-xs font-bold text-slate-500 mb-1 block">Base Amount (₹)</label><input type="number" id="nonIeeeBase" required min="0" class="w-full px-3 py-2 border border-slate-300 rounded-lg outline-none focus:ring-2 focus:ring-brand-blue"></div>
-                                <div><label class="text-xs font-bold text-slate-500 mb-1 block">Tax Amount (₹)</label><input type="number" id="nonIeeeTax" required min="0" class="w-full px-3 py-2 border border-slate-300 rounded-lg outline-none focus:ring-2 focus:ring-brand-blue"></div>
+                                <div><label class="text-xs font-bold text-slate-500 mb-1 block">Base Amount (₹)</label><input type="number" id="nonIeeeBase" required min="0" class="w-full px-3 py-2 border border-slate-300 rounded-lg outline-none"></div>
+                                <div><label class="text-xs font-bold text-slate-500 mb-1 block">Tax Amount (₹)</label><input type="number" id="nonIeeeTax" required min="0" class="w-full px-3 py-2 border border-slate-300 rounded-lg outline-none"></div>
                             </div>
                         </div>
                     </div>
                 </form>
             </div>
-            
             <div class="p-6 border-t border-slate-100 bg-white rounded-b-[2rem] flex justify-end gap-3">
                 <button type="button" onclick="closeEventModal()" class="px-5 py-2.5 rounded-xl font-bold text-slate-600 hover:bg-slate-100 transition-colors">Cancel</button>
-                <button type="submit" form="eventForm" id="saveEventBtn" class="px-6 py-2.5 rounded-xl font-bold text-white bg-brand-blue hover:bg-brand-dark transition-colors shadow-md flex items-center gap-2">
-                    Save Event
-                </button>
+                <button type="submit" form="eventForm" id="saveEventBtn" class="px-6 py-2.5 rounded-xl font-bold text-white bg-brand-blue hover:bg-brand-dark transition-colors shadow-md flex items-center gap-2">Save Event</button>
             </div>
         </div>
     </div>
 
-    <!-- Team Details Modal (Updated for Attendance) -->
+    <!-- Team Details Modal -->
     <div id="teamModal" class="fixed inset-0 z-50 hidden items-center justify-center modal-overlay p-4 opacity-0 transition-opacity duration-300">
         <div class="bg-white rounded-[2rem] w-full max-w-4xl shadow-2xl transform scale-95 transition-transform duration-300 flex flex-col max-h-[90vh]">
             <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-white rounded-t-[2rem]">
@@ -382,7 +421,6 @@
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             </div>
-            
             <div class="p-6 overflow-y-auto flex-1 bg-slate-50/50">
                 <div class="overflow-x-auto bg-white rounded-xl shadow-sm border border-slate-200">
                     <table class="w-full text-left border-collapse">
@@ -395,15 +433,38 @@
                                 <th class="py-3 px-4 text-xs font-bold text-slate-500 uppercase">IEEE Status</th>
                             </tr>
                         </thead>
-                        <tbody id="teamMembersContainer" class="divide-y divide-slate-100">
-                            <!-- Populated dynamically -->
-                        </tbody>
+                        <tbody id="teamMembersContainer" class="divide-y divide-slate-100"></tbody>
                     </table>
                 </div>
             </div>
-            
             <div class="p-5 border-t border-slate-100 bg-white rounded-b-[2rem] flex justify-end">
                 <button type="button" onclick="closeTeamModal()" class="px-6 py-2.5 rounded-xl font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 transition-colors">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PDF Options Modal -->
+    <div id="pdfOptionsModal" class="fixed inset-0 z-[60] hidden items-center justify-center modal-overlay p-4 opacity-0 transition-opacity duration-300">
+        <div class="bg-white rounded-3xl w-full max-w-md shadow-2xl transform scale-95 transition-transform duration-300 flex flex-col overflow-hidden">
+            <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                <h2 class="text-lg font-display font-bold text-slate-900">Export Analytics PDF</h2>
+                <button onclick="closePdfModal()" class="text-slate-400 hover:text-slate-700 transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <div class="p-6 space-y-4">
+                <p class="text-sm text-slate-600">Choose the details you want to include in the downloaded report.</p>
+                <label class="flex items-center gap-3 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors">
+                    <input type="checkbox" id="includeFinancialsCheckbox" class="w-5 h-5 text-brand-blue rounded border-slate-300 focus:ring-brand-blue" checked>
+                    <div class="flex flex-col">
+                        <span class="text-sm font-bold text-slate-800">Include Financial Data</span>
+                        <span class="text-xs text-slate-500">Adds revenue split by IEEE/Non-IEEE per event.</span>
+                    </div>
+                </label>
+            </div>
+            <div class="p-5 border-t border-slate-100 bg-slate-50 flex justify-end gap-3">
+                <button onclick="closePdfModal()" class="px-5 py-2.5 rounded-xl font-bold text-slate-600 hover:bg-slate-200 transition-colors">Cancel</button>
+                <button onclick="executePdfDownload()" class="px-6 py-2.5 rounded-xl font-bold text-white bg-brand-blue hover:bg-brand-dark transition-colors shadow-md">Download PDF</button>
             </div>
         </div>
     </div>
@@ -417,9 +478,15 @@
         let events = [];
         let registrations = [];
         let currentSubEvents = []; 
-        let html5QrCode = null; // Changed to base Html5Qrcode instance
+        let html5QrCode = null; 
+        
+        // POS State
+        let posActiveEvent = null;
+        let posDynamicCount = -1;
 
-        // Auth Check
+        // Analytics State mapping
+        window.lastAnalyticsData = null;
+
         document.addEventListener('DOMContentLoaded', () => {
             const token = localStorage.getItem('token');
             const role = localStorage.getItem('role');
@@ -427,26 +494,39 @@
             const name = localStorage.getItem('name');
 
             if (!token || (role !== 'coordinator' && role !== 'admin')) {
-                console.warn("Invalid session detected. Clearing storage and redirecting.");
                 localStorage.clear(); 
                 window.location.replace('/staff-login'); 
                 return;
             }
 
             document.getElementById('coordName').textContent = name || 'Coordinator';
+            
+            // Restore last active tab to prevent losing context on reload
+            const savedTab = sessionStorage.getItem('coordinatorActiveTab') || 'analytics';
+            switchTab(savedTab);
+            
             fetchDashboardData();
         });
 
         function logout() {
-            if (html5QrcodeScanner) html5QrcodeScanner.clear();
-            localStorage.clear();
+            if (typeof html5QrCode !== 'undefined' && html5QrCode) {
+                try {
+                    if (html5QrCode.isScanning) html5QrCode.stop();
+                    html5QrCode.clear();
+                } catch(e) {}
+            }
+            localStorage.removeItem('token');
+            localStorage.removeItem('role');
+            localStorage.removeItem('orgId');
+            localStorage.removeItem('name');
+            sessionStorage.removeItem('coordinatorActiveTab');
             window.location.href = '/staff-login';
         }
 
-        // Updated switchTab to handle the 4 views correctly including scanner
         function switchTab(tab) {
             currentTab = tab;
-            const tabs = ['analytics', 'events', 'registrations', 'scanner'];
+            sessionStorage.setItem('coordinatorActiveTab', tab);
+            const tabs = ['analytics', 'events', 'registrations', 'scanner', 'pos'];
             
             tabs.forEach(t => {
                 const btn = document.getElementById(`tab-${t}`);
@@ -454,27 +534,31 @@
                 
                 if (t === tab) {
                     if (t === 'scanner') {
-                        btn.className = 'flex-1 sm:flex-none px-6 py-2.5 rounded-lg text-sm font-bold text-emerald-700 bg-emerald-100 shadow-sm transition-all flex items-center justify-center gap-1.5';
+                        btn.className = 'px-5 py-2.5 rounded-lg text-sm font-bold text-emerald-700 bg-emerald-100 shadow-sm transition-all whitespace-nowrap flex items-center justify-center gap-1.5';
+                    } else if (t === 'pos') {
+                        btn.className = 'px-5 py-2.5 rounded-lg text-sm font-bold bg-white text-brand-blue shadow-sm transition-all whitespace-nowrap flex items-center gap-1.5';
                     } else {
-                        btn.className = 'flex-1 sm:flex-none px-6 py-2.5 rounded-lg text-sm font-bold bg-white text-brand-blue shadow-sm transition-all';
+                        btn.className = 'px-5 py-2.5 rounded-lg text-sm font-bold bg-white text-brand-blue shadow-sm transition-all whitespace-nowrap';
                     }
                     
                     view.classList.remove('hidden');
-                    if (t === 'registrations' || t === 'scanner') {
+                    if (t === 'registrations' || t === 'scanner' || t === 'pos') {
                         view.classList.add('flex');
                     } else {
                         view.classList.add('block');
                     }
                 } else {
                     if (t === 'scanner') {
-                        btn.className = 'flex-1 sm:flex-none px-6 py-2.5 rounded-lg text-sm font-bold text-emerald-600 hover:text-emerald-700 bg-emerald-50/50 hover:bg-emerald-100 transition-all flex items-center justify-center gap-1.5';
+                        btn.className = 'px-5 py-2.5 rounded-lg text-sm font-bold text-emerald-600 hover:text-emerald-700 bg-emerald-50/50 hover:bg-emerald-100 transition-all flex items-center justify-center gap-1.5 whitespace-nowrap';
                         if (html5QrCode && html5QrCode.isScanning) {
                             html5QrCode.stop().catch(e => console.log("Stop error:", e));
                             document.getElementById('reader').classList.add('hidden');
                             document.getElementById('scanner-ui-controls').classList.remove('hidden');
                         }
+                    } else if (t === 'pos') {
+                        btn.className = 'px-5 py-2.5 rounded-lg text-sm font-bold text-slate-600 hover:text-slate-900 transition-all whitespace-nowrap flex items-center gap-1.5';
                     } else {
-                        btn.className = 'flex-1 sm:flex-none px-6 py-2.5 rounded-lg text-sm font-bold text-slate-600 hover:text-slate-900 transition-all';
+                        btn.className = 'px-5 py-2.5 rounded-lg text-sm font-bold text-slate-600 hover:text-slate-900 transition-all whitespace-nowrap';
                     }
                     
                     view.classList.add('hidden');
@@ -490,8 +574,8 @@
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
             toast.innerHTML = type === 'success' 
-                ? `<svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> <span>${message}</span>`
-                : `<svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> <span>${message}</span>`;
+                ? `<svg class="w-5 h-5 shrink-0 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> <span>${message}</span>`
+                : `<svg class="w-5 h-5 shrink-0 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> <span>${message}</span>`;
             
             container.appendChild(toast);
             setTimeout(() => toast.classList.add('show'), 10);
@@ -507,6 +591,7 @@
                 
                 events = (evData.events || []).filter(e => e.orgId === orgId);
                 renderEvents();
+                renderPosEvents(); // Setup POS Select dropdown
 
                 const regRes = await fetch(`${API_BASE}/coordinator/registrations`, {
                     headers: { 'Authorization': `Bearer ${token}` }
@@ -523,92 +608,470 @@
             }
         }
 
+        /* ----- Analytics & PDF Export Logic ----- */
         function calculateAnalytics() {
-            let totalRegistrations = 0;
-            let totalParticipants = 0;
-            let totalAttended = 0; // NEW: Attendance Tracker
-            let ieeeCount = 0;
-            let nonIeeeCount = 0;
-            let totalBaseAmount = 0;
-            let subEventCounts = {}; // Track regs, participants, attended
+            let totalRegistrations = 0; let totalParticipants = 0; let totalAttended = 0; 
+            let ieeeCount = 0; let nonIeeeCount = 0; 
+            let totalBaseAmount = 0; let totalIeeeAmount = 0; let totalNonIeeeAmount = 0;
+            let subEventCounts = {};
 
             registrations.forEach(reg => {
                 if (reg.paymentStatus !== 'Paid') return;
-
                 totalRegistrations++;
-
                 let regBaseAmount = 0;
                 const eventObj = events.find(e => e.eventId === reg.eventId);
-                
                 const eventName = eventObj ? eventObj.title : 'Unknown Event';
                 const subEventName = reg.selectedSubEvent ? reg.selectedSubEvent : 'Standard';
                 const trackingKey = `${eventName} - ${subEventName}`;
 
                 if (!subEventCounts[trackingKey]) {
-                    subEventCounts[trackingKey] = { regs: 0, participants: 0, attended: 0 };
+                    subEventCounts[trackingKey] = { 
+                        regs: 0, participants: 0, attended: 0, 
+                        ieeeParts: 0, nonIeeeParts: 0, ieeeAmount: 0, nonIeeeAmount: 0 
+                    };
                 }
                 subEventCounts[trackingKey].regs++;
 
                 if (reg.participants && eventObj) {
                     reg.participants.forEach(p => {
-                        totalParticipants++;
-                        subEventCounts[trackingKey].participants++;
+                        totalParticipants++; subEventCounts[trackingKey].participants++;
+                        if (p.attended) { totalAttended++; subEventCounts[trackingKey].attended++; }
                         
-                        // Check Attendance
-                        if (p.attended) {
-                            totalAttended++;
-                            subEventCounts[trackingKey].attended++;
+                        let pAmount = 0;
+                        if (p.isIeee === 'Yes' || p.isIeee === true) { 
+                            ieeeCount++; 
+                            subEventCounts[trackingKey].ieeeParts++;
+                            pAmount = Number(eventObj.ieeeAmount || 0);
+                            subEventCounts[trackingKey].ieeeAmount += pAmount;
+                            totalIeeeAmount += pAmount;
+                        } else { 
+                            nonIeeeCount++; 
+                            subEventCounts[trackingKey].nonIeeeParts++;
+                            pAmount = Number(eventObj.nonIeeeAmount || 0);
+                            subEventCounts[trackingKey].nonIeeeAmount += pAmount;
+                            totalNonIeeeAmount += pAmount;
                         }
-
-                        const isIeee = (p.isIeee === 'Yes' || p.isIeee === true);
-                        if (isIeee) {
-                            ieeeCount++;
-                            regBaseAmount += Number(eventObj.ieeeAmount || 0);
-                        } else {
-                            nonIeeeCount++;
-                            regBaseAmount += Number(eventObj.nonIeeeAmount || 0);
-                        }
+                        regBaseAmount += pAmount;
                     });
                 }
                 totalBaseAmount += regBaseAmount;
             });
 
-            // Bind values to UI
+            // Store cleanly for PDF export
+            window.lastAnalyticsData = {
+                totalRegistrations, totalParticipants, totalAttended, ieeeCount, nonIeeeCount, 
+                totalBaseAmount, totalIeeeAmount, totalNonIeeeAmount, subEventCounts
+            };
+
+            // Update DOM Dashboard Stats
             document.getElementById('stat-total-regs').textContent = totalRegistrations;
             document.getElementById('stat-total-parts').textContent = totalParticipants;
             document.getElementById('stat-total-attended').textContent = totalAttended;
             document.getElementById('stat-ieee-parts').textContent = ieeeCount;
             document.getElementById('stat-non-ieee-parts').textContent = nonIeeeCount;
             document.getElementById('stat-total-amount').textContent = `₹${totalBaseAmount}`;
-            
-            const attendanceRate = totalParticipants > 0 ? Math.round((totalAttended / totalParticipants) * 100) : 0;
-            document.getElementById('stat-attendance-rate').textContent = `${attendanceRate}%`;
+            document.getElementById('stat-attendance-rate').textContent = `${totalParticipants > 0 ? Math.round((totalAttended / totalParticipants) * 100) : 0}%`;
 
-            // Render Sub-Event Statistics with Attendance
-            const subEventContainer = document.getElementById('analytics-sub-events');
-            
+            const subContainer = document.getElementById('analytics-sub-events');
             if (Object.keys(subEventCounts).length === 0) {
-                subEventContainer.innerHTML = '<div class="col-span-full py-4 text-center text-slate-500 text-sm">No registrations yet.</div>';
+                subContainer.innerHTML = '<div class="col-span-full py-4 text-center text-slate-500 text-sm">No registrations yet.</div>';
             } else {
-                subEventContainer.innerHTML = Object.entries(subEventCounts).map(([name, count]) => `
-                    <div class="flex flex-col p-4 bg-slate-50 rounded-xl border border-slate-200 shadow-sm transition-all hover:border-brand-blue hover:shadow-md">
+                subContainer.innerHTML = Object.entries(subEventCounts).map(([name, count]) => `
+                    <div class="flex flex-col p-4 bg-slate-50 rounded-xl border border-slate-200">
                         <span class="text-sm font-bold text-slate-700 mb-3 truncate" title="${name}">${name}</span>
                         <div class="mt-auto flex flex-col gap-2">
-                            <div class="flex justify-between items-center">
-                                <span class="text-xs text-slate-500 font-medium">Tickets / Regs</span>
-                                <span class="px-2 py-0.5 bg-slate-200 text-slate-700 rounded text-xs font-bold">${count.regs}</span>
+                            <div class="flex justify-between items-center"><span class="text-xs text-slate-500 font-medium">Regs</span><span class="px-2 py-0.5 bg-slate-200 text-slate-700 rounded text-xs font-bold">${count.regs}</span></div>
+                            <div class="flex justify-between items-center"><span class="text-xs text-slate-500 font-medium">Parts.</span><span class="px-2 py-0.5 bg-blue-100 text-brand-blue rounded text-xs font-bold">${count.participants}</span></div>
+                            <div class="flex justify-between items-center pt-2 border-t border-slate-200 mt-1">
+                                <span class="text-[10px] text-slate-500 font-bold uppercase">IEEE / Non-IEEE</span>
+                                <span class="text-xs font-bold text-slate-700">${count.ieeeParts} / ${count.nonIeeeParts}</span>
                             </div>
-                            <div class="flex justify-between items-center">
-                                <span class="text-xs text-slate-500 font-medium">Total Participants</span>
-                                <span class="px-2 py-0.5 bg-blue-100 text-brand-blue rounded text-xs font-bold">${count.participants}</span>
-                            </div>
-                            <div class="flex justify-between items-center pt-2 border-t border-slate-200">
-                                <span class="text-xs text-emerald-600 font-bold uppercase">Checked-in</span>
-                                <span class="px-2 py-0.5 bg-emerald-100 text-emerald-700 rounded text-xs font-bold">${count.attended}</span>
-                            </div>
+                            <div class="flex justify-between items-center pt-1"><span class="text-xs text-emerald-600 font-bold uppercase">Checked-in</span><span class="px-2 py-0.5 bg-emerald-100 text-emerald-700 rounded text-xs font-bold">${count.attended}</span></div>
                         </div>
                     </div>
                 `).join('');
+            }
+        }
+        
+        // PDF Modal logic
+        function promptDownloadAnalyticsPDF() {
+            if (!window.lastAnalyticsData) {
+                showToast("Data not ready yet.", "error");
+                return;
+            }
+            const modal = document.getElementById('pdfOptionsModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            setTimeout(() => modal.classList.remove('opacity-0'), 10);
+        }
+
+        function closePdfModal() {
+            const modal = document.getElementById('pdfOptionsModal');
+            modal.classList.add('opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }, 300);
+        }
+
+        // PDF Generation execution
+        function executePdfDownload() {
+            const includeFinancials = document.getElementById('includeFinancialsCheckbox').checked;
+            closePdfModal();
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const data = window.lastAnalyticsData;
+            
+            // Header configuration
+            doc.setFontSize(18);
+            doc.setTextColor(0, 98, 155); // brand-blue
+            doc.text("UDGAMA 2026 - Dashboard Overview", 14, 20);
+            
+            doc.setFontSize(10);
+            doc.setTextColor(100, 100, 100);
+            doc.text(`Generated on: ${new Date().toLocaleString()}`, 14, 28);
+
+            const rate = data.totalParticipants > 0 ? Math.round((data.totalAttended / data.totalParticipants) * 100) : 0;
+
+            const overviewBody = [
+                ['Total Registrations', data.totalRegistrations],
+                ['Total Participants', data.totalParticipants],
+                ['IEEE Participants', data.ieeeCount],
+                ['Non-IEEE Participants', data.nonIeeeCount],
+                ['Total Checked-In', `${data.totalAttended} (${rate}%)`]
+            ];
+
+            if (includeFinancials) {
+                overviewBody.push(['Total Amount (IEEE)', `Rs. ${data.totalIeeeAmount}`]);
+                overviewBody.push(['Total Amount (Non-IEEE)', `Rs. ${data.totalNonIeeeAmount}`]);
+                overviewBody.push(['Total Amount Collected', `Rs. ${data.totalBaseAmount}`]);
+            }
+
+            // Generate Key Stats Table
+            doc.autoTable({
+                startY: 35,
+                head: [['Overview Statistic', 'Value']],
+                body: overviewBody,
+                theme: 'grid',
+                headStyles: { fillColor: [0, 98, 155] },
+                styles: { fontSize: 10, cellPadding: 4 }
+            });
+
+            // Sub Events Header Configuration
+            let finalY = doc.lastAutoTable.finalY || 35;
+            doc.setFontSize(14);
+            doc.setTextColor(0, 98, 155);
+            doc.text("Sub-Event Registration Breakdown", 14, finalY + 15);
+
+            let head = [];
+            let subEventData = [];
+            
+            if (includeFinancials) {
+                head = [['Event / Sub-Event', 'Regs', 'Parts.', 'IEEE', 'Non', 'Attended', 'IEEE Amt', 'Non Amt', 'Total Amt']];
+            } else {
+                head = [['Event / Sub-Event Name', 'Registrations', 'Total Participants', 'IEEE', 'Non-IEEE', 'Checked-In']];
+            }
+
+            Object.entries(data.subEventCounts).forEach(([name, count]) => {
+                if (includeFinancials) {
+                    subEventData.push([
+                        name, count.regs, count.participants, count.ieeeParts, count.nonIeeeParts, count.attended,
+                        `Rs. ${count.ieeeAmount}`, `Rs. ${count.nonIeeeAmount}`, `Rs. ${count.ieeeAmount + count.nonIeeeAmount}`
+                    ]);
+                } else {
+                    subEventData.push([
+                        name, count.regs, count.participants, count.ieeeParts, count.nonIeeeParts, count.attended
+                    ]);
+                }
+            });
+
+            if (subEventData.length > 0) {
+                doc.autoTable({
+                    startY: finalY + 20,
+                    head: head,
+                    body: subEventData,
+                    theme: 'grid',
+                    headStyles: { fillColor: [51, 65, 85] }, // slate-700
+                    styles: { fontSize: 8, cellPadding: 3 },
+                    columnStyles: includeFinancials ? { 0: { cellWidth: 40 } } : {}
+                });
+            } else {
+                doc.setFontSize(10);
+                doc.setTextColor(100, 100, 100);
+                doc.text("No sub-event registration data available yet.", 14, finalY + 25);
+            }
+
+            doc.save('UDGAMA_Dashboard_Analytics.pdf');
+            showToast("Overview Analytics PDF downloaded successfully!");
+        }
+
+        /* -------------------------------------------
+           POS WALk-IN SYSTEM
+           ------------------------------------------- */
+        
+        function renderPosEvents() {
+            const select = document.getElementById('posEventSelect');
+            select.innerHTML = '<option value="" disabled selected>-- Choose an Event --</option>';
+            events.filter(e => e.status === 'opened').forEach(ev => {
+                select.innerHTML += `<option value="${ev.eventId}">${ev.title} ${ev.isTeam ? '(Team)' : ''}</option>`;
+            });
+        }
+
+        function handlePosEventChange() {
+            const eventId = document.getElementById('posEventSelect').value;
+            posActiveEvent = events.find(e => e.eventId === eventId);
+            const container = document.getElementById('posEventDetails');
+
+            if (!posActiveEvent) { container.classList.add('hidden'); return; }
+
+            const ieeeBase = Number(posActiveEvent.ieeeAmount) + Number(posActiveEvent.ieeeTax || 0);
+            const nonIeeeBase = Number(posActiveEvent.nonIeeeAmount) + Number(posActiveEvent.nonIeeeTax || 0);
+            
+            document.getElementById('posPriceIeee').textContent = ieeeBase;
+            document.getElementById('posPriceNonIeee').textContent = nonIeeeBase;
+            document.getElementById('posTeamBadge').textContent = posActiveEvent.isTeam ? `Team (Max ${posActiveEvent.teamSize})` : 'Individual';
+
+            const subEventContainer = document.getElementById('posSubEventContainer');
+            const subEventSelect = document.getElementById('posSubEventSelect');
+            if (posActiveEvent.subEvents && posActiveEvent.subEvents.length > 0) {
+                subEventSelect.innerHTML = `<option value="" disabled selected>Select an option...</option>` +
+                    posActiveEvent.subEvents.map(se => `<option value="${se}">${se}</option>`).join('');
+                subEventContainer.classList.remove('hidden');
+            } else {
+                subEventContainer.classList.add('hidden');
+                subEventSelect.innerHTML = '';
+            }
+
+            document.getElementById('posDynamicParticipants').innerHTML = '';
+            posDynamicCount = -1;
+            
+            const addBtn = document.getElementById('posAddMemberBtn');
+            if(posActiveEvent.isTeam) { addBtn.classList.remove('hidden'); addBtn.classList.add('flex'); } 
+            else { addBtn.classList.add('hidden'); addBtn.classList.remove('flex'); }
+
+            addPosParticipant(true); 
+            container.classList.remove('hidden');
+        }
+
+        function addPosParticipant(isLead = false) {
+            if(!posActiveEvent) return;
+            if(posActiveEvent.isTeam && posDynamicCount + 1 >= posActiveEvent.teamSize) return;
+            
+            posDynamicCount++;
+            const id = `pos-part-${posDynamicCount}`;
+            const div = document.createElement('div'); 
+            div.className = 'border border-slate-200 rounded-xl overflow-hidden bg-white shadow-sm';
+            div.id = id;
+            
+            const title = isLead ? (posActiveEvent.isTeam ? 'Team Lead (Primary)' : 'Participant Details') : `Team Member ${posDynamicCount + 1}`;
+            
+            div.innerHTML = `
+                <div class="bg-slate-50 px-4 py-3 border-b border-slate-200 flex items-center justify-between">
+                    <h4 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-full bg-brand-blue text-white flex items-center justify-center text-xs">${posDynamicCount + 1}</span>
+                        ${title}
+                    </h4>
+                    ${!isLead ? `<button type="button" onclick="removePosParticipant('${id}')" class="text-red-500 hover:bg-red-50 p-1.5 rounded-full"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>` : ''}
+                </div>
+                <div class="p-4 space-y-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Full Name *</label>
+                            <input type="text" class="premium-input dyn-name" required placeholder="John Doe">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Email *</label>
+                            <input type="email" class="premium-input dyn-email" required placeholder="john@example.com">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Mobile *</label>
+                            <input type="tel" class="premium-input dyn-mobile" required placeholder="10-digit number" pattern="[0-9]{10}">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Institution *</label>
+                            <input type="text" class="premium-input dyn-org" required placeholder="College Name">
+                        </div>
+                    </div>
+                    
+                    <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
+                        <span class="text-sm font-bold text-slate-800">Apply IEEE Discount</span>
+                        <label class="flex items-center cursor-pointer relative">
+                            <input type="checkbox" class="sr-only toggle-checkbox" onchange="handleIeeeTogglePos(this, '${id}')">
+                            <div class="toggle-label block w-11 h-6 bg-slate-300 rounded-full transition-colors duration-300"></div>
+                            <div class="dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform duration-300 shadow"></div>
+                        </label>
+                    </div>
+                    
+                    <input type="hidden" class="dyn-ieee-toggle" value="No">
+                    <div class="dyn-ieee-input-container hidden pt-2">
+                        <label class="block text-[11px] font-bold text-brand-blue uppercase mb-1">IEEE Number *</label>
+                        <input type="text" class="premium-input dyn-ieee-num" placeholder="Enter Valid IEEE number">
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('posDynamicParticipants').appendChild(div);
+            
+            if(posActiveEvent.isTeam && posDynamicCount + 1 >= posActiveEvent.teamSize) {
+                document.getElementById('posAddMemberBtn').classList.add('hidden');
+                document.getElementById('posAddMemberBtn').classList.remove('flex');
+            }
+            updatePosTotals();
+        }
+
+        window.handleIeeeTogglePos = function(checkbox, cardId) {
+            const container = document.querySelector(`#${cardId} .dyn-ieee-input-container`);
+            const input = document.querySelector(`#${cardId} .dyn-ieee-num`);
+            const hiddenValue = document.querySelector(`#${cardId} .dyn-ieee-toggle`);
+
+            if(checkbox.checked) {
+                hiddenValue.value = 'Yes';
+                container.classList.remove('hidden');
+                input.setAttribute('required', 'true');
+            } else {
+                hiddenValue.value = 'No';
+                container.classList.add('hidden');
+                input.removeAttribute('required');
+                input.value = '';
+            }
+            updatePosTotals();
+        }
+
+        window.removePosParticipant = function(id) { 
+            document.getElementById(id).remove(); 
+            posDynamicCount--; 
+            const addBtn = document.getElementById('posAddMemberBtn');
+            addBtn.classList.remove('hidden'); addBtn.classList.add('flex');
+            updatePosTotals(); 
+        }
+
+        function updatePosTotals() { 
+            if(!posActiveEvent) return;
+            const ieeeTotal = Number(posActiveEvent.ieeeAmount) + Number(posActiveEvent.ieeeTax || 0);
+            const nonIeeeTotal = Number(posActiveEvent.nonIeeeAmount) + Number(posActiveEvent.nonIeeeTax || 0);
+            let totalDue = 0;
+            const toggles = document.querySelectorAll('#posDynamicParticipants .dyn-ieee-toggle'); 
+            
+            toggles.forEach(toggle => {
+                if(toggle.value === 'Yes') totalDue += ieeeTotal;
+                else totalDue += nonIeeeTotal;
+            });
+            document.getElementById('posModalCount').textContent = posDynamicCount + 1; 
+            document.getElementById('posTotalDue').textContent = totalDue; 
+        }
+
+        function getPosPayload() {
+            const form = document.getElementById('posForm');
+            if(!form.checkValidity()) { form.reportValidity(); return null; }
+
+            const subEventSelect = document.getElementById('posSubEventSelect');
+            let selectedSubEvent = null;
+            if (posActiveEvent.subEvents && posActiveEvent.subEvents.length > 0) {
+                if (!subEventSelect.value) {
+                    showToast('Please select a Sub-Event', 'error');
+                    return null;
+                }
+                selectedSubEvent = subEventSelect.value;
+            }
+
+            const participants = [];
+            document.querySelectorAll('#posDynamicParticipants > div').forEach(card => { 
+                participants.push({ 
+                    fullName: card.querySelector('.dyn-name').value, 
+                    email: card.querySelector('.dyn-email').value, 
+                    mobile: card.querySelector('.dyn-mobile').value, 
+                    organization: card.querySelector('.dyn-org').value,
+                    isIeee: card.querySelector('.dyn-ieee-toggle').value, 
+                    ieeeNumber: card.querySelector('.dyn-ieee-num').value
+                }); 
+            });
+
+            return { eventId: posActiveEvent.eventId, selectedSubEvent, participants };
+        }
+
+        async function processPosCash() {
+            const payload = getPosPayload();
+            if(!payload) return;
+
+            const btn = document.getElementById('btnPosCash'); 
+            const originalText = btn.innerHTML;
+            btn.disabled = true; btn.innerHTML = 'Processing...';
+
+            const totalPaid = Number(document.getElementById('posTotalDue').textContent);
+            payload.totalPaid = totalPaid;
+            
+            try {
+                const token = localStorage.getItem('token');
+                const res = await fetch(`${API_BASE}/coordinator/pos/register-cash`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify(payload)
+                });
+                
+                const data = await res.json();
+                if(!res.ok) throw new Error(data.error || 'Failed to process cash payment');
+
+                showToast(`Success! Reg ID: ${data.registrationId}`);
+                document.getElementById('posEventSelect').value = ""; 
+                handlePosEventChange();
+                fetchDashboardData(); 
+            } catch (err) {
+                showToast(err.message, 'error');
+            } finally {
+                btn.disabled = false; btn.innerHTML = originalText;
+            }
+        }
+
+        async function processPosOnline() {
+            const payload = getPosPayload();
+            if(!payload) return;
+
+            const btn = document.getElementById('btnPosOnline'); 
+            const originalText = btn.innerHTML;
+            btn.disabled = true; btn.innerHTML = 'Loading Gateway...';
+
+            try {
+                const orderRes = await fetch(`${API_BASE}/public/register/init`, { 
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json' }, 
+                    body: JSON.stringify(payload) 
+                });
+                
+                const orderData = await orderRes.json();
+                if (!orderRes.ok) throw new Error(orderData.error || 'Failed to initialize payment');
+
+                const options = { 
+                    key: orderData.keyId, amount: orderData.amount, currency: orderData.currency, order_id: orderData.orderId,
+                    name: "UDGAMA 2026 POS", description: posActiveEvent.title,
+                    prefill: { name: payload.participants[0].fullName, email: payload.participants[0].email, contact: payload.participants[0].mobile },
+                    theme: { color: "#00629B" },
+                    handler: async function(res) { 
+                        btn.innerHTML = 'Verifying...';
+                        
+                        const verifyRes = await fetch(`${API_BASE}/public/register/verify`, { 
+                            method: 'POST', headers: { 'Content-Type': 'application/json' }, 
+                            body: JSON.stringify({ 
+                                ...payload, totalPaid: orderData.totalPaid,
+                                razorpay_payment_id: res.razorpay_payment_id, razorpay_order_id: res.razorpay_order_id, 
+                                razorpay_signature: res.razorpay_signature, isFree: false 
+                            }) 
+                        });
+                        const vData = await verifyRes.json();
+                        if (!verifyRes.ok) throw new Error(vData.error || 'Verification failed');
+                        
+                        showToast(`Success! Reg ID: ${vData.registrationId}`);
+                        document.getElementById('posEventSelect').value = "";
+                        handlePosEventChange();
+                        fetchDashboardData();
+                    },
+                    modal: { ondismiss: () => { btn.disabled = false; btn.innerHTML = originalText; showToast('Payment cancelled', 'error'); } }
+                };
+                new Razorpay(options).open();
+            } catch (err) {
+                showToast(err.message, 'error');
+            } finally {
+                btn.disabled = false; btn.innerHTML = originalText;
             }
         }
 
@@ -618,10 +1081,7 @@
             try {
                 const res = await fetch(`${API_BASE}/coordinator/events/${eventId}/toggle-status`, {
                     method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                     body: JSON.stringify({ status: newStatus })
                 });
                 const data = await res.json();
@@ -652,36 +1112,22 @@
             container.innerHTML = events.map(event => `
                 <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-float transition-all flex flex-col relative">
                     <div class="h-32 bg-slate-100 relative overflow-hidden">
-                        ${event.bannerUrl 
-                            ? `<img src="${event.bannerUrl}" class="w-full h-full object-cover opacity-90" onerror="this.style.display='none'">` 
-                            : `<div class="w-full h-full bg-gradient-to-br from-brand-dark to-brand-blue"></div>`
-                        }
+                        ${event.bannerUrl ? `<img src="${event.bannerUrl}" class="w-full h-full object-cover opacity-90">` : `<div class="w-full h-full bg-gradient-to-br from-brand-dark to-brand-blue"></div>`}
                         <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
-                        <div class="absolute bottom-3 left-4 text-white">
-                            <p class="text-sm font-bold drop-shadow">${event.isTeam ? `Team Event (${event.teamSize})` : 'Individual'}</p>
-                        </div>
+                        <div class="absolute bottom-3 left-4 text-white"><p class="text-sm font-bold drop-shadow">${event.isTeam ? `Team Event (${event.teamSize})` : 'Individual'}</p></div>
                     </div>
                     <div class="p-5 flex flex-col flex-1">
                         <h3 class="font-display font-bold text-lg text-slate-900 mb-1 line-clamp-1">${event.title}</h3>
                         <p class="text-xs text-slate-500 mb-4 line-clamp-2">${event.shortDescription}</p>
-                        ${event.subEvents && event.subEvents.length > 0 
-                            ? `<div class="mb-4 flex flex-wrap gap-1">${event.subEvents.slice(0,3).map(se => `<span class="bg-slate-100 text-slate-600 text-[10px] font-bold px-2 py-0.5 rounded">${se}</span>`).join('')}${event.subEvents.length > 3 ? `<span class="bg-slate-100 text-slate-600 text-[10px] font-bold px-2 py-0.5 rounded">+${event.subEvents.length - 3}</span>` : ''}</div>`
-                            : ''
-                        }
+                        ${event.subEvents && event.subEvents.length > 0 ? `<div class="mb-4 flex flex-wrap gap-1">${event.subEvents.slice(0,3).map(se => `<span class="bg-slate-100 text-slate-600 text-[10px] font-bold px-2 py-0.5 rounded">${se}</span>`).join('')}</div>` : ''}
                         
                         <div class="mt-auto pt-4 border-t border-slate-100 flex justify-between items-center">
-                            <!-- Toggle switch for Accept/Close Registration -->
                             <label class="relative inline-flex items-center cursor-pointer group" title="Toggle Registrations">
                                 <input type="checkbox" class="sr-only peer" ${event.status === 'opened' ? 'checked' : ''} onchange="toggleEventStatus('${event.eventId}', this.checked)">
                                 <div class="w-9 h-5 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-500"></div>
-                                <span class="ml-2 text-[10px] font-bold ${event.status === 'opened' ? 'text-emerald-600' : 'text-slate-400'} uppercase tracking-wide transition-colors">
-                                    ${event.status === 'opened' ? 'Accepting' : 'Closed'}
-                                </span>
+                                <span class="ml-2 text-[10px] font-bold ${event.status === 'opened' ? 'text-emerald-600' : 'text-slate-400'} uppercase tracking-wide transition-colors">${event.status === 'opened' ? 'Accepting' : 'Closed'}</span>
                             </label>
-                            
-                            <button onclick="editEvent('${event.eventId}')" class="text-brand-blue hover:text-brand-dark font-bold text-sm flex items-center gap-1">
-                                Edit <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
-                            </button>
+                            <button onclick="editEvent('${event.eventId}')" class="text-brand-blue hover:text-brand-dark font-bold text-sm flex items-center gap-1">Edit</button>
                         </div>
                     </div>
                 </div>
@@ -699,10 +1145,8 @@
             }
 
             let overallTotalAmount = 0;
-
             container.innerHTML = registrations.map(reg => {
                 const lead = reg.participants && reg.participants[0] ? reg.participants[0] : { fullName: 'Unknown', email: 'N/A', mobile: 'N/A' };
-                
                 let baseAmountDisplay = reg.totalAmountPaid;
                 const eventObj = events.find(e => e.eventId === reg.eventId);
                 if (eventObj && reg.participants) {
@@ -713,82 +1157,51 @@
                     });
                     baseAmountDisplay = calcBase;
                 }
-
-                if (reg.paymentStatus === 'Paid') {
-                    overallTotalAmount += baseAmountDisplay;
-                }
+                if (reg.paymentStatus === 'Paid') overallTotalAmount += baseAmountDisplay;
 
                 return `
                 <tr class="hover:bg-slate-50 transition-colors group">
                     <td class="py-4 px-6 border-b border-slate-100">
                         <p class="font-mono text-xs font-bold text-brand-blue bg-blue-50 inline-block px-2 py-0.5 rounded mb-1">${reg.registrationId}</p>
-                        <p class="text-sm font-bold text-slate-700">
-                            ${reg.eventName} 
-                            ${reg.selectedSubEvent ? `<br><span class="text-[11px] text-brand-blue font-bold px-1.5 py-0.5 bg-blue-50 rounded mt-1 inline-block">${reg.selectedSubEvent}</span>` : ''}
-                        </p>
+                        <p class="text-sm font-bold text-slate-700">${reg.eventName} ${reg.selectedSubEvent ? `<br><span class="text-[11px] text-brand-blue font-bold px-1.5 py-0.5 bg-blue-50 rounded mt-1 inline-block">${reg.selectedSubEvent}</span>` : ''}</p>
                     </td>
                     <td class="py-4 px-6 border-b border-slate-100">
                         <p class="text-sm font-bold text-slate-900">${lead.fullName}</p>
                         <p class="text-xs text-slate-500">${lead.email} | ${lead.mobile}</p>
-                        ${reg.participants.length > 1 ? `<p class="text-[0.65rem] font-bold text-emerald-600 mt-1">+ ${reg.participants.length - 1} more member(s)</p>` : ''}
                     </td>
-                    <td class="py-4 px-6 border-b border-slate-100 text-sm font-bold text-slate-700">
-                        ₹${baseAmountDisplay}
-                    </td>
+                    <td class="py-4 px-6 border-b border-slate-100 text-sm font-bold text-slate-700">₹${baseAmountDisplay}</td>
                     <td class="py-4 px-6 border-b border-slate-100">
                         <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold ${reg.paymentStatus === 'Paid' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-600'}">
-                            <span class="w-1.5 h-1.5 rounded-full ${reg.paymentStatus === 'Paid' ? 'bg-emerald-500' : 'bg-slate-400'}"></span>
                             ${reg.paymentStatus}
                         </span>
                     </td>
                     <td class="py-4 px-6 border-b border-slate-100 text-right">
-                        <button onclick="viewTeam('${reg.registrationId}')" class="px-3 py-1.5 bg-white border border-slate-200 hover:border-brand-blue hover:text-brand-blue rounded-lg text-xs font-bold text-slate-600 shadow-sm transition-all">
-                            View Details
-                        </button>
+                        <button onclick="viewTeam('${reg.registrationId}')" class="px-3 py-1.5 bg-white border border-slate-200 hover:border-brand-blue hover:text-brand-blue rounded-lg text-xs font-bold shadow-sm transition-all">View Details</button>
                     </td>
                 </tr>
             `}).join('');
 
             if(footer) {
-                footer.innerHTML = `
-                    <tr>
-                        <td colspan="2" class="py-4 px-6 text-right uppercase tracking-wider text-sm text-slate-600">Total Collected (Paid Status):</td>
-                        <td class="py-4 px-6 text-emerald-600 text-base">₹${overallTotalAmount}</td>
-                        <td colspan="2"></td>
-                    </tr>
-                `;
+                footer.innerHTML = `<tr><td colspan="2" class="py-4 px-6 text-right uppercase tracking-wider text-sm text-slate-600">Total Collected (Paid Status):</td><td class="py-4 px-6 text-emerald-600 text-base">₹${overallTotalAmount}</td><td colspan="2"></td></tr>`;
                 footer.classList.remove('hidden');
             }
         }
 
+        // CSV Export Data formatting
         function getExportData() {
             const flatData = [];
             registrations.forEach(reg => {
                 const eventObj = events.find(e => e.eventId === reg.eventId);
-
                 (reg.participants || []).forEach((p, index) => {
                     let participantBaseAmount = 0;
-                    
                     if (eventObj) {
-                        if (p.isIeee === 'Yes' || p.isIeee === true) {
-                            participantBaseAmount = Number(eventObj.ieeeAmount || 0);
-                        } else {
-                            participantBaseAmount = Number(eventObj.nonIeeeAmount || 0);
-                        }
+                        participantBaseAmount = (p.isIeee === 'Yes' || p.isIeee === true) ? Number(eventObj.ieeeAmount || 0) : Number(eventObj.nonIeeeAmount || 0);
                     }
-
                     flatData.push({
-                        'Registration ID': reg.registrationId,
-                        'Event Name': reg.selectedSubEvent ? `${reg.eventName} - ${reg.selectedSubEvent}` : reg.eventName,
-                        'Role': index === 0 ? 'Lead' : 'Member',
-                        'Name': p.fullName || 'N/A',
-                        'Email': p.email || 'N/A',
-                        'Mobile': p.mobile || 'N/A',
-                        'Institution': p.organization || 'N/A',
-                        'IEEE Member': (p.isIeee === 'Yes' || p.isIeee === true) ? 'Yes' : 'No',
-                        'Amount (Indiv)': `Rs. ${participantBaseAmount}`,
-                        'Payment Status': reg.paymentStatus,
-                        'Attended (Check-in)': p.attended ? 'Yes' : 'No'
+                        'Registration ID': reg.registrationId, 'Event Name': reg.selectedSubEvent ? `${reg.eventName} - ${reg.selectedSubEvent}` : reg.eventName,
+                        'Role': index === 0 ? 'Lead' : 'Member', 'Name': p.fullName || 'N/A', 'Email': p.email || 'N/A', 'Mobile': p.mobile || 'N/A',
+                        'Institution': p.organization || 'N/A', 'IEEE Member': (p.isIeee === 'Yes' || p.isIeee === true) ? 'Yes' : 'No',
+                        'Amount (Indiv)': `Rs. ${participantBaseAmount}`, 'Payment Status': reg.paymentStatus, 'Attended (Check-in)': p.attended ? 'Yes' : 'No'
                     });
                 });
             });
@@ -797,8 +1210,7 @@
 
         function exportExcel() {
             if (registrations.length === 0) return showToast("No data to export", "error");
-            const data = getExportData();
-            const ws = XLSX.utils.json_to_sheet(data);
+            const ws = XLSX.utils.json_to_sheet(getExportData());
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, "Registrations");
             XLSX.writeFile(wb, "UDGAMA_Registrations.xlsx");
@@ -806,326 +1218,98 @@
 
         function exportPDF() {
             if (registrations.length === 0) return showToast("No data to export", "error");
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF('landscape');
-            
-            doc.setFontSize(14);
-            doc.text("UDGAMA 2026 - Registrations", 14, 15);
-            
+            const { jsPDF } = window.jspdf; const doc = new jsPDF('landscape');
+            doc.setFontSize(14); doc.text("UDGAMA 2026 - Registrations", 14, 15);
             const data = getExportData();
-            const headers = [['Reg ID', 'Event (Sub-Event)', 'Role', 'Name', 'Email', 'Mobile', 'Institution', 'IEEE', 'Attended', 'Indiv Amt']];
-            const rows = data.map(d => [
-                d['Registration ID'], d['Event Name'], d['Role'], d['Name'], d['Email'], 
-                d['Mobile'], d['Institution'], d['IEEE Member'], d['Attended (Check-in)'],
-                d['Amount (Indiv)']
-            ]);
-            
-            doc.autoTable({
-                head: headers,
-                body: rows,
-                startY: 20,
-                styles: { fontSize: 7, cellPadding: 2 },
-                headStyles: { fillColor: [0, 98, 155] } 
-            });
-            
+            const headers = [['Reg ID', 'Event', 'Role', 'Name', 'Email', 'Mobile', 'Institution', 'IEEE', 'Attended']];
+            const rows = data.map(d => [d['Registration ID'], d['Event Name'], d['Role'], d['Name'], d['Email'], d['Mobile'], d['Institution'], d['IEEE Member'], d['Attended (Check-in)']]);
+            doc.autoTable({ head: headers, body: rows, startY: 20, styles: { fontSize: 7, cellPadding: 2 }, headStyles: { fillColor: [0, 98, 155] } });
             doc.save('UDGAMA_Registrations.pdf');
         }
 
+        // Team detail view formatting
         function viewTeam(regId) {
             const reg = registrations.find(r => r.registrationId === regId);
             if(!reg) return;
 
             document.getElementById('teamModalTitle').innerHTML = `${reg.eventName} ${reg.selectedSubEvent ? `<span class="text-sm font-bold text-brand-blue bg-blue-50 px-2 py-1 rounded ml-2">${reg.selectedSubEvent}</span>` : ''}`;
-            document.getElementById('teamModalRegId').textContent = `Registration ID: ${reg.registrationId}`;
+            document.getElementById('teamModalRegId').textContent = `Registration ID: ${reg.registrationId} | Paid via ${reg.paymentId === 'POS_CASH' ? 'CASH' : 'ONLINE'}`;
             
-            const container = document.getElementById('teamMembersContainer');
-            container.innerHTML = (reg.participants || []).map((p, idx) => `
+            document.getElementById('teamMembersContainer').innerHTML = (reg.participants || []).map((p, idx) => `
                 <tr class="hover:bg-slate-50 transition-colors">
                     <td class="py-3 px-4 border-b border-slate-100 text-center sm:text-left">
-                        <span class="inline-block px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider ${idx === 0 ? 'bg-blue-100 text-brand-blue' : 'bg-slate-100 text-slate-500'} mb-2">
-                            ${idx === 0 ? 'Lead' : 'Member'}
-                        </span><br>
-                        <!-- NEW: Attendance visual indicator inside Modal -->
-                        ${p.attended 
-                            ? `<span class="bg-emerald-100 text-emerald-700 text-[10px] font-bold px-2 py-0.5 rounded border border-emerald-200">Present</span>` 
-                            : `<span class="bg-amber-50 text-amber-600 text-[10px] font-bold px-2 py-0.5 rounded border border-amber-200">Pending</span>`}
+                        <span class="inline-block px-2 py-1 rounded text-[10px] font-bold uppercase ${idx === 0 ? 'bg-blue-100 text-brand-blue' : 'bg-slate-100 text-slate-500'} mb-2">${idx === 0 ? 'Lead' : 'Member'}</span><br>
+                        ${p.attended ? `<span class="bg-emerald-100 text-emerald-700 text-[10px] font-bold px-2 py-0.5 rounded">Present</span>` : `<span class="bg-amber-50 text-amber-600 text-[10px] font-bold px-2 py-0.5 rounded">Pending</span>`}
                     </td>
-                    <td class="py-3 px-4 border-b border-slate-100">
-                        <p class="text-sm font-bold text-slate-900">${p.fullName}</p>
-                    </td>
-                    <td class="py-3 px-4 border-b border-slate-100">
-                        <p class="text-xs text-slate-600">${p.email}</p>
-                        <p class="text-xs text-slate-600">${p.mobile}</p>
-                    </td>
-                    <td class="py-3 px-4 border-b border-slate-100 text-sm text-slate-700">
-                        ${p.organization}
-                    </td>
-                    <td class="py-3 px-4 border-b border-slate-100">
-                        ${(p.isIeee === 'Yes' || p.isIeee === true) 
-                            ? `<span class="text-emerald-600 text-xs font-bold">YES</span><br><span class="text-[10px] text-slate-400 font-mono">${p.ieeeNumber || ''}</span>`
-                            : `<span class="text-slate-400 text-xs font-bold">NO</span>`}
-                    </td>
+                    <td class="py-3 px-4 border-b border-slate-100"><p class="text-sm font-bold text-slate-900">${p.fullName}</p></td>
+                    <td class="py-3 px-4 border-b border-slate-100"><p class="text-xs text-slate-600">${p.email}</p><p class="text-xs text-slate-600">${p.mobile}</p></td>
+                    <td class="py-3 px-4 border-b border-slate-100 text-sm text-slate-700">${p.organization}</td>
+                    <td class="py-3 px-4 border-b border-slate-100">${(p.isIeee === 'Yes' || p.isIeee === true) ? `<span class="text-emerald-600 text-xs font-bold">YES</span><br><span class="text-[10px] text-slate-400 font-mono">${p.ieeeNumber || ''}</span>` : `<span class="text-slate-400 text-xs font-bold">NO</span>`}</td>
                 </tr>
             `).join('');
 
             const modal = document.getElementById('teamModal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
+            modal.classList.remove('hidden'); modal.classList.add('flex');
             setTimeout(() => modal.classList.remove('opacity-0'), 10);
         }
 
         function closeTeamModal() {
             const modal = document.getElementById('teamModal');
             modal.classList.add('opacity-0');
-            setTimeout(() => {
-                modal.classList.add('hidden');
-                modal.classList.remove('flex');
-            }, 300);
+            setTimeout(() => { modal.classList.add('hidden'); modal.classList.remove('flex'); }, 300);
         }
 
-        // --- SCANNER IMPLEMENTATION ---
         async function initScanner() {
             document.getElementById('scanner-ui-controls').classList.add('hidden');
             document.getElementById('reader').classList.remove('hidden');
-            
-            if (!html5QrCode) {
-                html5QrCode = new Html5Qrcode("reader");
-            }
-
-            try {
-                await html5QrCode.start(
-                    { facingMode: "environment" },
-                    { fps: 10, qrbox: { width: 250, height: 250 }, aspectRatio: 1.0 },
-                    onScanSuccess,
-                    onScanFailure
-                );
-            } catch (err) {
-                console.error("Camera error:", err);
-                showToast("Camera access denied or unavailable", "error");
-                document.getElementById('reader').classList.add('hidden');
-                document.getElementById('scanner-ui-controls').classList.remove('hidden');
-            }
+            if (!html5QrCode) html5QrCode = new Html5Qrcode("reader");
+            try { await html5QrCode.start({ facingMode: "environment" }, { fps: 10, qrbox: { width: 250, height: 250 }, aspectRatio: 1.0 }, onScanSuccess, onScanFailure); } 
+            catch (err) { showToast("Camera access denied", "error"); document.getElementById('reader').classList.add('hidden'); document.getElementById('scanner-ui-controls').classList.remove('hidden'); }
         }
-
         async function onScanSuccess(decodedText) {
-            // Immediately stop camera to freeze the frame and prevent multiple scans
-            if (html5QrCode && html5QrCode.isScanning) {
-                try { await html5QrCode.stop(); } catch(e) { console.log("Failed to stop scanner", e); }
-            }
+            if (html5QrCode && html5QrCode.isScanning) { try { await html5QrCode.stop(); } catch(e) {} }
             await processScanData(decodedText);
         }
-
-        function onScanFailure(error) { /* Ignore background scanning errors */ }
-
+        function onScanFailure(error) {}
         async function handleManualScan(e) {
-            e.preventDefault();
-            const data = document.getElementById('manualQrData').value.trim();
-            if(!data) return;
-            
-            if (html5QrCode && html5QrCode.isScanning) {
-                try { await html5QrCode.stop(); } catch(e) {}
-            }
-            
-            await processScanData(data);
-            document.getElementById('manualQrData').value = '';
+            e.preventDefault(); const data = document.getElementById('manualQrData').value.trim(); if(!data) return;
+            if (html5QrCode && html5QrCode.isScanning) { try { await html5QrCode.stop(); } catch(e) {} }
+            await processScanData(data); document.getElementById('manualQrData').value = '';
         }
-
         async function processScanData(qrData) {
-            document.getElementById('scan-loading-overlay').classList.remove('hidden');
-            document.getElementById('scan-loading-overlay').classList.add('flex');
-            
+            document.getElementById('scan-loading-overlay').classList.remove('hidden'); document.getElementById('scan-loading-overlay').classList.add('flex');
             try {
                 const token = localStorage.getItem('token');
-                const res = await fetch(`${API_BASE}/coordinator/ticket/scan`, {
-                    method: 'POST',
-                    headers: { 
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}` 
-                    },
-                    body: JSON.stringify({ qrData })
-                });
-
+                const res = await fetch(`${API_BASE}/coordinator/ticket/scan`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ qrData }) });
                 const data = await res.json();
-                document.getElementById('scan-loading-overlay').classList.add('hidden');
-                document.getElementById('scan-loading-overlay').classList.remove('flex');
-
-                if (!res.ok) {
-                    showToast(data.error || 'Failed to mark attendance', 'error');
-                    setTimeout(resumeScanner, 2000); 
-                    return;
-                }
-
-                // Update UI visually for Check-in
-                document.getElementById('scanned-participant-name').innerHTML = `
-                    <span class="font-bold text-lg block text-slate-900">${data.participant.fullName}</span>
-                    <span class="text-slate-500">${data.participant.email}</span>
-                `;
-                document.getElementById('scan-success-overlay').classList.remove('hidden');
-                document.getElementById('scan-success-overlay').classList.add('flex');
-
+                document.getElementById('scan-loading-overlay').classList.add('hidden'); document.getElementById('scan-loading-overlay').classList.remove('flex');
+                if (!res.ok) { showToast(data.error || 'Failed to mark attendance', 'error'); setTimeout(resumeScanner, 2000); return; }
+                document.getElementById('scanned-participant-name').innerHTML = `<span class="font-bold text-lg block text-slate-900">${data.participant.fullName}</span><span class="text-slate-500">${data.participant.email}</span>`;
+                document.getElementById('scan-success-overlay').classList.remove('hidden'); document.getElementById('scan-success-overlay').classList.add('flex');
                 fetchDashboardData();
-
-            } catch(e) {
-                document.getElementById('scan-loading-overlay').classList.add('hidden');
-                document.getElementById('scan-loading-overlay').classList.remove('flex');
-                showToast("Network Error", "error");
-                setTimeout(resumeScanner, 2000);
-            }
+            } catch(e) { document.getElementById('scan-loading-overlay').classList.add('hidden'); document.getElementById('scan-loading-overlay').classList.remove('flex'); showToast("Network Error", "error"); setTimeout(resumeScanner, 2000); }
         }
+        function resumeScanner() { document.getElementById('scan-success-overlay').classList.add('hidden'); document.getElementById('scan-success-overlay').classList.remove('flex'); initScanner(); }
 
-        function resumeScanner() {
-            document.getElementById('scan-success-overlay').classList.add('hidden');
-            document.getElementById('scan-success-overlay').classList.remove('flex');
-            // Restart the scanner securely
-            initScanner();
-        }
-
-        // Sub-Events Handling
         function renderSubEvents() {
-            const container = document.getElementById('subEventsList');
-            container.innerHTML = currentSubEvents.map((se, idx) => `
-                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 rounded-full text-xs font-bold text-slate-700 shadow-sm group">
-                    ${se}
-                    <button type="button" onclick="removeSubEvent(${idx})" class="text-slate-400 hover:text-red-500 transition-colors">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                    </button>
-                </span>
-            `).join('');
+            document.getElementById('subEventsList').innerHTML = currentSubEvents.map((se, idx) => `<span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 rounded-full text-xs font-bold text-slate-700 shadow-sm group">${se}<button type="button" onclick="removeSubEvent(${idx})" class="text-slate-400 hover:text-red-500"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button></span>`).join('');
         }
-
-        function addSubEvent() {
-            const input = document.getElementById('subEventInput');
-            const val = input.value.trim();
-            if(val && !currentSubEvents.includes(val)) {
-                currentSubEvents.push(val);
-                renderSubEvents();
-                input.value = '';
-                input.focus();
-            }
-        }
-
-        window.removeSubEvent = function(index) {
-            currentSubEvents.splice(index, 1);
-            renderSubEvents();
-        }
-
-        function toggleTeamSize(isTeam) {
-            const container = document.getElementById('teamSizeContainer');
-            if(isTeam) {
-                container.classList.remove('opacity-50', 'pointer-events-none');
-            } else {
-                container.classList.add('opacity-50', 'pointer-events-none');
-                document.getElementById('teamSize').value = 1;
-            }
-        }
-
-        function openEventModal() {
-            document.getElementById('eventForm').reset();
-            document.getElementById('editEventId').value = '';
-            document.getElementById('modalTitle').textContent = 'Create New Event';
-            
-            currentSubEvents = [];
-            renderSubEvents();
-            
-            toggleTeamSize(false);
-            
-            const modal = document.getElementById('eventModal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-            setTimeout(() => modal.classList.remove('opacity-0'), 10);
-        }
-
-        function editEvent(eventId) {
-            const ev = events.find(e => e.eventId === eventId);
-            if(!ev) return;
-
-            document.getElementById('editEventId').value = ev.eventId;
-            document.getElementById('modalTitle').textContent = 'Edit Event';
-            
-            document.getElementById('title').value = ev.title;
-            document.getElementById('shortDesc').value = ev.shortDescription;
-            document.getElementById('longDesc').value = ev.detailedDescription;
-            document.getElementById('bannerUrl').value = ev.bannerUrl || ''; 
-            
-            currentSubEvents = ev.subEvents || [];
-            renderSubEvents();
-
-            const teamToggle = document.getElementById('isTeam');
-            teamToggle.checked = ev.isTeam;
-            toggleTeamSize(ev.isTeam);
-            document.getElementById('teamSize').value = ev.teamSize || 1;
-
-            document.getElementById('ieeeBase').value = ev.ieeeAmount;
-            document.getElementById('ieeeTax').value = ev.ieeeTax || 0;
-            document.getElementById('nonIeeeBase').value = ev.nonIeeeAmount;
-            document.getElementById('nonIeeeTax').value = ev.nonIeeeTax || 0;
-
-            const modal = document.getElementById('eventModal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-            setTimeout(() => modal.classList.remove('opacity-0'), 10);
-        }
-
-        function closeEventModal() {
-            const modal = document.getElementById('eventModal');
-            modal.classList.add('opacity-0');
-            setTimeout(() => {
-                modal.classList.add('hidden');
-                modal.classList.remove('flex');
-            }, 300);
-        }
-
+        function addSubEvent() { const input = document.getElementById('subEventInput'); const val = input.value.trim(); if(val && !currentSubEvents.includes(val)) { currentSubEvents.push(val); renderSubEvents(); input.value = ''; } }
+        window.removeSubEvent = function(index) { currentSubEvents.splice(index, 1); renderSubEvents(); }
+        function toggleTeamSize(isTeam) { const container = document.getElementById('teamSizeContainer'); if(isTeam) { container.classList.remove('opacity-50', 'pointer-events-none'); } else { container.classList.add('opacity-50', 'pointer-events-none'); document.getElementById('teamSize').value = 1; } }
+        
+        function openEventModal() { document.getElementById('eventForm').reset(); document.getElementById('editEventId').value = ''; document.getElementById('modalTitle').textContent = 'Create New Event'; currentSubEvents = []; renderSubEvents(); toggleTeamSize(false); const modal = document.getElementById('eventModal'); modal.classList.remove('hidden'); modal.classList.add('flex'); setTimeout(() => modal.classList.remove('opacity-0'), 10); }
+        
+        function editEvent(eventId) { const ev = events.find(e => e.eventId === eventId); if(!ev) return; document.getElementById('editEventId').value = ev.eventId; document.getElementById('modalTitle').textContent = 'Edit Event'; document.getElementById('title').value = ev.title; document.getElementById('shortDesc').value = ev.shortDescription; document.getElementById('longDesc').value = ev.detailedDescription; document.getElementById('bannerUrl').value = ev.bannerUrl || ''; currentSubEvents = ev.subEvents || []; renderSubEvents(); const teamToggle = document.getElementById('isTeam'); teamToggle.checked = ev.isTeam; toggleTeamSize(ev.isTeam); document.getElementById('teamSize').value = ev.teamSize || 1; document.getElementById('ieeeBase').value = ev.ieeeAmount; document.getElementById('ieeeTax').value = ev.ieeeTax || 0; document.getElementById('nonIeeeBase').value = ev.nonIeeeAmount; document.getElementById('nonIeeeTax').value = ev.nonIeeeTax || 0; const modal = document.getElementById('eventModal'); modal.classList.remove('hidden'); modal.classList.add('flex'); setTimeout(() => modal.classList.remove('opacity-0'), 10); }
+        
+        function closeEventModal() { const modal = document.getElementById('eventModal'); modal.classList.add('opacity-0'); setTimeout(() => { modal.classList.add('hidden'); modal.classList.remove('flex'); }, 300); }
+        
         async function saveEvent(e) {
-            e.preventDefault();
-            const btn = document.getElementById('saveEventBtn');
-            btn.disabled = true;
-            btn.innerHTML = 'Saving...';
-
-            const token = localStorage.getItem('token');
-            const eventId = document.getElementById('editEventId').value;
-            const isUpdate = !!eventId;
-
-            const payload = {
-                title: document.getElementById('title').value,
-                shortDescription: document.getElementById('shortDesc').value,
-                detailedDescription: document.getElementById('longDesc').value,
-                bannerUrl: document.getElementById('bannerUrl').value,
-                subEvents: currentSubEvents, 
-                isTeam: document.getElementById('isTeam').checked,
-                teamSize: Number(document.getElementById('teamSize').value),
-                ieeeAmount: Number(document.getElementById('ieeeBase').value),
-                ieeeTax: Number(document.getElementById('ieeeTax').value), 
-                nonIeeeAmount: Number(document.getElementById('nonIeeeBase').value),
-                nonIeeeTax: Number(document.getElementById('nonIeeeTax').value) 
-            };
-
+            e.preventDefault(); const btn = document.getElementById('saveEventBtn'); btn.disabled = true; btn.innerHTML = 'Saving...';
+            const token = localStorage.getItem('token'); const eventId = document.getElementById('editEventId').value; const isUpdate = !!eventId;
+            const payload = { title: document.getElementById('title').value, shortDescription: document.getElementById('shortDesc').value, detailedDescription: document.getElementById('longDesc').value, bannerUrl: document.getElementById('bannerUrl').value, subEvents: currentSubEvents, isTeam: document.getElementById('isTeam').checked, teamSize: Number(document.getElementById('teamSize').value), ieeeAmount: Number(document.getElementById('ieeeBase').value), ieeeTax: Number(document.getElementById('ieeeTax').value), nonIeeeAmount: Number(document.getElementById('nonIeeeBase').value), nonIeeeTax: Number(document.getElementById('nonIeeeTax').value) };
             const url = isUpdate ? `${API_BASE}/coordinator/events/${eventId}` : `${API_BASE}/coordinator/events`;
-            const method = isUpdate ? 'PUT' : 'POST';
-
-            try {
-                const res = await fetch(url, {
-                    method: method,
-                    headers: { 
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}` 
-                    },
-                    body: JSON.stringify(payload)
-                });
-
-                const data = await res.json();
-                if (!res.ok) throw new Error(data.error || 'Failed to save event');
-
-                showToast(isUpdate ? 'Event updated!' : 'Event created!');
-                closeEventModal();
-                fetchDashboardData(); 
-
-            } catch (error) {
-                console.error(error);
-                showToast(error.message, 'error');
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = 'Save Event';
-            }
+            try { const res = await fetch(url, { method: isUpdate ? 'PUT' : 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify(payload) }); const data = await res.json(); if (!res.ok) throw new Error(data.error || 'Failed to save event'); showToast(isUpdate ? 'Event updated!' : 'Event created!'); closeEventModal(); fetchDashboardData(); } catch (error) { showToast(error.message, 'error'); } finally { btn.disabled = false; btn.innerHTML = 'Save Event'; }
         }
     </script>
 </body>
