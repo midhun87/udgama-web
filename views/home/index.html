@@ -175,7 +175,7 @@
         ::-webkit-scrollbar-thumb { background: rgba(0, 163, 224, 0.4); border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: rgba(0, 163, 224, 0.7); }
 
-        /* The Core Glossy Classes */
+            <!-- The Core Glossy Classes -->
         .glass-panel {
             background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.7) 100%);
             backdrop-filter: blur(20px);
@@ -234,12 +234,12 @@
         /* Scrolling Ticker Animation */
         @keyframes ticker-scroll {
             0% { transform: translateX(100vw); }
-            100% { transform: translateX(-100%); }
+            100% { transform: translateX(-150%); }
         }
         .animate-ticker {
-            display: inline-block;
+            display: inline-flex;
             white-space: nowrap;
-            animation: ticker-scroll 30s linear infinite;
+            animation: ticker-scroll 25s linear infinite;
             will-change: transform;
         }
         .animate-ticker:hover {
@@ -285,14 +285,14 @@
                 <!-- Fixed readability: Solid white color with drop shadow instead of gradient -->
                 <span class="text-white text-[0.7rem] sm:text-xs font-bold uppercase tracking-[0.3em] mb-4 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">Designed & Developed By</span>
                 
-                <div class="relative group">
-                    <div class="absolute -inset-1 bg-gradient-to-r from-brand-accent to-purple-600 rounded-2xl blur-md opacity-60 group-hover:opacity-100 transition duration-500 animate-pulse-glow"></div>
-                    <div class="relative flex items-center gap-3 sm:gap-4 px-5 sm:px-8 py-3 sm:py-3.5 rounded-2xl bg-[#020617]/95 border border-white/30 backdrop-blur-xl shadow-2xl">
-                        <img src="https://res.cloudinary.com/dpz44zf0z/image/upload/v1760704788/XETA_SOLUTIONS_LOGO_bcsbwh.png" alt="Xeta Solutions Logo" class="h-6 sm:h-8 w-auto object-contain drop-shadow-[0_0_10px_rgba(255,255,255,0.2)]">
+                <div class="relative group cursor-pointer" onclick="window.open('https://xetatech.in', '_blank')">
+                    <div class="absolute -inset-1 bg-gradient-to-r from-brand-accent via-blue-500 to-purple-600 rounded-2xl blur-lg opacity-80 group-hover:opacity-100 transition duration-500 animate-pulse-glow"></div>
+                    <div class="relative flex items-center gap-3 sm:gap-4 px-5 sm:px-8 py-3 sm:py-3.5 rounded-2xl bg-[#020617]/90 border border-brand-accent/50 backdrop-blur-xl shadow-[0_0_30px_rgba(0,163,224,0.3)]">
+                        <img src="https://res.cloudinary.com/dpz44zf0z/image/upload/v1760704788/XETA_SOLUTIONS_LOGO_bcsbwh.png" alt="Xeta Solutions Logo" class="h-6 sm:h-8 w-auto object-contain drop-shadow-[0_0_10px_rgba(255,255,255,0.4)]">
                         
                         <!-- Added explicitly spelled out text next to the logo -->
-                        <div class="w-px h-6 sm:h-8 bg-white/20"></div>
-                        <span class="text-white font-black text-xs sm:text-base tracking-wider whitespace-nowrap">Xeta Tech Solutions</span>
+                        <div class="w-px h-6 sm:h-8 bg-brand-accent/40"></div>
+                        <span class="font-black text-xs sm:text-base tracking-wider whitespace-nowrap text-transparent bg-clip-text bg-gradient-to-r from-brand-accent via-blue-100 to-white drop-shadow-sm">Xeta Tech Solutions</span>
                     </div>
                 </div>
             </div>
@@ -342,11 +342,14 @@
 
         <!-- Event Updates Scrolling Ticker -->
         <div class="w-full bg-brand-dark/95 backdrop-blur-md text-white overflow-hidden border-t border-white/10 shadow-[0_4px_12px_rgba(0,0,0,0.15)] relative">
-            <div class="animate-ticker py-2 flex items-center">
-                <span class="text-xs sm:text-sm font-medium flex items-center gap-2 mx-8">
+            <div class="animate-ticker py-2">
+                <span class="text-xs sm:text-sm font-medium flex items-center gap-2 mx-8 shrink-0">
                     <span class="text-brand-accent animate-pulse">🔔</span> All the registered participants can avail bus facility to the host institute on day of event by showing event ticket.
                 </span>
-                <span class="text-xs sm:text-sm font-medium flex items-center gap-2 mx-8">
+                <span class="text-xs sm:text-sm font-medium flex items-center gap-2 mx-8 shrink-0">
+                    <span class="text-brand-accent animate-pulse">🗺️</span> <a href="https://testifysecuretestapp.s3.ap-south-1.amazonaws.com/BuS+Routes.pdf" target="_blank" class="text-brand-accent hover:text-white underline decoration-dashed underline-offset-2 transition-colors relative z-50">Please click here for Chalapathi University Bus Routes</a>
+                </span>
+                <span class="text-xs sm:text-sm font-medium flex items-center gap-2 mx-8 shrink-0">
                     <span class="text-brand-accent animate-pulse">🎫</span> All the registered participants should download the event tickets from <a href="https://udgama2026.in/ticket" target="_blank" class="text-brand-accent hover:text-white underline decoration-dashed underline-offset-2 transition-colors relative z-50">udgama2026.in/ticket</a>.
                 </span>
             </div>
@@ -1166,8 +1169,8 @@
                         
                         <div class="space-y-6">
                             <div>
-                                <p class="font-bold text-white text-sm">Xeta Tech Solutions</p>
-                                <a href="tel:+919542297568" class="text-blue-200 text-sm font-medium flex items-center gap-2 hover:text-white transition-colors mt-1">
+                                <p class="font-black text-transparent bg-clip-text bg-gradient-to-r from-brand-accent to-blue-200 text-base drop-shadow-sm">Xeta Tech Solutions</p>
+                                <a href="tel:+919542297568" class="text-blue-200 text-sm font-medium flex items-center gap-2 hover:text-white transition-colors mt-1.5">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
                                     +91 95422 97568
                                 </a>
@@ -1299,10 +1302,10 @@
             <!-- Bottom Footer bar -->
             <div class="pt-8 mt-12 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center gap-6 text-sm text-slate-500 font-medium">
                 <p>&copy; 2026 IEEE Hyderabad Section SAC. All rights reserved.</p>
-                <div class="flex items-center gap-3 bg-slate-800/50 px-5 py-2.5 rounded-full border border-slate-700/50 hover:border-brand-accent/50 transition-colors shadow-lg">
-                    <span class="text-[0.65rem] uppercase tracking-widest text-slate-400 font-bold">Designed & Developed by</span>
+                <div class="flex items-center gap-3 bg-gradient-to-r from-[#001b3a]/80 to-slate-900 px-6 py-3 rounded-full border border-brand-accent/40 hover:border-brand-accent transition-all duration-300 shadow-[0_0_20px_rgba(0,163,224,0.2)] hover:shadow-[0_0_30px_rgba(0,163,224,0.4)]">
+                    <span class="text-[0.65rem] uppercase tracking-widest text-brand-accent/80 font-bold">Designed & Developed by</span>
                     <a href="https://xetatech.in" target="_blank" rel="noopener noreferrer" class="relative group flex items-center">
-                        <span class="font-black text-transparent bg-clip-text bg-gradient-to-r from-brand-accent to-purple-400 group-hover:from-white group-hover:to-blue-200 transition-all duration-300">
+                        <span class="font-black text-transparent bg-clip-text bg-gradient-to-r from-brand-accent via-blue-300 to-purple-400 group-hover:from-white group-hover:to-blue-200 transition-all duration-300 tracking-wide">
                             Xeta Tech Solutions
                         </span>
                         <div class="absolute -bottom-1 left-0 w-0 h-px bg-gradient-to-r from-brand-accent to-purple-400 group-hover:w-full transition-all duration-300"></div>
@@ -1315,38 +1318,43 @@
     <!-- Announcement Pop-up Modal -->
     <div id="announcement-modal" class="fixed inset-0 z-[60] flex items-center justify-center px-4 opacity-0 pointer-events-none transition-opacity duration-500 hidden">
         <!-- Blur Backdrop -->
-        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeAnnouncementModal()"></div>
+        <div class="absolute inset-0 bg-slate-900/80 backdrop-blur-sm" onclick="closeAnnouncementModal()"></div>
         
         <!-- Modal Content Card -->
-        <div class="glass-panel relative w-full max-w-lg rounded-3xl p-6 sm:p-8 shadow-[0_20px_50px_-10px_rgba(0,0,0,0.3)] transform scale-95 transition-transform duration-500" id="announcement-card">
+        <div class="relative w-full max-w-lg rounded-3xl p-6 sm:p-8 shadow-[0_20px_50px_-10px_rgba(0,0,0,0.5)] transform scale-95 transition-transform duration-500 bg-[#0f172a]/95 border border-slate-700/50 backdrop-blur-xl" id="announcement-card">
             <!-- Close Button -->
-            <button onclick="closeAnnouncementModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 bg-white/50 hover:bg-white rounded-full p-2 transition-all focus:outline-none">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            <button onclick="closeAnnouncementModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 rounded-full p-2 transition-all focus:outline-none">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
             
             <div class="flex items-center gap-3 mb-6">
-                <div class="w-10 h-10 bg-gradient-to-br from-brand-accent to-brand-blue text-white rounded-xl flex items-center justify-center shrink-0 shadow-sm">
+                <div class="w-10 h-10 bg-[#3b82f6] text-white rounded-xl flex items-center justify-center shrink-0 shadow-sm">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
                 </div>
-                <h3 class="text-xl font-display font-bold text-slate-800">Important Updates</h3>
+                <h3 class="text-xl font-display font-bold text-slate-200">Important Updates</h3>
             </div>
             
-            <div class="space-y-4">
+            <div class="space-y-4 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
                 <!-- Update 1 -->
-                <div class="bg-white/60 border border-white rounded-2xl p-4 flex gap-4 items-start shadow-sm hover:shadow-md transition-shadow">
-                    <div class="text-2xl shrink-0 mt-0.5 bg-blue-50 w-10 h-10 rounded-full flex items-center justify-center border border-blue-100">🚌</div>
-                    <p class="text-sm text-slate-700 font-medium leading-relaxed">All registered participants can avail <span class="text-brand-blue font-bold">bus facility</span> to the host institute on the day of the event by showing the event ticket.</p>
+                <div class="bg-white/10 border border-white/20 rounded-[1.5rem] p-4 flex gap-4 items-center shadow-sm">
+                    <div class="text-2xl shrink-0 bg-white w-12 h-12 rounded-full flex items-center justify-center shadow-inner">🚌</div>
+                    <p class="text-[0.85rem] sm:text-sm text-slate-300 font-medium leading-relaxed">All registered participants can avail <span class="text-[#60a5fa] font-bold">bus facility</span> to the host institute on the day of the event by showing the event ticket.</p>
                 </div>
                 <!-- Update 2 -->
-                <div class="bg-white/60 border border-white rounded-2xl p-4 flex gap-4 items-start shadow-sm hover:shadow-md transition-shadow">
-                    <div class="text-2xl shrink-0 mt-0.5 bg-emerald-50 w-10 h-10 rounded-full flex items-center justify-center border border-emerald-100">🎫</div>
-                    <p class="text-sm text-slate-700 font-medium leading-relaxed">All registered participants should <span class="text-brand-blue font-bold">download their event tickets</span> from <a href="https://udgama2026.in/ticket" target="_blank" class="text-brand-accent font-bold hover:underline">udgama2026.in/ticket</a>.</p>
+                <div class="bg-white/10 border border-white/20 rounded-[1.5rem] p-4 flex gap-4 items-center shadow-sm">
+                    <div class="text-2xl shrink-0 bg-white w-12 h-12 rounded-full flex items-center justify-center shadow-inner">🗺️</div>
+                    <a href="https://testifysecuretestapp.s3.ap-south-1.amazonaws.com/BuS+Routes.pdf" target="_blank" class="text-[0.85rem] sm:text-sm text-[#60a5fa] font-bold hover:underline leading-relaxed">Please click here for Chalapathi University Bus Routes</a>
+                </div>
+                <!-- Update 3 -->
+                <div class="bg-white/10 border border-white/20 rounded-[1.5rem] p-4 flex gap-4 items-center shadow-sm">
+                    <div class="text-2xl shrink-0 bg-white w-12 h-12 rounded-full flex items-center justify-center shadow-inner">🎫</div>
+                    <p class="text-[0.85rem] sm:text-sm text-slate-300 font-medium leading-relaxed">All registered participants should <span class="text-[#60a5fa] font-bold">download their event tickets</span> from <a href="https://udgama2026.in/ticket" target="_blank" class="text-[#60a5fa] font-bold hover:underline">udgama2026.in/ticket</a>.</p>
                 </div>
             </div>
             
-            <button onclick="closeAnnouncementModal()" class="mt-8 w-full glossy-btn-accent py-3.5 rounded-xl text-white font-bold text-sm shadow-md flex justify-center items-center gap-2 group">
+            <button onclick="closeAnnouncementModal()" class="mt-8 w-full bg-gradient-to-b from-[#60a5fa] to-[#2563eb] hover:from-[#3b82f6] hover:to-[#1d4ed8] py-3.5 rounded-xl text-white font-bold text-sm shadow-md transition-all duration-300 flex justify-center items-center gap-2 group border border-[#3b82f6]/50">
                 Got it, Thanks!
-                <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
             </button>
         </div>
     </div>
@@ -1361,7 +1369,7 @@
             scene.fog = new THREE.FogExp2(0x020617, 0.002);
 
             const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camera.position.z = 160; 
+            camera.position.z = 120; // Closer initial position
 
             const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
@@ -1375,10 +1383,11 @@
 
             const colorBrand = new THREE.Color(0x00A3E0); 
             const colorWhite = new THREE.Color(0xffffff); 
+            const colorEventStart = new THREE.Color(0x38bdf8); // Brighter blue for excitement
 
             for(let i = 0; i < particlesCount; i++) {
-                // Distribute points in a spherical shell
-                const radius = 70 + (Math.random() * 25); 
+                // Distribute points in a spherical shell - more dynamic distribution
+                const radius = 60 + (Math.random() * 35); 
                 const theta = 2 * Math.PI * Math.random();
                 const phi = Math.acos(2 * Math.random() - 1);
                 
@@ -1386,8 +1395,14 @@
                 posArray[i*3+1] = radius * Math.sin(phi) * Math.sin(theta);
                 posArray[i*3+2] = radius * Math.cos(phi);
 
-                // Mix colors between brand blue and white for depth
-                const mixedColor = colorBrand.clone().lerp(colorWhite, Math.random() * 0.5);
+                // Mix colors for a celebratory vibe
+                let mixedColor;
+                if (Math.random() > 0.8) {
+                    mixedColor = colorEventStart;
+                } else {
+                    mixedColor = colorBrand.clone().lerp(colorWhite, Math.random() * 0.7);
+                }
+                
                 colorsArray[i*3] = mixedColor.r;
                 colorsArray[i*3+1] = mixedColor.g;
                 colorsArray[i*3+2] = mixedColor.b;
@@ -1397,10 +1412,10 @@
             particlesGeometry.setAttribute('color', new THREE.BufferAttribute(colorsArray, 3));
             
             const particlesMaterial = new THREE.PointsMaterial({
-                size: 1.2,
+                size: 1.5, // Slightly larger particles
                 vertexColors: true,
                 transparent: true,
-                opacity: 0.8,
+                opacity: 0.9,
                 blending: THREE.AdditiveBlending
             });
 
@@ -1408,12 +1423,12 @@
             scene.add(particleGlobe);
 
             // 2. Inner Glowing Core (Geometric structure)
-            const coreGeom = new THREE.IcosahedronGeometry(45, 1);
+            const coreGeom = new THREE.IcosahedronGeometry(35, 2); // More complex core
             const coreMat = new THREE.MeshBasicMaterial({
                 color: 0x00A3E0,
                 wireframe: true,
                 transparent: true,
-                opacity: 0.15
+                opacity: 0.25 // Brighter core
             });
             const coreMesh = new THREE.Mesh(coreGeom, coreMat);
             scene.add(coreMesh);
@@ -1435,26 +1450,28 @@
                 animationId = requestAnimationFrame(animate);
                 
                 if (!isExiting) {
-                    // Elegant, slow rotation representing global network
-                    particleGlobe.rotation.y += 0.001;
-                    particleGlobe.rotation.x += 0.0005;
+                    // Faster, more energetic rotation since event is starting
+                    particleGlobe.rotation.y += 0.003;
+                    particleGlobe.rotation.x += 0.0015;
                     
-                    // Core rotates in opposite direction
-                    coreMesh.rotation.y -= 0.002;
-                    coreMesh.rotation.z += 0.001;
+                    // Core pulses and rotates faster
+                    coreMesh.rotation.y -= 0.005;
+                    coreMesh.rotation.z += 0.002;
+                    const scale = 1 + Math.sin(Date.now() * 0.002) * 0.05;
+                    coreMesh.scale.set(scale, scale, scale);
                     
-                    ambientDust.rotation.y -= 0.0005;
+                    ambientDust.rotation.y -= 0.001;
                 } else {
-                    // Cinematic Exit: Warp speed fly-through
-                    camera.position.z -= 6; // Zoom camera extremely fast
+                    // Cinematic Exit: Extreme Warp speed fly-through
+                    camera.position.z -= 15; // Extremely fast zoom
                     
-                    particleGlobe.rotation.y += 0.02; // Spin up
-                    coreMesh.rotation.x -= 0.03;
+                    particleGlobe.rotation.y += 0.05; // Extreme spin up
+                    coreMesh.rotation.x -= 0.06;
                     
-                    // Fade out materials to transition to website
-                    if (particlesMaterial.opacity > 0) particlesMaterial.opacity -= 0.02;
-                    if (coreMat.opacity > 0) coreMat.opacity -= 0.02;
-                    if (dustMat.opacity > 0) dustMat.opacity -= 0.02;
+                    // Faster fade out
+                    if (particlesMaterial.opacity > 0) particlesMaterial.opacity -= 0.05;
+                    if (coreMat.opacity > 0) coreMat.opacity -= 0.05;
+                    if (dustMat.opacity > 0) dustMat.opacity -= 0.05;
                 }
                 
                 renderer.render(scene, camera);
@@ -1474,7 +1491,7 @@
         window.addEventListener('load', () => {
             const { renderer, animationId, triggerExit } = init3DSplash();
             
-            // Wait for 3 seconds of showing the splash
+            // Reduced wait time for snappiest entry (1.5 seconds)
             setTimeout(() => {
                 // Trigger the 3D fly-through animation
                 triggerExit();
@@ -1490,8 +1507,8 @@
                     setTimeout(() => {
                         splash.style.display = 'none';
                         cancelAnimationFrame(animationId); 
-                    }, 1000); 
-                }, 400); 
+                    }, 600); // Faster cleanup
+                }, 200); // Start fading DOM immediately
                 
                 // Show Announcement Modal shortly after splash screen disappears
                 setTimeout(() => {
@@ -1507,9 +1524,9 @@
                     
                     card.classList.remove('scale-95');
                     card.classList.add('scale-100');
-                }, 4200); // 3000 + 1200 ms to ensure it loads smoothly after splash
+                }, 2000); // Adjusted timing based on 1.5s splash animation
                 
-            }, 3000); 
+            }, 1500); // 1.5 second initial wait time
         });
 
         // Close Announcement Modal Logic
