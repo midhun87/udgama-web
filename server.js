@@ -253,7 +253,7 @@ app.get('/api/coordinating-admin/dashboard', requireCoordinatingAdmin, async (re
         const assignedOrgIds = user.assignedOrgs || [];
         
         if (assignedOrgIds.length === 0) {
-            return res.json({ stats: null, orgStats: [], subEventStats: [], assignedOrgsDetails: [] });
+            return res.json({ stats: null, orgStats: [], subEventStats: [], assignedOrgsDetails: [], commonParticipants: [] });
         }
 
         // 2. Fetch Organizations Details
@@ -280,6 +280,7 @@ app.get('/api/coordinating-admin/dashboard', requireCoordinatingAdmin, async (re
         let nonIeeeCount = 0;
         let orgStatsMap = {};
         let subEventStatsMap = {};
+        let participantOrgMap = {}; // NEW: Map to track emails across orgs
 
         // Initialize org stats map
         assignedOrgsDetails.forEach(org => {
@@ -304,12 +305,13 @@ app.get('/api/coordinating-admin/dashboard', requireCoordinatingAdmin, async (re
             const orgId = event.orgId;
             const amount = Number(reg.totalAmountPaid || 0);
             const subEventName = reg.selectedSubEvent || 'Main Event';
-            const subEventKey = `${event.eventId}_${subEventName}`; // Unique key per sub-event
+            const subEventKey = `${event.eventId}_${subEventName}`; 
+            const currentOrgName = orgStatsMap[orgId] ? orgStatsMap[orgId].orgName : 'Unknown Org';
             
             totalRevenue += amount;
             
             if(orgStatsMap[orgId]) {
-                orgStatsMap[orgId].registrations += 1; // Ticket count
+                orgStatsMap[orgId].registrations += 1; 
                 orgStatsMap[orgId].revenue += amount;
             }
 
@@ -319,7 +321,7 @@ app.get('/api/coordinating-admin/dashboard', requireCoordinatingAdmin, async (re
                     subEvent: subEventName,
                     revenue: 0,
                     participants: 0,
-                    orgName: orgStatsMap[orgId] ? orgStatsMap[orgId].orgName : 'Unknown Org'
+                    orgName: currentOrgName
                 };
             }
             
@@ -327,7 +329,6 @@ app.get('/api/coordinating-admin/dashboard', requireCoordinatingAdmin, async (re
 
             let regParticipantsCount = 0;
 
-            // Deep dive into Participants array to count ACTUAL people (teams = multiple people)
             if (reg.participants && Array.isArray(reg.participants)) {
                 regParticipantsCount = reg.participants.length;
                 totalParticipants += regParticipantsCount;
@@ -344,22 +345,50 @@ app.get('/api/coordinating-admin/dashboard', requireCoordinatingAdmin, async (re
                         nonIeeeCount++;
                         if(orgStatsMap[orgId]) orgStatsMap[orgId].nonIeee++;
                     }
+
+                    // NEW: Track participant for Cross-Organization presence
+                    if (p.email && reg.paymentStatus === 'Paid') {
+                        const emailLower = p.email.toLowerCase().trim();
+                        if (!participantOrgMap[emailLower]) {
+                            participantOrgMap[emailLower] = {
+                                name: p.fullName,
+                                email: emailLower,
+                                mobile: p.mobile || 'N/A',
+                                orgIds: new Set(),
+                                orgNames: new Set()
+                            };
+                        }
+                        participantOrgMap[emailLower].orgIds.add(orgId);
+                        participantOrgMap[emailLower].orgNames.add(currentOrgName);
+                    }
                 });
             }
             
             detailedRegistrations.push({
                 ...reg,
                 eventName: event.title,
-                orgName: orgStatsMap[orgId] ? orgStatsMap[orgId].orgName : 'Unknown Org',
+                orgName: currentOrgName,
                 participantCount: regParticipantsCount
             });
         });
 
+        // NEW: Filter for participants who belong to > 1 organization
+        const commonParticipants = Object.values(participantOrgMap)
+            .filter(p => p.orgIds.size > 1)
+            .map(p => ({
+                name: p.name,
+                email: p.email,
+                mobile: p.mobile,
+                orgCount: p.orgIds.size,
+                orgNames: Array.from(p.orgNames)
+            }))
+            .sort((a, b) => b.orgCount - a.orgCount); // Sort by highest participation count
+
         res.json({
             stats: {
                 totalRevenue,
-                totalRegistrations, // Number of tickets
-                totalParticipants,  // Number of actual human beings
+                totalRegistrations,
+                totalParticipants,
                 ieeeCount,
                 nonIeeeCount,
                 totalAssignedOrgs: assignedOrgIds.length
@@ -367,8 +396,9 @@ app.get('/api/coordinating-admin/dashboard', requireCoordinatingAdmin, async (re
             orgStats: Object.values(orgStatsMap),
             subEventStats: Object.values(subEventStatsMap),
             assignedOrgsDetails,
+            commonParticipants, // NEW Field Added
             recentRegistrations: detailedRegistrations.slice(-10).reverse(), 
-            allRegistrations: detailedRegistrations // Complete set for CSV export
+            allRegistrations: detailedRegistrations 
         });
 
     } catch (error) {
@@ -376,7 +406,6 @@ app.get('/api/coordinating-admin/dashboard', requireCoordinatingAdmin, async (re
         res.status(500).json({ error: 'Failed to fetch dashboard data' });
     }
 });
-
 // --- API: Organization Coordinator Routes ---
 // 1. Create Event
 app.post('/api/coordinator/events', requireCoordinator, upload.single('bannerImage'), async (req, res) => {
@@ -529,7 +558,7 @@ app.get('/api/public/data', async (req, res) => {
         
         res.json({ 
             organizations: orgsRes.Items || [], 
-            events: (eventsRes.Items || []).filter(e => e.status === 'opened') 
+            events: eventsRes.Items || [] // Return all events, allowing frontend to handle 'closed' state
         });
     } catch (error) {
         console.error('Public Data Fetch Error:', error);
@@ -1226,6 +1255,34 @@ app.post('/api/coordinator/ticket/scan', requireCoordinator, async (req, res) =>
     } catch (error) {
         console.error('Scan Ticket Error:', error);
         res.status(500).json({ error: 'Failed to process ticket scan' });
+    }
+});
+
+app.put('/api/coordinator/events/:eventId/toggle-status', requireCoordinator, async (req, res) => {
+    try {
+        const { eventId } = req.params;
+        const { status } = req.body; // Expects 'opened' or 'closed'
+        const orgId = req.user.role === 'admin' ? null : req.user.orgId;
+
+        if (orgId) {
+            const eventCheck = await docClient.send(new GetCommand({ TableName: EVENTS_TABLE, Key: { eventId } }));
+            if (!eventCheck.Item || eventCheck.Item.orgId !== orgId) {
+                return res.status(403).json({ error: 'Unauthorized to edit this event' });
+            }
+        }
+
+        await docClient.send(new UpdateCommand({
+            TableName: EVENTS_TABLE,
+            Key: { eventId },
+            UpdateExpression: 'SET #status = :s',
+            ExpressionAttributeNames: { '#status': 'status' },
+            ExpressionAttributeValues: { ':s': status }
+        }));
+
+        res.json({ message: `Event marked as ${status}` });
+    } catch (error) {
+        console.error('Toggle Event Status Error:', error);
+        res.status(500).json({ error: 'Failed to toggle event status' });
     }
 });
 // Catch-all for unresolved routes
